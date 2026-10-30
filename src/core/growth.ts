@@ -1,5 +1,5 @@
 import { CONFIG } from '../config';
-import type { AttrKey, GameState, Phase } from '../types';
+import { ATTR_LABEL, type AttrKey, type GameState, type Phase } from '../types';
 import { clamp, phaseOfYear } from './state';
 
 /** 涨到下一级所需经验：属性越高越贵。 */
@@ -67,7 +67,7 @@ export function advanceYear(state: GameState): string[] {
       const before = state.attrs[key];
       state.attrs[key] = clamp(before - CONFIG.attrs.declineDrop, 0, CONFIG.attrs.cap);
       if (state.attrs[key] !== before) {
-        logs.push(`${key} 掉了 ${before - state.attrs[key]} 点——手比脑子慢半拍。`);
+        logs.push(`${ATTR_LABEL[key]} 掉了 ${before - state.attrs[key]} 点——手比脑子慢半拍。`);
       }
     }
   }

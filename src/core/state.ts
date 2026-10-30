@@ -27,10 +27,6 @@ export function phaseOfYear(year: number): Phase {
   return 'decline';
 }
 
-export function phaseOfWeek(year: number): Phase {
-  return phaseOfYear(year);
-}
-
 export function ageOf(state: GameState): number {
   return CONFIG.career.startAge + state.year - 1;
 }
@@ -95,7 +91,6 @@ export function newGame(seed: number): GameState {
     actionTargets: [null, null, null],
     pendingEvent: null,
     eventDone: false,
-    matchDone: false,
     temp: {},
     log: [{ text: `第 1 周，你 18 岁，坐在训练室的最后一排。`, tone: 'plain' }],
     ended: null,
@@ -108,10 +103,6 @@ export function newGame(seed: number): GameState {
 /** 六维总和，结局与统计用。 */
 export function attrTotal(state: GameState): number {
   return ATTR_KEYS.reduce((sum, key) => sum + state.attrs[key], 0);
-}
-
-export function hasFlag(state: GameState, flag: string): boolean {
-  return state.flags.includes(flag);
 }
 
 export function addFlag(state: GameState, flag: string): void {

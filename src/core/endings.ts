@@ -1,12 +1,15 @@
 import { ATTR_KEYS, ATTR_LABEL, HONOR_LABEL, type Ending, type GameState } from '../types';
 import { ageOf, rankTier } from './state';
 
-export type EndReason = 'expired' | 'retired' | 'no-team';
+export type EndReason = 'expired' | 'retired';
 
 /** 标记 → 尾注。尾注必须点出「当年那个选择」。 */
 const MARK_NOTES: Record<string, string> = {
   试训通过: '当年那条弹幕飘过去，你选了去试训。',
-  请神: '第 3 年决赛前，你闭上了眼睛——那一下，值不值，只有你知道。',
+  嘴碎: '当年你回怼了那条弹幕，之后每一年都在还。',
+  想得开: '当年你选择继续播，没把那条弹幕当回事。',
+  请神: '第 3 年决赛前，你闭上了眼睛——那一下值不值，只有你知道。',
+  道过歉: '那年训练室里你低了头，队伍没散。',
 };
 
 function bestAndWorst(state: GameState): { best: string; worst: string } {
@@ -22,9 +25,10 @@ function honorLine(state: GameState): string {
 }
 
 function noteFor(state: GameState): string {
+  // 取最后一个能对上模板的标记：越晚发生，越接近「这一局的我」。
   const marks = state.flags.filter((f) => MARK_NOTES[f]);
-  const first = marks[0];
-  if (first) return MARK_NOTES[first] ?? '';
+  const last = marks[marks.length - 1];
+  if (last) return MARK_NOTES[last] ?? '';
   return '没有哪个选择特别响，但它们都算数。';
 }
 

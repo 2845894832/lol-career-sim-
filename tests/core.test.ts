@@ -6,11 +6,12 @@ import { advanceYear, gainExp } from '../src/core/growth';
 import { autoMatch, applyMatchOutcome } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
 import { drawEvent } from '../src/core/events';
+import { canPlay } from '../src/core/match';
 import { createRng } from '../src/rng';
 import { fromSaveJson, toSaveJson } from '../src/core/save';
 import { loadSaved, persist } from '../src/core/save';
 import { newGame, rankTier } from '../src/core/state';
-import { ATTR_KEYS, type Action, type GameState } from '../src/types';
+import { ATTR_KEYS, MATCH_ATTRS, type Action, type GameState } from '../src/types';
 
 /** 一周：排三格 → 结周 → 处理事件。 */
 function step(state: GameState): GameState {
@@ -189,7 +190,7 @@ describe('事件与临场值', () => {
 
   it('必败选项一定失败', () => {
     const s = newGame(1);
-    s.pendingEvent = { eventId: 'E02', isMatch: false };
+    s.pendingEvent = { eventId: 'E02' };
     const before = s.attrs.laning;
     const r = reduce(s, { kind: 'chooseOption', option: 1 }).state;
     expect(r.attrs.laning).toBeLessThan(before);
@@ -203,6 +204,24 @@ describe('比赛', () => {
     const { win } = autoMatch(s);
     applyMatchOutcome(s, win, false);
     expect(s.coachTrust).not.toBe(before);
+  });
+
+  it('临场加减会改变自动比赛的胜率', () => {
+    let s = newGame(7);
+    let normal = 0;
+    let debuffed = 0;
+    for (let i = 0; i < 200; i++) {
+      const a = structuredClone(s);
+      if (autoMatch(a).win) normal++;
+      s.rngState = a.rngState;
+
+      const b = structuredClone(s);
+      for (const key of MATCH_ATTRS) b.temp[key] = -1000;
+      if (autoMatch(b).win) debuffed++;
+      s.rngState = b.rngState;
+    }
+    expect(normal).toBeGreaterThan(60);
+    expect(debuffed).toBeLessThan(normal);
   });
 });
 
@@ -294,6 +313,56 @@ describe('事件抽取', () => {
     const s = newGame(1);
     s.flags.push('试训通过');
     expect(normalEnding(s, 'expired').note).toContain('试训');
+  });
+
+  it('特殊事件在随机池里按 1:10 抽出', () => {
+    let special = 0;
+    const total = 4000;
+    for (let i = 0; i < total; i++) {
+      const s = newGame(i + 1);
+      s.year = 1;
+      s.week = 10;
+      s.rngState = (i * 2654435761) >>> 0;
+      const r = drawEvent(s);
+      if (r.event?.id === 'E04') special++;
+    }
+    const ratio = special / total;
+    expect(ratio).toBeGreaterThan(0.02);
+    expect(ratio).toBeLessThan(0.08);
+  });
+});
+
+describe('出场判定', () => {
+  it('未签约不上场', () => {
+    const s = newGame(1);
+    s.week = 5;
+    expect(canPlay(s)).toBe(false);
+  });
+
+  it('伤病到 3 赛季报销', () => {
+    const s = newGame(1);
+    s.week = 5;
+    s.signed = true;
+    s.injury = 3;
+    expect(canPlay(s)).toBe(false);
+  });
+
+  it('教练信任低于替补线不上场，高于则能打', () => {
+    const s = newGame(1);
+    s.week = 5;
+    s.signed = true;
+    s.injury = 0;
+    s.coachTrust = CONFIG.match.benchThreshold - 1;
+    expect(canPlay(s)).toBe(false);
+    s.coachTrust = CONFIG.match.benchThreshold + 5;
+    expect(canPlay(s)).toBe(true);
+  });
+
+  it('休赛期没有比赛', () => {
+    const s = newGame(1);
+    s.week = 28;
+    s.signed = true;
+    expect(canPlay(s)).toBe(false);
   });
 });
 

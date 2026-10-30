@@ -128,8 +128,6 @@ export interface GameEvent {
 
 export interface PendingEvent {
   eventId: string;
-  /** 本周是否已经有比赛（必触发事件也占用比赛位）。 */
-  isMatch: boolean;
 }
 
 export interface Ending {
@@ -178,8 +176,6 @@ export interface GameState {
   pendingEvent: PendingEvent | null;
   /** 本周事件是否已结算。 */
   eventDone: boolean;
-  /** 本周比赛是否已结算。 */
-  matchDone: boolean;
   /** 临场加减，不进存档。 */
   temp: Partial<Stats>;
   log: LogEntry[];
@@ -197,10 +193,9 @@ export type Action =
   | { kind: 'chooseOption'; option: number }
   | { kind: 'endWeek' }
   | { kind: 'retire' }
-  | { kind: 'skipYear' }
-  | { kind: 'reset' };
+  | { kind: 'skipYear' };
 
 export interface ReduceResult {
   state: GameState;
-  log: string[];
+  log: LogEntry[];
 }

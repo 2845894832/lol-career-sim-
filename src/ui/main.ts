@@ -4,7 +4,7 @@ import { getEvent, successRateOf } from '../core/events';
 import { ACTION_INFO, canAfford, isActionUnlocked, staminaCost } from '../core/actions';
 import { loadSaved, persist } from '../core/save';
 import { expProgress } from '../core/growth';
-import { ageOf, newGame, phaseOfYear, rankTier } from '../core/state';
+import { ageOf, isMatchWeek, newGame, phaseOfYear, rankTier } from '../core/state';
 import { randomSeed } from '../rng';
 import {
   ACTION_IDS,
@@ -31,7 +31,7 @@ let outcome: LogEntry[] | null = null;
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-const slotLabel = (slot: number): string => `第 ${slot + 1} 格`;
+const slotLabel = (slot: number): string => `行动 ${slot + 1}`;
 
 function renderTopbar(): string {
   const phase = phaseOfYear(state.year);
@@ -41,7 +41,7 @@ function renderTopbar(): string {
       <div class="title">第 ${state.year} 年 · 第 ${state.week} 周</div>
       <div class="sub">${PHASE_LABEL[phase]} · ${ageOf(state)} 岁 · ${tag}</div>
     </div>
-    <div class="sub">${state.week <= 26 ? '比赛周' : '休赛期'}</div>
+    <div class="sub">${isMatchWeek(state.week) ? '比赛周' : '休赛期'}</div>
   </div>`;
 }
 
@@ -91,7 +91,7 @@ function renderControls(): string {
   const blocked = state.pendingEvent ? 'disabled' : '';
   return `<div class="panel" style="display:flex;flex-direction:column;gap:8px">
     <button class="btn primary" data-act="end-week" ${blocked}>
-      <span>结周</span><span class="hint">${state.pendingEvent ? '先处理事件' : '结算三格并推进'}</span>
+      <span>结周</span><span class="hint">${state.pendingEvent ? '先处理事件' : '结算三个行动并推进'}</span>
     </button>
     <button class="btn" data-act="retire"><span>退役</span><span class="hint">立刻看结局</span></button>
     <button class="btn" data-act="skip-year"><span>跳到下一年</span><span class="hint">调试用</span></button>
@@ -112,7 +112,11 @@ function renderSheet(): string {
       const unlocked = isActionUnlocked(state, id);
       const afford = canAfford(state, sheet!.slot, id);
       const disabled = !unlocked || !afford;
-      const hint = !unlocked ? '签约后解锁' : `${staminaCost(id)} 体力 · ${ACTION_INFO[id].hint}`;
+      const hint = !unlocked
+        ? '签约后解锁'
+        : !afford
+          ? `体力不够（需 ${staminaCost(id)}）`
+          : `${staminaCost(id)} 体力 · ${ACTION_INFO[id].hint}`;
       return `<button class="btn" data-act="pick-action" data-id="${id}" ${disabled ? 'disabled' : ''}>
         <span>${ACTION_INFO[id].label}</span><span class="hint">${hint}</span>
       </button>`;
@@ -201,10 +205,11 @@ function render(): void {
     renderOutcome();
 }
 
-function apply(action: Action): void {
+function apply(action: Action, persistNow = true): void {
   const result = reduce(state, action);
   state = result.state;
-  persist(state);
+  // 存档以比赛周为界：排行动点不落盘，结周才写。
+  if (persistNow) persist(state);
   sheet = null;
   render();
 }
@@ -235,14 +240,14 @@ app.addEventListener('click', (ev) => {
         return;
       }
       const slot = sheet?.kind === 'actions' ? sheet.slot : 0;
-      apply({ kind: 'selectAction', slot, action: id });
+      apply({ kind: 'selectAction', slot, action: id }, false);
       break;
     }
     case 'pick-target': {
       const key = node.dataset.key as AttrKey | undefined;
       if (!key) return;
       const slot = sheet?.kind === 'targets' ? sheet.slot : 0;
-      apply({ kind: 'selectAction', slot, action: 'train', target: key });
+      apply({ kind: 'selectAction', slot, action: 'train', target: key }, false);
       break;
     }
     case 'close-sheet':
@@ -263,7 +268,7 @@ app.addEventListener('click', (ev) => {
       const result = reduce(state, { kind: 'chooseOption', option: index });
       state = result.state;
       persist(state);
-      outcome = state.log.slice(-6);
+      outcome = result.log;
       render();
       break;
     }

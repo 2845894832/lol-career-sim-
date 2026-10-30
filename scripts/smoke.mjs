@@ -10,10 +10,13 @@ import { dirname, join } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..');
-const require = createRequire('C:/Users/18191/.dsh/profiles/desktop/node_modules/');
+const require = createRequire(import.meta.url);
 const puppeteer = require('puppeteer-core');
 
-const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+/** 浏览器路径可用 EDGE_PATH 覆盖，默认找本机 Edge。 */
+const EDGE =
+  process.env.EDGE_PATH ??
+  'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const PAGE = join(root, 'dist', 'index.html');
 
 if (!existsSync(PAGE)) {

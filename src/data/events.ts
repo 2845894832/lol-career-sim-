@@ -1,3 +1,4 @@
+import { CONFIG } from '../config';
 import type { GameEvent } from '../types';
 
 /**
@@ -83,6 +84,7 @@ export const EVENTS: readonly GameEvent[] = [
         risk: 'fail',
         fail: {
           attrs: { laning: -2, teamfight: -2 },
+          flag: '嘴碎',
         },
         failText: '你回了两句，第二天剪辑就上了热门。',
       },
@@ -91,6 +93,7 @@ export const EVENTS: readonly GameEvent[] = [
         risk: 'success',
         success: {
           attrs: { mentality: 2 },
+          flag: '想得开',
         },
         successText: '你把心态放得很好：水到渠成，急不得。',
       },
@@ -100,8 +103,8 @@ export const EVENTS: readonly GameEvent[] = [
     id: 'E03',
     kind: 'special',
     phase: 'peak',
-    year: 3,
-    week: 26,
+    year: CONFIG.career.finalYear,
+    week: CONFIG.career.finalWeek,
     tags: ['#S赛', '#决赛', '#特殊', '#请神'],
     text: '第 3 年，决赛。这一场决定你以后的历史地位。',
     once: true,
@@ -111,7 +114,6 @@ export const EVENTS: readonly GameEvent[] = [
         label: '闭上双眼请神',
         risk: 'roll',
         attrs: ['mentality', 'awareness'],
-        matchResult: 'win',
         success: {
           temp: { operation: 8, laning: 8, teamfight: 8, awareness: 8 },
           flag: '请神',
@@ -125,17 +127,53 @@ export const EVENTS: readonly GameEvent[] = [
       {
         label: '不想这些，专注游戏',
         risk: 'success',
-        matchResult: 'win',
         successText: '你把耳机音量调大了一格，世界安静了。',
       },
       {
         label: '向队友说些话',
         risk: 'success',
-        matchResult: 'win',
         success: {
           attrs: { mentality: 2 },
         },
         successText: '你说「打完这把去吃火锅」，语音里有人笑出了声。',
+      },
+    ],
+  },
+  {
+    id: 'E04',
+    kind: 'life',
+    phase: 'any',
+    tags: ['#队内', '#矛盾', '#特殊'],
+    text: '训练室里，中单把耳机摔了。他说你昨天那句「下路自己打」，全队都听见了。',
+    once: true,
+    weight: 1,
+    options: [
+      {
+        label: '道歉',
+        risk: 'success',
+        success: {
+          coachTrust: 4,
+          attrs: { mentality: 2 },
+          flag: '道过歉',
+        },
+        successText: '你把话收回去，训练室安静下来。',
+      },
+      {
+        label: '怼回去',
+        risk: 'fail',
+        fail: {
+          coachTrust: -8,
+          attrs: { mentality: -2 },
+        },
+        failText: '你们打了一架，第二天上了热搜。',
+      },
+      {
+        label: '不说话',
+        risk: 'success',
+        success: {
+          attrs: { mentality: -1 },
+        },
+        successText: '你没说话，他也没再说。',
       },
     ],
   },

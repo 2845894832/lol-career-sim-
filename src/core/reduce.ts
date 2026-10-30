@@ -1,16 +1,16 @@
 import { CONFIG } from '../config';
-import { randomSeed } from '../rng';
+import { createRng } from '../rng';
 import type { Action, AttrKey, GameState, LogEntry, ReduceResult } from '../types';
 import { applyAction, canAfford, isActionUnlocked, staminaCost } from './actions';
 import { advanceYear } from './growth';
 import { applyMatchOutcome, autoMatch, benchReason, canPlay } from './match';
 import { drawEvent, getEvent, resolveOption } from './events';
 import { normalEnding, specialEnding } from './endings';
-import { attrTotal, cloneState, isMatchWeek, isSigningWindow, newGame } from './state';
+import { attrTotal, cloneState, isMatchWeek, isSigningWindow } from './state';
 
 /** 那场决赛：第 3 年 S 赛。 */
 export function isFinalWeek(state: GameState): boolean {
-  return state.year === 3 && state.week === CONFIG.career.finalWeek;
+  return state.year === CONFIG.career.finalYear && state.week === CONFIG.career.finalWeek;
 }
 
 /**
@@ -18,11 +18,8 @@ export function isFinalWeek(state: GameState): boolean {
  * 不读界面、不碰存储、不自己取随机数。
  */
 export function reduce(prev: GameState, action: Action): ReduceResult {
-  if (action.kind === 'reset') {
-    return { state: newGame(randomSeed()), log: ['新的生涯。'] };
-  }
   if (prev.ended) {
-    return { state: prev, log: ['生涯已经结束了。'] };
+    return { state: prev, log: [{ text: '生涯已经结束了。', tone: 'plain' }] };
   }
 
   const state = cloneState(prev);
@@ -50,7 +47,7 @@ export function reduce(prev: GameState, action: Action): ReduceResult {
     state.log = [...state.log, ...out].slice(-60);
   }
 
-  return { state, log: out.map((e) => e.text) };
+  return { state, log: out };
 }
 
 function selectAction(
@@ -61,7 +58,7 @@ function selectAction(
   out: LogEntry[],
 ): void {
   if (slot < 0 || slot > 2) {
-    out.push({ text: '这一格不存在。', tone: 'plain' });
+    out.push({ text: '这个行动点不存在。', tone: 'plain' });
     return;
   }
   if (state.pendingEvent) {
@@ -76,7 +73,7 @@ function selectAction(
   let chosen = id;
   if (!canAfford(state, slot, id)) {
     chosen = 'rest';
-    out.push({ text: '体力不够，这一格只能安排休息。', tone: 'plain' });
+    out.push({ text: '体力不够，这个行动点只能安排休息。', tone: 'plain' });
   }
 
   state.actionGrid[slot] = chosen;
@@ -89,7 +86,7 @@ function endWeek(state: GameState, out: LogEntry[]): void {
     return;
   }
 
-  // 没排的格子自动补休息。
+  // 没排的行动点自动补休息。
   for (let i = 0; i < 3; i++) {
     if (!state.actionGrid[i]) {
       state.actionGrid[i] = 'rest';
@@ -97,7 +94,7 @@ function endWeek(state: GameState, out: LogEntry[]): void {
     }
   }
 
-  // 三格依次结算，先扣体力再执行。
+  // 三个行动点依次结算，先扣体力再执行。
   for (let i = 0; i < 3; i++) {
     const id = state.actionGrid[i];
     if (!id) continue;
@@ -110,16 +107,13 @@ function endWeek(state: GameState, out: LogEntry[]): void {
   const drawn = drawEvent(state);
   state.rngState = drawn.rngState;
   if (drawn.event) {
-    state.pendingEvent = {
-      eventId: drawn.event.id,
-      isMatch: drawn.event.kind === 'match',
-    };
+    state.pendingEvent = { eventId: drawn.event.id };
     out.push({ text: `【事件】${drawn.event.text}`, tone: 'plain' });
     return;
   }
 
   state.eventDone = true;
-  settleMatch(state, null, out);
+  settleMatch(state, out);
   finishWeek(state, out);
 }
 
@@ -132,7 +126,7 @@ function chooseOption(state: GameState, index: number, out: LogEntry[]): void {
   if (!event) {
     state.pendingEvent = null;
     state.eventDone = true;
-    settleMatch(state, null, out);
+    settleMatch(state, out);
     finishWeek(state, out);
     return;
   }
@@ -140,21 +134,23 @@ function chooseOption(state: GameState, index: number, out: LogEntry[]): void {
   const outcome = resolveOption(state, event, index);
   out.push(...outcome.logs);
 
+  // 比赛事件由选项决定胜负；但伤停/下放/没签约时，这场不该算在你头上。
   if (outcome.win !== null) {
-    out.push(...applyMatchOutcome(state, outcome.win, isFinalWeek(state)));
+    if (canPlay(state)) {
+      out.push(...applyMatchOutcome(state, outcome.win, isFinalWeek(state)));
+    } else {
+      const reason = benchReason(state);
+      if (reason) out.push({ text: reason, tone: 'plain' });
+    }
   } else {
-    settleMatch(state, null, out);
+    settleMatch(state, out);
   }
 
   finishWeek(state, out);
 }
 
-/** 有比赛事件时用事件结果；否则照常自动打一场。 */
-function settleMatch(state: GameState, forcedWin: boolean | null, out: LogEntry[]): void {
-  if (forcedWin !== null) {
-    out.push(...applyMatchOutcome(state, forcedWin, isFinalWeek(state)));
-    return;
-  }
+/** 照常打一场：受伤/下放会跳过，休赛期没有比赛。 */
+function settleMatch(state: GameState, out: LogEntry[]): void {
   if (!isMatchWeek(state.week)) return;
   if (!canPlay(state)) {
     const reason = benchReason(state);
@@ -169,7 +165,7 @@ function resolveSigningWindow(state: GameState, out: LogEntry[]): void {
   if (state.signed) return;
 
   // 第 1 年只是路人期，不计数。
-  if (state.year <= 1) {
+  if (state.year < CONFIG.career.rookieSeason) {
     state.freeAgent = true;
     return;
   }
@@ -198,44 +194,63 @@ function resolveSigningWindow(state: GameState, out: LogEntry[]): void {
   }
 }
 
+/** 一个行动点用完后的清理：临场值、伤病、签约窗口、跨年。 */
 function finishWeek(state: GameState, out: LogEntry[]): void {
   // 临场加减只在当场有效。
   state.temp = {};
 
-  state.stamina = Math.min(state.maxStamina, state.stamina + CONFIG.weekly.staminaRegen);
+  // 伤病每周有概率好转；停在 3 就是赛季报销。
+  if (state.injury > 0) {
+    const ctx = createRng(state.rngState);
+    if (ctx.rng.next() < CONFIG.weekly.injuryHealChance) {
+      state.injury -= 1;
+      out.push({ text: '伤好了一点。', tone: 'good' });
+    }
+    state.rngState = ctx.state();
+  }
 
   if (isSigningWindow(state.week)) resolveSigningWindow(state, out);
   if (state.ended) return;
 
+  resetWeek(state);
+
+  if (state.week < CONFIG.career.weeksPerYear) {
+    state.week += 1;
+    return;
+  }
+
+  advanceToNextYear(state, out);
+}
+
+function resetWeek(state: GameState): void {
   state.actionGrid = [null, null, null];
   state.actionTargets = [null, null, null];
   state.eventDone = false;
-  state.matchDone = false;
   state.pendingEvent = null;
+}
 
-  if (state.week >= CONFIG.career.weeksPerYear) {
-    state.week = 1;
-    state.year += 1;
+function advanceToNextYear(state: GameState, out: LogEntry[]): void {
+  state.week = 1;
+  state.year += 1;
 
-    if (state.year > CONFIG.career.years) {
-      state.year = CONFIG.career.years;
-      state.ended = normalEnding(state, 'expired');
-      out.push({ text: '八年过去了。', tone: 'plain' });
-      return;
-    }
+  if (state.year > CONFIG.career.years) {
+    state.year = CONFIG.career.years;
+    state.ended = normalEnding(state, 'expired');
+    out.push({ text: '八年过去了。', tone: 'plain' });
+    return;
+  }
 
-    out.push(...advanceYear(state).map((text) => ({ text, tone: 'plain' as const })));
-    const total = attrTotal(state);
-    if (total > state.peakScore) {
-      state.peakScore = total;
-      state.peakYear = state.year;
-    }
-    if (state.year === 2) {
-      state.honors.push('rookie-of-year');
-      out.push({ text: '赛季末，你拿了最佳新秀。', tone: 'good' });
-    }
-  } else {
-    state.week += 1;
+  out.push(...advanceYear(state).map((text) => ({ text, tone: 'plain' as const })));
+
+  const total = attrTotal(state);
+  if (total > state.peakScore) {
+    state.peakScore = total;
+    state.peakYear = state.year;
+  }
+
+  if (state.year === CONFIG.career.rookieSeason) {
+    state.honors.push('rookie-of-year');
+    out.push({ text: '赛季末，你拿了最佳新秀。', tone: 'good' });
   }
 }
 
@@ -250,19 +265,9 @@ function skipYear(state: GameState, out: LogEntry[]): void {
     out.push({ text: '先把这周的事件处理掉。', tone: 'plain' });
     return;
   }
-  state.year += 1;
-  state.week = 1;
-  state.actionGrid = [null, null, null];
-  state.actionTargets = [null, null, null];
-  state.eventDone = false;
-  state.matchDone = false;
-
-  if (state.year > CONFIG.career.years) {
-    state.ended = normalEnding(state, 'expired');
-    out.push({ text: '八年过去了。', tone: 'plain' });
-    return;
+  resetWeek(state);
+  advanceToNextYear(state, out);
+  if (!state.ended) {
+    out.push({ text: `跳到第 ${state.year} 年。`, tone: 'plain' });
   }
-
-  out.push(...advanceYear(state).map((text) => ({ text, tone: 'plain' as const })));
-  out.push({ text: `跳到第 ${state.year} 年。`, tone: 'plain' });
 }

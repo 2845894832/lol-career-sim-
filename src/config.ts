@@ -18,6 +18,10 @@ export const CONFIG = {
     signingWindowWeek: 30,
     /** 每年 S 赛决赛周。 */
     finalWeek: 26,
+    /** 那场决赛发生在第几年。 */
+    finalYear: 3,
+    /** 第 1 年结束（进入第 2 年）时评最佳新秀。 */
+    rookieSeason: 2,
   },
 
   start: {
@@ -53,7 +57,7 @@ export const CONFIG = {
     fitness: { stamina: 8, maxStamina: 4, maxStaminaCap: 150 },
     stream: { stamina: 10, money: 90, popularity: 3 },
     business: { stamina: 18, money: 320, popularity: 5 },
-    rest: { stamina: 0, restore: 18 },
+    rest: { stamina: 0, restore: 24 },
   },
 
   /** 段位：十档，每档 1000 点。 */
@@ -63,6 +67,8 @@ export const CONFIG = {
   match: {
     /** 胜率 = 相关属性均值 / 100 + 教练信任修正。 */
     coachTrustFactor: 0.001,
+    /** 教练信任 50 视为中性。 */
+    trustPivot: 50,
     minWinRate: 0.05,
     maxWinRate: 0.95,
     winCoachTrust: 3,
@@ -72,14 +78,16 @@ export const CONFIG = {
     winExp: { operation: 4, laning: 4, teamfight: 4, awareness: 4 },
     /** 输比赛有一定概率受伤。 */
     injuryChance: 0.12,
+    /** 伤病上限，到这个数就是赛季报销。 */
+    injuryMax: 3,
     /** 替补席与下放的教练信任阈值。 */
     benchThreshold: 25,
     demoteThreshold: 10,
   },
 
-  /** 结周时的自然恢复。 */
+  /** 结周时的自然变化。 */
   weekly: {
-    staminaRegen: 8,
+    /** 伤病每周有概率好转；不设自然体力恢复，休息是唯一补给。 */
     injuryHealChance: 0.2,
   },
 

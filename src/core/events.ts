@@ -106,7 +106,11 @@ export function applyConsequence(state: GameState, c: Consequence): string[] {
     notes.push(`${CONSEQUENCE_TEXT.stamina} ${c.stamina > 0 ? '+' : ''}${c.stamina}`);
   }
   if (c.maxStamina !== undefined) {
-    state.maxStamina = clamp(state.maxStamina + c.maxStamina, 0, 999);
+    state.maxStamina = clamp(
+      state.maxStamina + c.maxStamina,
+      0,
+      CONFIG.actions.fitness.maxStaminaCap,
+    );
     notes.push(`${CONSEQUENCE_TEXT.maxStamina} ${c.maxStamina > 0 ? '+' : ''}${c.maxStamina}`);
   }
   if (c.money !== undefined) {
@@ -114,7 +118,7 @@ export function applyConsequence(state: GameState, c: Consequence): string[] {
     notes.push(`${CONSEQUENCE_TEXT.money} ${c.money > 0 ? '+' : ''}${c.money}`);
   }
   if (c.injury !== undefined) {
-    state.injury = clamp(state.injury + c.injury, 0, 3);
+    state.injury = clamp(state.injury + c.injury, 0, CONFIG.match.injuryMax);
     notes.push(`${CONSEQUENCE_TEXT.injury} ${c.injury > 0 ? '+' : ''}${c.injury}`);
   }
   if (c.coachTrust !== undefined) {

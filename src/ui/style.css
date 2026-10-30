@@ -172,23 +172,28 @@ button {
   opacity: 0.35;
   cursor: not-allowed;
 }
+.btn .hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
 .btn.primary {
   background: var(--accent);
   border-color: var(--accent);
   color: #04121f;
   font-weight: 700;
+  flex-direction: column;
   justify-content: center;
+  gap: 2px;
+}
+.btn.primary .hint {
+  color: inherit;
+  opacity: 0.7;
+  font-weight: 400;
 }
 .btn.primary:disabled {
   background: var(--panel-2);
   color: var(--muted);
-}
-.btn .hint {
-  font-size: 12px;
-  color: var(--muted);
-}
-.btn.primary .hint {
-  color: inherit;
 }
 
 .log {

@@ -9,9 +9,11 @@
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "batch": "node --experimental-strip-types scripts/batch.ts"
+    "batch": "vite-node scripts/batch.ts 1000",
+    "smoke": "node scripts/smoke.mjs"
   },
   "devDependencies": {
+    "puppeteer-core": "^25.13.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.7",
     "vite-plugin-singlefile": "^2.3.0",
