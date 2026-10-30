@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原型 2：一周不上分，固定掉 20</title>
+<style>
+  :root{--ink:#1b1b1b;--muted:#6b7280;--line:#e5e7eb;--navy:#1f3a5f;--teal:#2e8b7e;--red:#b04a4a;--bg:#fbfbfa}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  main{max-width:720px;margin:0 auto;padding:24px 18px 60px}
+  h1{font-size:22px;margin:0 0 6px;color:var(--navy)}
+  .lead{color:var(--muted);font-size:14px;margin:0 0 20px}
+  section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  h2{font-size:15px;margin:0 0 10px;color:var(--navy)}
+  .state{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .field{font-size:13px;color:var(--muted)}
+  .field b{display:block;font-size:20px;color:var(--ink);font-weight:600}
+  .field b.loss{color:var(--red)} .field b.gain{color:var(--teal)}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+  button{font:inherit;font-size:14px;padding:9px 14px;border-radius:8px;border:1px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer}
+  button.primary{background:var(--navy);color:#fff}
+  button:active{transform:translateY(1px)}
+  .slider{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:8px 0}
+  input[type=range]{width:100%}
+  .log{font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;color:var(--muted);max-height:170px;overflow:auto;margin-top:10px;white-space:pre-wrap}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .tabs button{font-size:13px;padding:6px 10px;border-radius:999px}
+  .tabs button[aria-selected=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+  .scenario p{font-size:14px;color:var(--muted);margin:0 0 10px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <h1>原型 2：一周没选上分，固定掉 20</h1>
+  <p class="lead">这个原型只回答一个问题：<b>每周 −20 的衰减，到底有多疼？</b> 你连跳过几周，看它掉多少、掉几档，会不会逼得每周都必须打一次。</p>
+
+  <section>
+    <h2>现在</h2>
+    <div class="state">
+      <div class="field">当前 LP<b id="lp">1200</b></div>
+      <div class="field">段位<b id="tier">白金 Ⅳ</b></div>
+      <div class="field">连续没上分的周数<b id="streak">0</b></div>
+      <div class="field">累计变化<b id="net">0</b></div>
+      <div class="field">上周变化<b id="last">—</b></div>
+      <div class="field">一年不练会掉<b id="year">−1040</b></div>
+    </div>
+    <div class="log" id="log">从白金 Ⅳ（1200 LP）起步。点「跳过这一周」看衰减。</div>
+  </section>
+
+  <section>
+    <h2>调参数</h2>
+    <div class="slider"><label>每周不上分扣多少</label><input id="decay" type="range" min="0" max="60" step="5" value="20"><span id="decayv">20</span></div>
+    <div class="slider"><label>一次上分的下限</label><input id="wmin" type="range" min="10" max="60" step="5" value="30"><span id="wminv">30</span></div>
+    <div class="slider"><label>一次上分的上限</label><input id="wmax" type="range" min="20" max="80" step="5" value="50"><span id="wmaxv">50</span></div>
+  </section>
+
+  <section>
+    <h2>随便点</h2>
+    <div class="row">
+      <button class="primary" data-act="ranked">这一周打上分</button>
+      <button data-act="skip">跳过这一周</button>
+      <button data-act="skip4">连跳 4 周</button>
+      <button data-act="reset">重开</button>
+    </div>
+  </section>
+
+  <section class="scenario">
+    <h2>跟着走</h2>
+    <div class="tabs" role="tablist"></div>
+    <div id="walk"></div>
+  </section>
+</main>
+
+<script>
+// ---- 纯逻辑 ----
+const D = { START: 1200, DECAY: 20 };
+const TIERS = [["黑铁",4],["青铜",4],["白银",4],["黄金",4],["铂金",4],["翡翠",4],["钻石",4]];
+function tierOf(lp){
+  if (lp >= 4000) return "王者";
+  if (lp >= 3400) return "宗师";
+  if (lp >= 2800) return "大师";
+  let no = 0;
+  for (const [name, divs] of TIERS){
+    const size = divs * 100;
+    if (lp < no + size){
+      const d = divs - Math.floor((lp - no) / 100);
+      return name + " " + ["Ⅰ","Ⅱ","Ⅲ","Ⅳ"][d-1];
+    }
+    no += size;
+  }
+  return "大师";
+}
+function ranked(state, cfg, rng){
+  const d = cfg.wmin + Math.floor(rng() * (cfg.wmax - cfg.wmin + 1));
+  const lp = Math.max(0, state.lp + d);
+  return { ...state, lp, net: state.net + d, streak: 0, last: d, weeks: state.weeks + 1 };
+}
+function skip(state, cfg){
+  const d = -cfg.decay;
+  const lp = Math.max(0, state.lp + d);
+  return { ...state, lp, net: state.net + d, streak: state.streak + 1, last: d, weeks: state.weeks + 1 };
+}
+// ---- 页面 ----
+const cfg = { decay: 20, wmin: 30, wmax: 50 };
+let S = { lp: D.START, net: 0, streak: 0, last: null, weeks: 0 };
+const $ = id => document.getElementById(id);
+let lines = [];
+function render(){
+  $("lp").textContent = S.lp;
+  $("tier").textContent = tierOf(S.lp);
+  $("streak").textContent = S.streak;
+  $("net").textContent = (S.net>=0?"+":"") + S.net;
+  $("net").className = S.net < 0 ? "loss" : "gain";
+  $("last").textContent = S.last == null ? "—" : (S.last>0?"+":"") + S.last;
+  $("last").className = S.last < 0 ? "loss" : "gain";
+  $("year").textContent = "−" + cfg.decay*52;
+  $("log").textContent = lines.slice(-15).join("\n");
+}
+function push(msg){ lines.push(msg); render(); }
+function reset(){
+  S = { lp: D.START, net: 0, streak: 0, last: null, weeks: 0 };
+  lines = ["重开：从白金 Ⅳ（1200 LP）起步。"]; render();
+}
+document.addEventListener("click", e => {
+  const a = e.target.dataset && e.target.dataset.act;
+  if (!a) return;
+  if (a === "ranked"){ const b=S.lp; S = ranked(S, cfg, Math.random); push(`打上分：${b} → ${S.lp}（+${S.last}）`); }
+  if (a === "skip"){ const b=S.lp; S = skip(S, cfg); push(`跳过：${b} → ${S.lp}（${S.last}），已连跳 ${S.streak} 周`); }
+  if (a === "skip4"){ for(let i=0;i<4;i++){ const b=S.lp; S = skip(S, cfg); lines.push(`跳过：${b} → ${S.lp}（${S.last}）`); } push(`连跳 4 周结束，累计 ${S.net}`); }
+  if (a === "reset") reset();
+});
+["decay","wmin","wmax"].forEach(k => {
+  $(k).addEventListener("input", e => {
+    cfg[k] = +e.target.value; $(k+"v").textContent = e.target.value;
+    if (k === "wmin" && cfg.wmin > cfg.wmax){ cfg.wmax = cfg.wmin; $("wmax").value = cfg.wmax; $("wmaxv").textContent = cfg.wmax; }
+    render();
+  });
+});
+const SCEN = [
+  { name:"打 4 周", text:"连打四周，看它涨多少。这是正常节奏。", steps:[["打上分","ranked"],["打上分","ranked"],["打上分","ranked"],["打上分","ranked"]] },
+  { name:"停 6 周", text:"停六周。注意：掉的是 −120，等于一个多小段。", steps:[["跳过","skip"],["跳过","skip"],["跳过","skip"],["跳过","skip"],["跳过","skip"],["跳过","skip"]] },
+  { name:"打一周停一周", text:"交替八次。每两周一涨一跌，净变化非常小——这就是「不敢停」的来源。", steps:[["打上分","ranked"],["跳过","skip"],["打上分","ranked"],["跳过","skip"],["打上分","ranked"],["跳过","skip"],["打上分","ranked"],["跳过","skip"]] },
+];
+const tabs = document.querySelector(".tabs");
+SCEN.forEach((s,i)=>{ const b=document.createElement("button"); b.textContent=(i+1)+". "+s.name; b.setAttribute("aria-selected",i===0); b.onclick=()=>show(i); tabs.appendChild(b); });
+function show(i){
+  [...tabs.children].forEach((b,j)=>b.setAttribute("aria-selected", j===i));
+  const s = SCEN[i], w = $("walk");
+  w.innerHTML = `<p>${s.text}</p>`;
+  const row = document.createElement("div"); row.className="row";
+  s.steps.forEach(([label, act], k) => { const b=document.createElement("button"); b.textContent=(k+1)+". "+label; b.dataset.act=act; row.appendChild(b); });
+  w.appendChild(row);
+}
+show(0); render();
+</script>
+</body>
+</html>

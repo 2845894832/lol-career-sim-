@@ -272,8 +272,12 @@ describe('整局', () => {
     expect(specialEnding(s).note.length).toBeGreaterThan(0);
   });
 
-  it('段位按点数映射到十档', () => {
-    expect(rankTier(0).name).toBe('黑铁');
+  it('段位按现实 LP 结构映射', () => {
+    expect(rankTier(0).name).toBe('黑铁 Ⅳ');
+    expect(rankTier(100).name).toBe('黑铁 Ⅲ');
+    expect(rankTier(CONFIG.rank.masterAt).name).toBe('大师');
+    expect(rankTier(CONFIG.rank.grandmasterAt).name).toBe('宗师');
+    expect(rankTier(CONFIG.rank.kingAt).name).toBe('王者');
     expect(rankTier(CONFIG.rank.max).name).toBe('王者');
   });
 });
@@ -371,5 +375,76 @@ describe('动作接口', () => {
     const s = newGame(1);
     const r = reduce(s, { kind: 'selectAction', slot: 9, action: 'rank' } as Action).state;
     expect(r.actionGrid).toEqual([null, null, null]);
+  });
+});
+
+
+describe('段位与邀请函', () => {
+  /** 排三格然后结周。 */
+  function planWeek(s: GameState, actions: ('rank' | 'rest')[]): GameState {
+    let next = s;
+    for (let i = 0; i < 3; i++) {
+      next = reduce(next, { kind: 'selectAction', slot: i, action: actions[i] ?? 'rest' }).state;
+    }
+    return reduce(next, { kind: 'endWeek' }).state;
+  }
+
+  it('一次上分给 500 LP', () => {
+    let s = newGame(7);
+    const before = s.rankPoints;
+    s = reduce(s, { kind: 'selectAction', slot: 0, action: 'rank' }).state;
+    s = reduce(s, { kind: 'selectAction', slot: 1, action: 'rest' }).state;
+    s = reduce(s, { kind: 'selectAction', slot: 2, action: 'rest' }).state;
+    s = reduce(s, { kind: 'endWeek' }).state;
+    while (s.pendingEvent) s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
+    expect(s.rankPoints).toBeGreaterThanOrEqual(before + CONFIG.actions.rank.rankPoints - 200);
+  });
+
+  it('三格没排满不能结周', () => {
+    const s = newGame(11);
+    const r = reduce(s, { kind: 'endWeek' });
+    expect(r.state.week).toBe(1);
+    expect(r.state.actionGrid.some((id) => id === null)).toBe(true);
+    expect(r.log.some((e) => e.text.includes('三个行动点'))).toBe(true);
+  });
+
+  it('清空格子后可以重排', () => {
+    let s = newGame(12);
+    s = reduce(s, { kind: 'selectAction', slot: 0, action: 'rank' }).state;
+    s = reduce(s, { kind: 'clearSlot', slot: 0 }).state;
+    expect(s.actionGrid[0]).toBeNull();
+    s = reduce(s, { kind: 'selectAction', slot: 0, action: 'rest' }).state;
+    expect(s.actionGrid[0]).toBe('rest');
+  });
+
+  it('这周没上分，按段位掉 LP', () => {
+    let s = newGame(13);
+    s.rankPoints = CONFIG.rank.masterAt;
+    s.week = 5;
+    s = planWeek(s, ['rest', 'rest', 'rest']);
+    while (s.pendingEvent) s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
+    expect(s.rankPoints).toBe(CONFIG.rank.masterAt - CONFIG.rank.decay.master);
+  });
+
+  it('段位到王者，签约窗口必定收到邀请函', () => {
+    let s = newGame(14);
+    s.year = 1;
+    s.week = CONFIG.career.signingWindowWeek;
+    s.rankPoints = CONFIG.rank.kingAt;
+    s = planWeek(s, ['rest', 'rest', 'rest']);
+    while (s.pendingEvent) s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
+    expect(s.signed).toBe(true);
+  });
+
+  it('没到王者且第 1 年，不计数也不终结', () => {
+    let s = newGame(15);
+    s.year = 1;
+    s.week = CONFIG.career.signingWindowWeek;
+    s.rankPoints = 0;
+    s = planWeek(s, ['rest', 'rest', 'rest']);
+    while (s.pendingEvent) s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
+    expect(s.signed).toBe(false);
+    expect(s.failedWindows).toBe(0);
+    expect(s.ended).toBeNull();
   });
 });

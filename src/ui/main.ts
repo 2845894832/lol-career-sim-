@@ -88,10 +88,16 @@ function renderSlots(): string {
 }
 
 function renderControls(): string {
-  const blocked = state.pendingEvent ? 'disabled' : '';
+  const incomplete = state.actionGrid.some((id) => id === null);
+  const blocked = state.pendingEvent || incomplete ? 'disabled' : '';
+  const hint = state.pendingEvent
+    ? '先处理事件'
+    : incomplete
+      ? '三个行动点都要排上'
+      : '结算三个行动并推进';
   return `<div class="panel" style="display:flex;flex-direction:column;gap:8px">
     <button class="btn primary" data-act="end-week" ${blocked}>
-      <span>结周</span><span class="hint">${state.pendingEvent ? '先处理事件' : '结算三个行动并推进'}</span>
+      <span>结周</span><span class="hint">${hint}</span>
     </button>
     <button class="btn" data-act="retire"><span>退役</span><span class="hint">立刻看结局</span></button>
     <button class="btn" data-act="skip-year"><span>跳到下一年</span><span class="hint">调试用</span></button>
@@ -121,9 +127,13 @@ function renderSheet(): string {
         <span>${ACTION_INFO[id].label}</span><span class="hint">${hint}</span>
       </button>`;
     }).join('');
+    const filled = state.actionGrid[sheet.slot] !== null;
+    const clearRow = filled
+      ? `<button class="btn" data-act="clear-slot"><span>清空这一格</span><span class="hint">恢复成空，重新排</span></button>`
+      : '';
     return `<div class="overlay" data-act="close-sheet"><div class="sheet" data-stop="1">
       <h2>${slotLabel(sheet.slot)}排什么</h2>
-      <div class="options">${rows}</div>
+      <div class="options">${rows}${clearRow}</div>
     </div></div>`;
   }
 
@@ -248,6 +258,11 @@ app.addEventListener('click', (ev) => {
       if (!key) return;
       const slot = sheet?.kind === 'targets' ? sheet.slot : 0;
       apply({ kind: 'selectAction', slot, action: 'train', target: key }, false);
+      break;
+    }
+    case 'clear-slot': {
+      const slot = sheet?.kind === 'actions' ? sheet.slot : 0;
+      apply({ kind: 'clearSlot', slot }, false);
       break;
     }
     case 'close-sheet':

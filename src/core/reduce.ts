@@ -6,7 +6,7 @@ import { advanceYear } from './growth';
 import { applyMatchOutcome, autoMatch, benchReason, canPlay } from './match';
 import { drawEvent, getEvent, resolveOption } from './events';
 import { normalEnding, specialEnding } from './endings';
-import { attrTotal, cloneState, isMatchWeek, isSigningWindow } from './state';
+import { attrTotal, cloneState, isMatchWeek, isSigningWindow, rankDecay } from './state';
 
 /** 那场决赛：第 3 年 S 赛。 */
 export function isFinalWeek(state: GameState): boolean {
@@ -34,6 +34,9 @@ export function reduce(prev: GameState, action: Action): ReduceResult {
       break;
     case 'endWeek':
       endWeek(state, out);
+      break;
+    case 'clearSlot':
+      clearSlot(state, action.slot, out);
       break;
     case 'retire':
       retire(state, out);
@@ -80,18 +83,28 @@ function selectAction(
   state.actionTargets[slot] = chosen === 'train' ? (target ?? 'operation') : null;
 }
 
+function clearSlot(state: GameState, slot: number, out: LogEntry[]): void {
+  if (slot < 0 || slot > 2) return;
+  if (state.pendingEvent) {
+    out.push({ text: '先把这周的事件处理掉。', tone: 'plain' });
+    return;
+  }
+  if (!state.actionGrid[slot]) return;
+  state.actionGrid[slot] = null;
+  state.actionTargets[slot] = null;
+  out.push({ text: '这一格清空了，可以重排。', tone: 'plain' });
+}
+
 function endWeek(state: GameState, out: LogEntry[]): void {
   if (state.pendingEvent) {
     out.push({ text: '先把这周的事件处理掉。', tone: 'plain' });
     return;
   }
 
-  // 没排的行动点自动补休息。
-  for (let i = 0; i < 3; i++) {
-    if (!state.actionGrid[i]) {
-      state.actionGrid[i] = 'rest';
-      state.actionTargets[i] = null;
-    }
+  // 三格必须排满才能结周；没排满就不推进。
+  if (state.actionGrid.some((id) => id === null)) {
+    out.push({ text: '三个行动点都要排上才能结周。', tone: 'plain' });
+    return;
   }
 
   // 三个行动点依次结算，先扣体力再执行。
@@ -164,23 +177,20 @@ function settleMatch(state: GameState, out: LogEntry[]): void {
 function resolveSigningWindow(state: GameState, out: LogEntry[]): void {
   if (state.signed) return;
 
-  // 第 1 年只是路人期，不计数。
-  if (state.year < CONFIG.career.rookieSeason) {
-    state.freeAgent = true;
-    return;
-  }
-
-  const hasTrial = state.flags.includes('试训通过');
-  const qualified =
-    hasTrial ||
-    state.attrs.popularity >= CONFIG.signing.popularityNeeded ||
-    state.rankPoints >= CONFIG.signing.rankPointsNeeded;
+  // 段位到王者就必定收到邀请函；人气不参与签约。
+  const qualified = state.rankPoints >= CONFIG.rank.kingAt;
 
   if (qualified) {
     state.signed = true;
     state.freeAgent = false;
     state.failedWindows = 0;
     out.push({ text: '有队伍给了你一份合同。你签字的时候手有点抖。', tone: 'good' });
+    return;
+  }
+
+  // 第 1 年没到王者只是路人期，不计数。
+  if (state.year < CONFIG.career.rookieSeason) {
+    state.freeAgent = true;
     return;
   }
 
@@ -211,6 +221,16 @@ function finishWeek(state: GameState, out: LogEntry[]): void {
 
   if (isSigningWindow(state.week)) resolveSigningWindow(state, out);
   if (state.ended) return;
+
+  // 这周没上分：按段位掉 LP。
+  if (!state.actionGrid.includes('rank')) {
+    const drop = rankDecay(state.rankPoints);
+    if (drop > 0) {
+      const before = state.rankPoints;
+      state.rankPoints = Math.max(0, state.rankPoints - drop);
+      out.push({ text: `这周没打排位，段位掉了 ${before - state.rankPoints}。`, tone: 'bad' });
+    }
+  }
 
   resetWeek(state);
 

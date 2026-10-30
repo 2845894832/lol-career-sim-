@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原型 4：一周上多少分（按段位递增的衰减）</title>
+<style>
+  :root{--ink:#1b1b1b;--muted:#6b7280;--line:#e5e7eb;--navy:#1f3a5f;--teal:#2e8b7e;--red:#b04a4a;--bg:#fbfbfa}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  main{max-width:720px;margin:0 auto;padding:24px 18px 60px}
+  h1{font-size:22px;margin:0 0 6px;color:var(--navy)}
+  .lead{color:var(--muted);font-size:14px;margin:0 0 20px}
+  section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  h2{font-size:15px;margin:0 0 10px;color:var(--navy)}
+  .state{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .field{font-size:13px;color:var(--muted)}
+  .field b{display:block;font-size:20px;color:var(--ink);font-weight:600}
+  .field b.gain{color:var(--teal)} .field b.loss{color:var(--red)}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+  button{font:inherit;font-size:14px;padding:9px 14px;border-radius:8px;border:1px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer}
+  button.primary{background:var(--navy);color:#fff}
+  button:active{transform:translateY(1px)}
+  .seg{display:flex;gap:6px;margin:6px 0 2px}
+  .seg button{font-size:13px;padding:6px 12px;border-radius:999px}
+  .seg button[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+  .slider{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:8px 0}
+  .slider.off{opacity:.4}
+  input[type=range]{width:100%}
+  canvas{width:100%;height:130px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-top:10px}
+  .log{font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;color:var(--muted);max-height:140px;overflow:auto;margin-top:10px;white-space:pre-wrap}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .tabs button{font-size:13px;padding:6px 10px;border-radius:999px}
+  .tabs button[aria-selected=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+  .scenario p{font-size:14px;color:var(--muted);margin:0 0 10px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <h1>原型 4：一周上多少分 · 衰减按段位递增</h1>
+  <p class="lead">两个问题一起验：<b>一周给多少 LP 才既爬得动、又不两个月打满</b>；以及<b>大师之后每周掉 100，守分到底疼不疼</b>。拖滑条、按「连续四周」，看它什么时候到大师、什么时候掉下来。</p>
+
+  <section>
+    <h2>现在</h2>
+    <div class="state">
+      <div class="field">当前 LP<b id="lp">2800</b></div>
+      <div class="field">段位<b id="tier">大师</b></div>
+      <div class="field">已过周数<b id="weeks">0</b></div>
+      <div class="field">到王者还要<b id="toM">4 周</b></div>
+      <div class="field">到满点 9999 还要<b id="toC">15 周</b></div>
+      <div class="field">这周若不上分会掉<b id="drop">−100</b></div>
+    </div>
+    <canvas id="chart" width="640" height="130"></canvas>
+    <div class="log" id="log">从大师 2800 起步；王者门槛 4500。</div>
+  </section>
+
+  <section>
+    <h2>设定</h2>
+    <div class="slider"><label>一次上分（一周）给多少 LP</label><input id="gain" type="range" min="200" max="2000" step="50" value="500"><span id="gainv">500</span></div>
+    <div class="slider"><label>王者封顶点数</label><input id="cap" type="range" min="4500" max="9999" step="1" value="9999"><span id="capv">9999</span></div>
+    <div>衰减方式</div>
+    <div class="seg">
+      <button id="mTier" aria-pressed="true">按段位递增</button>
+      <button id="mFlat" aria-pressed="false">固定</button>
+    </div>
+    <div class="slider" id="flatWrap"><label>固定模式：每周扣多少</label><input id="decay" type="range" min="0" max="200" step="10" value="20"><span id="decayv">20</span></div>
+    <p class="hint">递增档位：黄金以下 −20 · 铂金 −40 · 钻石 −60 · 大师以上 −100。段位按现实 LP：黑铁Ⅳ=0，每小段 100，大师=2800。</p>
+  </section>
+
+  <section>
+    <h2>点按钮</h2>
+    <div class="row">
+      <button class="primary" data-act="w1">上分一周</button>
+      <button data-act="w4">连续四周</button>
+      <button data-act="skip4">连续四周不上分</button>
+      <button data-act="intoMaster">跳到大师</button>
+      <button data-act="reset">重开</button>
+    </div>
+  </section>
+
+  <section class="scenario">
+    <h2>跟着走</h2>
+    <div class="tabs" role="tablist"></div>
+    <div id="walk"></div>
+  </section>
+</main>
+
+<script>
+// ---- 纯逻辑 ----
+const TIERS = [["黑铁",4],["青铜",4],["白银",4],["黄金",4],["铂金",4],["翡翠",4],["钻石",4]];
+const DECAY_TIER = { "黑铁":20, "青铜":20, "白银":20, "黄金":20, "铂金":40, "翡翠":40, "钻石":60, "大师":100, "宗师":100, "王者":100 };
+function tierName(lp){
+  if (lp >= KING) return "王者";
+  if (lp >= GM) return "宗师";
+  if (lp >= MASTER) return "大师";
+  let no=0;
+  for (const [name,divs] of TIERS){
+    const size = divs*100;
+    if (lp < no+size){
+      const d = divs - Math.floor((lp-no)/100);
+      return name + " " + ["Ⅰ","Ⅱ","Ⅲ","Ⅳ"][d-1];
+    }
+    no += size;
+  }
+  return "大师";
+}
+function baseTier(lp){ return tierName(lp).split(" ")[0]; }
+function decayFor(lp, cfg){
+  if (cfg.mode === "flat") return cfg.decay;
+  return DECAY_TIER[baseTier(lp)] ?? 20;
+}
+function rankWeek(state, cfg){
+  const lp = Math.min(cfg.cap, state.lp + cfg.gain);
+  return { ...state, lp, weeks: state.weeks + 1, history: [...state.history, lp] };
+}
+function idleWeek(state, cfg){
+  const d = decayFor(state.lp, cfg);
+  const lp = Math.max(0, state.lp - d);
+  return { ...state, lp, weeks: state.weeks + 1, lastDrop: d, history: [...state.history, lp] };
+}
+// ---- 页面 ----
+const KING = 4500, GM = 4000, MASTER = 2800;
+const cfg = { gain: 500, cap: 9999, mode: "tier", decay: 20 };
+let S = { lp: 2800, weeks: 0, lastDrop: 0, history: [2800] };
+const $ = id => document.getElementById(id);
+let lines = [];
+function weeksTo(target){ const left = Math.max(0, target - S.lp); return cfg.gain ? Math.ceil(left/cfg.gain) : Infinity; }
+function render(){
+  $("lp").textContent = S.lp;
+  $("tier").textContent = tierName(S.lp) + (S.lp >= KING ? `（${S.lp}/9999）` : "");
+  $("weeks").textContent = S.weeks;
+  const wm = weeksTo(KING), wc = weeksTo(cfg.cap);
+  $("toM").textContent = Number.isFinite(wm) ? wm + " 周" : "—";
+  $("toC").textContent = Number.isFinite(wc) ? wc + " 周" : "—";
+  $("drop").textContent = "−" + decayFor(S.lp, cfg);
+  $("drop").className = "loss";
+  $("flatWrap").className = "slider" + (cfg.mode === "flat" ? "" : " off");
+  $("log").textContent = lines.slice(-12).join("\n");
+  draw();
+}
+function draw(){
+  const c=$("chart"), ctx=c.getContext("2d");
+  ctx.clearRect(0,0,c.width,c.height);
+  const h=S.history.slice(-100);
+  const hi=Math.max(cfg.cap, ...h), span=Math.max(1,hi);
+  ctx.strokeStyle="#e5e7eb"; ctx.lineWidth=1;
+  const yCap = c.height - cfg.cap/span*(c.height-16) - 8;
+  ctx.beginPath(); ctx.moveTo(0,yCap); ctx.lineTo(c.width,yCap); ctx.stroke();
+  ctx.fillStyle="#8b95a3"; ctx.font="11px sans-serif"; ctx.fillText("王者", 4, yCap-4);
+  const yM = c.height - 2800/span*(c.height-16) - 8;
+  ctx.strokeStyle="#eceff3"; ctx.beginPath(); ctx.moveTo(0,yM); ctx.lineTo(c.width,yM); ctx.stroke();
+  ctx.fillStyle="#b0b7c3"; ctx.fillText("大师", 4, yM-4);
+  ctx.strokeStyle="#2e8b7e"; ctx.lineWidth=2; ctx.beginPath();
+  h.forEach((v,i)=>{
+    const x = h.length===1?0:i/(h.length-1)*c.width;
+    const y = c.height - 8 - v/span*(c.height-16);
+    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+  });
+  ctx.stroke();
+}
+function rw(n){
+  for(let i=0;i<n;i++){
+    const b=S.lp; S = rankWeek(S, cfg);
+    lines.push(`第 ${S.weeks} 周：上分 ${b} → ${S.lp}（${tierName(S.lp,cfg.cap)}）`);
+  }
+  render();
+}
+function iw(n){
+  for(let i=0;i<n;i++){
+    const b=S.lp, d=decayFor(b,cfg); S = idleWeek(S, cfg);
+    lines.push(`第 ${S.weeks} 周：不上分 ${b} → ${S.lp}（−${d}，${tierName(S.lp,cfg.cap)}）`);
+  }
+  render();
+}
+function reset(){ S={lp:2800,weeks:0,lastDrop:0,history:[2800]}; lines=["重开：大师 2800。"]; render(); }
+document.addEventListener("click", e=>{
+  const a=e.target.dataset && e.target.dataset.act;
+  if(!a) return;
+  if(a==="w1") rw(1);
+  if(a==="w4") rw(4);
+  if(a==="skip4") iw(4);
+  if(a==="intoMaster"){ S={lp:2800,weeks:S.weeks,lastDrop:0,history:[2800]}; lines.push("跳到大师 2800。"); render(); }
+  if(a==="reset") reset();
+});
+["gain","cap","decay"].forEach(k=>{
+  $(k).addEventListener("input", e=>{ cfg[k]=+e.target.value; $(k+"v").textContent=e.target.value; render(); });
+});
+$("mTier").onclick = ()=>{ cfg.mode="tier"; setMode(); };
+$("mFlat").onclick = ()=>{ cfg.mode="flat"; setMode(); };
+function setMode(){
+  $("mTier").setAttribute("aria-pressed", cfg.mode==="tier");
+  $("mFlat").setAttribute("aria-pressed", cfg.mode==="flat");
+  render();
+}
+const SCEN=[
+  {name:"500/周：多久打满", text:"默认 500，连按三次「连续四周」。12 周后你在哪？", steps:[["连续四周","w4"],["连续四周","w4"],["连续四周","w4"]]},
+  {name:"大师后守分", text:"点「跳到大师」，再「连续四周不上分」。大师每周 −100，但它掉到钻石后衰减就降成 60——所以四周实际掉 280，落到钻石 Ⅲ。", steps:[["跳到大师","intoMaster"],["连续四周不上分","skip4"]]},
+  {name:"交替：打一周停一周", text:"从大师开始，打一周（+500）升到宗师，再停四周（每周 −100）。净 +100，还留在大师。递增衰减只是摩擦，不是封顶。", steps:[["跳到大师","intoMaster"],["上分一周","w1"],["连续四周不上分","skip4"],["连续四周","w4"]]},
+];
+const tabs=document.querySelector(".tabs");
+SCEN.forEach((s,i)=>{const b=document.createElement("button");b.textContent=(i+1)+". "+s.name;b.setAttribute("aria-selected",i===0);b.onclick=()=>show(i);tabs.appendChild(b);});
+function show(i){
+  [...tabs.children].forEach((b,j)=>b.setAttribute("aria-selected",j===i));
+  const s=SCEN[i], w=$("walk");
+  w.innerHTML=`<p>${s.text}</p>`;
+  const row=document.createElement("div"); row.className="row";
+  s.steps.forEach(([label,act],k)=>{const b=document.createElement("button");b.textContent=(k+1)+". "+label;b.dataset.act=act;row.appendChild(b);});
+  w.appendChild(row);
+}
+show(0); setMode();
+</script>
+</body>
+</html>

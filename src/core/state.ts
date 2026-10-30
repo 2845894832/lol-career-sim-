@@ -40,14 +40,42 @@ export function isSigningWindow(week: number): boolean {
   return week === CONFIG.career.signingWindowWeek;
 }
 
-const RANK_TIERS = ['黑铁', '青铜', '白银', '黄金', '铂金', '翡翠', '钻石', '大师', '宗师', '王者'] as const;
+const DIVISION_TIERS = ['黑铁', '青铜', '白银', '黄金', '铂金', '翡翠', '钻石'] as const;
+const DIVISION_LABELS = ['Ⅳ', 'Ⅲ', 'Ⅱ', 'Ⅰ'] as const;
 
+/**
+ * 现实 LP 结构：黑铁Ⅳ=0，每小段 100；大师 2800、宗师 4000、王者 4500。
+ * 王者内部继续涨到封顶，name 仍是「王者」。
+ */
 export function rankTier(points: number): { name: string; index: number; progress: number } {
-  const size = CONFIG.rank.tierSize;
-  const index = clamp(Math.floor(points / size), 0, RANK_TIERS.length - 1);
-  const base = index * size;
-  const progress = clamp((points - base) / size, 0, 1);
-  return { name: RANK_TIERS[index] ?? '黑铁', index, progress };
+  const { masterAt, grandmasterAt, kingAt, max, divisionSize } = CONFIG.rank;
+  if (points >= kingAt) {
+    return { name: '王者', index: 9, progress: clamp((points - kingAt) / (max - kingAt), 0, 1) };
+  }
+  if (points >= grandmasterAt) {
+    return { name: '宗师', index: 8, progress: clamp((points - grandmasterAt) / (kingAt - grandmasterAt), 0, 1) };
+  }
+  if (points >= masterAt) {
+    return { name: '大师', index: 7, progress: clamp((points - masterAt) / (grandmasterAt - masterAt), 0, 1) };
+  }
+  const band = divisionSize * 4;
+  const seg = clamp(Math.floor(points / band), 0, DIVISION_TIERS.length - 1);
+  const within = points - seg * band;
+  const div = clamp(Math.floor(within / divisionSize), 0, 3);
+  return {
+    name: `${DIVISION_TIERS[seg]} ${DIVISION_LABELS[div]}`,
+    index: seg,
+    progress: (within % divisionSize) / divisionSize,
+  };
+}
+
+/** 一周没上分掉多少 LP：段位越高掉得越多。 */
+export function rankDecay(points: number): number {
+  const { masterAt, decay } = CONFIG.rank;
+  if (points >= masterAt) return decay.master;
+  if (points >= 2400) return decay.diamond;
+  if (points >= 1600) return decay.platinum;
+  return decay.low;
 }
 
 /** 段位越高，上分给的经验越多。 */

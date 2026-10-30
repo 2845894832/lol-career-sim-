@@ -190,6 +190,7 @@ export interface GameState {
 
 export type Action =
   | { kind: 'selectAction'; slot: number; action: ActionId; target?: AttrKey }
+  | { kind: 'clearSlot'; slot: number }
   | { kind: 'chooseOption'; option: number }
   | { kind: 'endWeek' }
   | { kind: 'retire' }

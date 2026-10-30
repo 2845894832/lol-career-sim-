@@ -50,7 +50,7 @@ export const CONFIG = {
 
   /** 每个行动的体力消耗与收益。 */
   actions: {
-    rank: { stamina: 12, rankPoints: 26, exp: { operation: 6, laning: 6, teamfight: 6, awareness: 6 } },
+    rank: { stamina: 12, rankPoints: 500, exp: { operation: 6, laning: 6, teamfight: 6, awareness: 6 } },
     train: { stamina: 10, exp: 14 },
     review: { stamina: 6, exp: { awareness: 10 } },
     scrim: { stamina: 14, exp: { teamfight: 8, awareness: 8 }, coachTrust: 1 },
@@ -60,8 +60,19 @@ export const CONFIG = {
     rest: { stamina: 0, restore: 24 },
   },
 
-  /** 段位：十档，每档 1000 点。 */
-  rank: { max: 9999, tierSize: 1000 },
+  /**
+   * 段位：现实 LP 结构。黑铁Ⅳ=0，每小段 100；
+   * 大师 2800、宗师 4000、王者 4500（进入王者），王者内部继续涨到 9999 封顶。
+   */
+  rank: {
+    max: 9999,
+    divisionSize: 100,
+    masterAt: 2800,
+    grandmasterAt: 4000,
+    kingAt: 4500,
+    /** 一周没上分，按段位掉多少 LP。 */
+    decay: { low: 20, platinum: 40, diamond: 60, master: 100 },
+  },
 
   /** 比赛结算。 */
   match: {
@@ -93,9 +104,7 @@ export const CONFIG = {
 
   /** 签约。 */
   signing: {
-    /** 有试训标记时必签；否则看人气与段位。 */
-    popularityNeeded: 35,
-    rankPointsNeeded: 600,
+    /** 段位到王者就必定收到邀请函（判定见 reduce 的签约窗口）；人气不参与签约。 */
     /** 连续几个窗口无人可签就终结。 */
     failedWindowsToEnd: 2,
   },

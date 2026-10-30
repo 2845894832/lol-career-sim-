@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原型 1：段位越高峰越容易掉 LP</title>
+<style>
+  :root{--ink:#1b1b1b;--muted:#6b7280;--line:#e5e7eb;--navy:#1f3a5f;--teal:#2e8b7e;--red:#b04a4a;--bg:#fbfbfa}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  main{max-width:720px;margin:0 auto;padding:24px 18px 60px}
+  h1{font-size:22px;margin:0 0 6px;color:var(--navy)}
+  .lead{color:var(--muted);font-size:14px;margin:0 0 20px}
+  section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  h2{font-size:15px;margin:0 0 10px;color:var(--navy)}
+  .state{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .field{font-size:13px;color:var(--muted)}
+  .field b{display:block;font-size:20px;color:var(--ink);font-weight:600}
+  .field b.loss{color:var(--red)} .field b.gain{color:var(--teal)}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+  button{font:inherit;font-size:14px;padding:9px 14px;border-radius:8px;border:1px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer}
+  button.primary{background:var(--navy);color:#fff}
+  button:active{transform:translateY(1px)}
+  .slider{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:8px 0}
+  input[type=range]{width:100%}
+  .log{font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;color:var(--muted);max-height:150px;overflow:auto;margin-top:10px;white-space:pre-wrap}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .tabs button{font-size:13px;padding:6px 10px;border-radius:999px}
+  .tabs button[aria-selected=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+  .scenario p{font-size:14px;color:var(--muted);margin:0 0 10px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+  .verdict{font-size:13px;margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <h1>原型 1：段位越高峰，越容易摇到 −30～50</h1>
+  <p class="lead">这个原型只回答一个问题：<b>掉分概率升到多高，玩家就会不想再打上分？</b> 你调概率、连打几十次，看期望值什么时候翻负。</p>
+
+  <section>
+    <h2>现在</h2>
+    <div class="state">
+      <div class="field">当前 LP<b id="lp">2800</b></div>
+      <div class="field">段位<b id="tier">大师</b></div>
+      <div class="field">本次上分次数<b id="n">0</b></div>
+      <div class="field">累计变化<b id="net">0</b></div>
+      <div class="field">当前掉分概率<b id="p">10%</b></div>
+      <div class="field">单次期望<b id="ev">+32</b></div>
+    </div>
+    <div class="log" id="log">从大师 100 点起步。点「打一次上分」开始。</div>
+  </section>
+
+  <section>
+    <h2>调参数</h2>
+    <div class="slider"><label>低段位掉分概率</label><input id="p0" type="range" min="0" max="60" value="10"><span id="p0v">10%</span></div>
+    <div class="slider"><label>高段位掉分概率</label><input id="p1" type="range" min="0" max="90" value="40"><span id="p1v">40%</span></div>
+    <div class="slider"><label>王者门槛（LP）</label><input id="cap" type="range" min="3000" max="9000" step="100" value="4000"><span id="capv">4000</span></div>
+    <p class="hint">掉分概率随段位从「低」线性升到「高」。期望值 = (1−p)×40 − p×40。</p>
+  </section>
+
+  <section>
+    <h2>随便点</h2>
+    <div class="row">
+      <button class="primary" data-act="once">打一次上分</button>
+      <button data-act="ten">连打 10 次</button>
+      <button data-act="reset">重开</button>
+    </div>
+  </section>
+
+  <section class="scenario">
+    <h2>跟着走</h2>
+    <div class="tabs" role="tablist"></div>
+    <div id="walk"></div>
+  </section>
+</main>
+
+<script>
+// ---- 纯逻辑：可整块搬进正式代码 ----
+const D = { START: 2800, WIN_MIN: 30, WIN_MAX: 50, LOSS_MIN: 30, LOSS_MAX: 50 };
+const TIERS = [["黑铁",4],["青铜",4],["白银",4],["黄金",4],["铂金",4],["翡翠",4],["钻石",4]];
+
+function tierOf(lp, cfg){
+  if (lp >= cfg.cap) return "王者";
+  const 宗师 = Math.round(cfg.cap * 0.85);
+  if (lp >= 宗师) return "宗师";
+  if (lp >= 2800) return "大师";
+  let no = 0;
+  for (const [name, divs] of TIERS){
+    const size = divs * 100;
+    if (lp < no + size){
+      const d = divs - Math.floor((lp - no) / 100);
+      return name + " " + ["Ⅰ","Ⅱ","Ⅲ","Ⅳ"][d-1];
+    }
+    no += size;
+  }
+  return "大师";
+}
+function pAt(lp, cfg){
+  const t = Math.max(0, Math.min(1, (lp - 2800) / Math.max(1, cfg.cap - 2800)));
+  return cfg.p0 + (cfg.p1 - cfg.p0) * t;
+}
+function roll(rng, cfg){ return rng() < pAt(cfg.lp, cfg) ? -1 : 1; }
+function delta(sign, rng){
+  const lo = sign > 0 ? D.WIN_MIN : D.LOSS_MIN;
+  const hi = sign > 0 ? D.WIN_MAX : D.LOSS_MAX;
+  return sign * (lo + Math.floor(rng() * (hi - lo + 1)));
+}
+function step(state, cfg, rng){
+  const sign = roll(rng, { ...cfg, lp: state.lp });
+  const d = delta(sign, rng);
+  return { ...state, lp: Math.max(0, state.lp + d), n: state.n + 1, net: state.net + d,
+           last: d, lastP: pAt(state.lp, cfg), tier: tierOf(Math.max(0, state.lp + d), cfg) };
+}
+function expected(cfg, lp){ const p = pAt(lp, cfg); return (1-p)*40 - p*40; }
+// ---- 页面 ----
+const cfg = { p0: .10, p1: .40, cap: 4000 };
+let S = { lp: D.START, n: 0, net: 0, tier: "大师", last: 0, lastP: .1 };
+const $ = id => document.getElementById(id);
+const logLines = [];
+function render(){
+  $("lp").textContent = S.lp;
+  $("tier").textContent = tierOf(S.lp, cfg);
+  $("n").textContent = S.n;
+  $("net").textContent = (S.net>=0?"+":"") + S.net;
+  $("net").className = S.net < 0 ? "loss" : "gain";
+  const p = pAt(S.lp, cfg);
+  $("p").textContent = Math.round(p*100) + "%";
+  const ev = expected(cfg, S.lp);
+  $("ev").textContent = (ev>=0?"+":"") + Math.round(ev);
+  $("ev").className = ev < 0 ? "loss" : "gain";
+  $("log").textContent = logLines.slice(-14).join("\n");
+}
+function doOnce(){
+  const before = S.lp;
+  S = step(S, cfg, Math.random);
+  logLines.push(`第 ${S.n} 次：${before} → ${S.lp}（${S.last>0?"+" : ""}${S.last}）　掉分概率 ${Math.round(S.lastP*100)}%`);
+  render();
+}
+function reset(){
+  S = { lp: D.START, n: 0, net: 0, tier: "大师", last: 0, lastP: .1 };
+  logLines.length = 0; logLines.push("重开：从大师 100 点起步。");
+  render();
+}
+document.addEventListener("click", e => {
+  const a = e.target.dataset && e.target.dataset.act;
+  if (!a) return;
+  if (a === "once") doOnce();
+  if (a === "ten") { for (let i=0;i<10;i++) doOnce(); }
+  if (a === "reset") reset();
+});
+["p0","p1","cap"].forEach(k => {
+  $(k).addEventListener("input", e => {
+    const v = +e.target.value;
+    if (k === "cap") cfg.cap = v; else cfg[k] = v/100;
+    $(k+"v").textContent = k === "cap" ? v : v + "%";
+    render();
+  });
+});
+
+// 引导场景
+const SCEN = [
+  { name:"低段位：期望还是正的", text:"从大师起步（掉分概率低），连打 10 次。观察累计变化——应该还在涨。", steps:[["连打 10 次","ten"]] },
+  { name:"高段位：期望翻负", text:"把两个概率都拉到 60% 以上，再连打 10 次。这就是「段位越高越不敢动」的样子。", steps:[["把低/高概率拉到 60% 以上（拖上面的滑条）",null],["连打 10 次","ten"]] },
+  { name:"临界点：50%", text:"把两个概率都调到 50%，连打 20 次。期望正好是 0——打得越多越接近原地打转。", steps:[["把低/高概率都调到 50%（拖滑条）",null],["连打 10 次","ten"],["再连打 10 次","ten"]] },
+];
+const tabs = document.querySelector(".tabs");
+SCEN.forEach((s,i) => {
+  const b = document.createElement("button");
+  b.textContent = (i+1) + ". " + s.name;
+  b.setAttribute("aria-selected", i===0);
+  b.onclick = () => show(i);
+  tabs.appendChild(b);
+});
+function show(i){
+  [...tabs.children].forEach((b,j)=>b.setAttribute("aria-selected", j===i));
+  const s = SCEN[i];
+  const w = $("walk");
+  w.innerHTML = `<p>${s.text}</p>`;
+  const row = document.createElement("div"); row.className = "row";
+  s.steps.forEach(([label, act]) => {
+    const b = document.createElement("button");
+    b.textContent = label;
+    if (act) b.dataset.act = act; else b.disabled = true;
+    row.appendChild(b);
+  });
+  w.appendChild(row);
+}
+show(0); render();
+</script>
+</body>
+</html>

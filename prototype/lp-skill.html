@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原型 3：能力越高，上分越快</title>
+<style>
+  :root{--ink:#1b1b1b;--muted:#6b7280;--line:#e5e7eb;--navy:#1f3a5f;--teal:#2e8b7e;--red:#b04a4a;--bg:#fbfbfa}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  main{max-width:720px;margin:0 auto;padding:24px 18px 60px}
+  h1{font-size:22px;margin:0 0 6px;color:var(--navy)}
+  .lead{color:var(--muted);font-size:14px;margin:0 0 20px}
+  section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  h2{font-size:15px;margin:0 0 10px;color:var(--navy)}
+  .state{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .field{font-size:13px;color:var(--muted)}
+  .field b{display:block;font-size:20px;color:var(--ink);font-weight:600}
+  .field b.gain{color:var(--teal)} .field b.loss{color:var(--red)}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+  button{font:inherit;font-size:14px;padding:9px 14px;border-radius:8px;border:1px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer}
+  button.primary{background:var(--navy);color:#fff}
+  button:active{transform:translateY(1px)}
+  .slider{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:8px 0}
+  input[type=range]{width:100%}
+  canvas{width:100%;height:150px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-top:10px}
+  .log{font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;color:var(--muted);max-height:130px;overflow:auto;margin-top:10px;white-space:pre-wrap}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .tabs button{font-size:13px;padding:6px 10px;border-radius:999px}
+  .tabs button[aria-selected=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+  .scenario p{font-size:14px;color:var(--muted);margin:0 0 10px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <h1>原型 3：六维越高，上分越快</h1>
+  <p class="lead">这个原型只回答一个问题：<b>「能力强就该上分快」这件事，要怎么落到规则里才成立？</b> 调能力值，看同一段位下爬升速度差多少。</p>
+
+  <section>
+    <h2>现在</h2>
+    <div class="state">
+      <div class="field">当前 LP<b id="lp">1400</b></div>
+      <div class="field">段位<b id="tier">黄金 Ⅱ</b></div>
+      <div class="field">场次<b id="games">0</b></div>
+      <div class="field">战绩<b id="record">0 胜 0 负</b></div>
+      <div class="field">胜率<b id="wr">—</b></div>
+      <div class="field">本段位需要的实力<b id="need">55</b></div>
+    </div>
+    <canvas id="chart" width="640" height="150"></canvas>
+    <div class="log" id="log">从黄金 Ⅱ（1400 LP）起步。调「你的能力」再打。</div>
+  </section>
+
+  <section>
+    <h2>你的能力</h2>
+    <div class="slider"><label>操作 / 对线（占一半）</label><input id="a1" type="range" min="0" max="100" value="50"><span id="a1v">50</span></div>
+    <div class="slider"><label>团战 / 意识（占一半）</label><input id="a2" type="range" min="0" max="100" value="50"><span id="a2v">50</span></div>
+    <div class="slider"><label>每场胜利加 LP</label><input id="win" type="range" min="10" max="40" value="25"><span id="winv">25</span></div>
+    <div class="slider"><label>每场失败扣 LP</label><input id="lose" type="range" min="5" max="40" value="20"><span id="losev">20</span></div>
+    <p class="hint">胜率 = 0.5 + 0.6 ×（你的能力 − 该段位需要的实力）÷ 100，夹在 15%～85% 之间。</p>
+  </section>
+
+  <section>
+    <h2>随便点</h2>
+    <div class="row">
+      <button class="primary" data-act="one">打一场</button>
+      <button data-act="ten">打十场</button>
+      <button data-act="reset">重开</button>
+    </div>
+  </section>
+
+  <section class="scenario">
+    <h2>跟着走</h2>
+    <div class="tabs" role="tablist"></div>
+    <div id="walk"></div>
+  </section>
+</main>
+
+<script>
+// ---- 纯逻辑 ----
+const TIERS = [["黑铁",4,20],["青铜",4,30],["白银",4,40],["黄金",4,55],["铂金",4,68],["翡翠",4,76],["钻石",4,84]];
+function tierInfo(lp){
+  if (lp >= 4000) return { name:"王者", need:95 };
+  if (lp >= 3400) return { name:"宗师", need:92 };
+  if (lp >= 2800) return { name:"大师", need:88 };
+  let no = 0;
+  for (const [name, divs, need] of TIERS){
+    const size = divs * 100;
+    if (lp < no + size){
+      const d = divs - Math.floor((lp - no) / 100);
+      return { name: name + " " + ["Ⅰ","Ⅱ","Ⅲ","Ⅳ"][d-1], need };
+    }
+    no += size;
+  }
+  return { name:"大师", need:88 };
+}
+function winChance(cfg){ return Math.min(.85, Math.max(.15, .5 + .6 * (cfg.rating - tierInfo(cfg.lp).need) / 100)); }
+function play(state, cfg, rng){
+  const p = winChance({ ...cfg, lp: state.lp });
+  const win = rng() < p;
+  const d = win ? cfg.winLP : -cfg.loseLP;
+  const lp = Math.max(0, state.lp + d);
+  return { ...state, lp, games: state.games + 1, wins: state.wins + (win?1:0),
+           lastP: p, lastWin: win, history: [...state.history, lp] };
+}
+// ---- 页面 ----
+const cfg = { rating: 50, winLP: 25, loseLP: 20 };
+let S = { lp: 1400, games: 0, wins: 0, lastP: .5, lastWin: null, history: [1400] };
+const $ = id => document.getElementById(id);
+let lines = [];
+function ratingOf(){ return (+$("a1").value + +$("a2").value) / 2; }
+function render(){
+  const info = tierInfo(S.lp);
+  $("lp").textContent = S.lp;
+  $("tier").textContent = info.name;
+  $("games").textContent = S.games;
+  $("record").textContent = `${S.wins} 胜 ${S.games - S.wins} 负`;
+  $("wr").textContent = S.games ? Math.round(S.wins / S.games * 100) + "%" : "—";
+  $("need").textContent = info.need;
+  $("log").textContent = lines.slice(-12).join("\n");
+  draw();
+}
+function draw(){
+  const c = $("chart"), ctx = c.getContext("2d");
+  ctx.clearRect(0,0,c.width,c.height);
+  const h = S.history.slice(-120);
+  const lo = Math.min(...h), hi = Math.max(...h);
+  const span = Math.max(1, hi - lo);
+  ctx.strokeStyle = "#e5e7eb"; ctx.beginPath(); ctx.moveTo(0, c.height-1); ctx.lineTo(c.width, c.height-1); ctx.stroke();
+  ctx.strokeStyle = "#2e8b7e"; ctx.lineWidth = 2; ctx.beginPath();
+  h.forEach((v,i) => {
+    const x = h.length === 1 ? 0 : i / (h.length-1) * c.width;
+    const y = c.height - 8 - (v - lo) / span * (c.height - 20);
+    i ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
+  });
+  ctx.stroke();
+}
+function playN(n){
+  for (let i=0;i<n;i++){
+    const before = S.lp;
+    S = play(S, { ...cfg, rating: ratingOf() }, Math.random);
+    lines.push(`${before} → ${S.lp}（${S.lastWin?"胜":"负"}，胜率 ${Math.round(S.lastP*100)}%）`);
+  }
+  render();
+}
+function reset(){
+  S = { lp: 1400, games: 0, wins: 0, lastP: .5, lastWin: null, history: [1400] };
+  lines = ["重开：黄金 Ⅱ（1400 LP）。"]; render();
+}
+document.addEventListener("click", e => {
+  const a = e.target.dataset && e.target.dataset.act;
+  if (!a) return;
+  if (a === "one") playN(1);
+  if (a === "ten") playN(10);
+  if (a === "reset") reset();
+});
+["a1","a2","win","lose"].forEach(k => {
+  $(k).addEventListener("input", e => {
+    const v = +e.target.value; $(k+"v").textContent = v;
+    if (k === "a1" || k === "a2") cfg.rating = ratingOf();
+    if (k === "win") cfg.winLP = v;
+    if (k === "lose") cfg.loseLP = v;
+    render();
+  });
+});
+const SCEN = [
+  { name:"新手打白银", text:"把两个能力都调到 40，连打 20 场。胜率会低于一半，看 LP 往下走。", steps:[["打十场","ten"],["打十场","ten"]] },
+  { name:"职业打白银", text:"把两个能力都调到 90，连打 20 场。你会发现它一路涨，几乎不停。", steps:[["打十场","ten"],["打十场","ten"]] },
+  { name:"职业打大师", text:"保持能力 90，但先手动把 LP 打到 2800 附近不现实——所以这个场景直接看「本段位需要的实力」那一栏：到大师要 88，你的 90 优势只剩 2 点。", steps:[["打十场","ten"],["打十场","ten"]] },
+];
+const tabs = document.querySelector(".tabs");
+SCEN.forEach((s,i)=>{ const b=document.createElement("button"); b.textContent=(i+1)+". "+s.name; b.setAttribute("aria-selected",i===0); b.onclick=()=>show(i); tabs.appendChild(b); });
+function show(i){
+  [...tabs.children].forEach((b,j)=>b.setAttribute("aria-selected", j===i));
+  const s = SCEN[i], w = $("walk");
+  w.innerHTML = `<p>${s.text}</p>`;
+  const row = document.createElement("div"); row.className="row";
+  s.steps.forEach(([label, act], k) => { const b=document.createElement("button"); b.textContent=(k+1)+". "+label; b.dataset.act=act; row.appendChild(b); });
+  w.appendChild(row);
+}
+show(0); render();
+</script>
+</body>
+</html>
