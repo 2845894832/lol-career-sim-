@@ -1,0 +1,4 @@
+# esbuild 的 postinstall 在本机沙箱里拿不到 spawn 权限（EPERM）；
+# 平台二进制已随 @esbuild/win32-x64 一起装好，跳过脚本不影响构建。
+ignoredBuiltDependencies:
+  - esbuild

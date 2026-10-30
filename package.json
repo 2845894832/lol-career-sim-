@@ -1,0 +1,20 @@
+{
+  "name": "lpl-career-proto",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "P2 可玩骨架：LPL 生涯模拟原型（单页、可离线）",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "batch": "node --experimental-strip-types scripts/batch.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.1.7",
+    "vite-plugin-singlefile": "^2.3.0",
+    "vitest": "^3.2.4"
+  }
+}
