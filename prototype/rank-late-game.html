@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原型 6：段位后半程（D/E/F）</title>
+<style>
+  :root{--ink:#1b1b1b;--muted:#6b7280;--line:#e5e7eb;--navy:#1f3a5f;--teal:#2e8b7e;--red:#b04a4a;--warm:#c07a2e;--bg:#fbfbfa}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  main{max-width:820px;margin:0 auto;padding:24px 18px 60px}
+  h1{font-size:22px;margin:0 0 6px;color:var(--navy)}
+  .lead{color:var(--muted);font-size:14px;margin:0 0 18px}
+  section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  h2{font-size:16px;margin:0 0 4px;color:var(--navy)}
+  .sub{font-size:13px;color:var(--muted);margin:0 0 12px}
+  .slider{display:grid;grid-template-columns:1fr 70px;align-items:center;gap:10px;font-size:13px;color:var(--muted);margin:8px 0}
+  input[type=range]{width:100%}
+  button{font:inherit;font-size:14px;padding:9px 14px;border-radius:8px;border:1px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer;margin-right:8px}
+  button.primary{background:var(--navy);color:#fff}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+  th{background:#f4f7fa;color:var(--navy);font-weight:600}
+  td.hi{background:#e8f3ee;color:#1f6b52;font-weight:600}
+  td.lo{background:#f8eaea;color:#8f3535}
+  .slot{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:6px 0;font-size:13px}
+  .slot b{color:var(--navy)}
+  .slot.off{opacity:.35}
+  .big{font-size:26px;font-weight:600;color:var(--navy)}
+  .note{font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <h1>原型 6：段位后半程</h1>
+  <p class="lead">三个方案各给一块可调的：D 软重置、E 升段事件、F 排名显示。参数都能拖着改，看哪个手感对。</p>
+
+  <section>
+    <h2>D · 赛季软重置</h2>
+    <p class="sub">每打完一年，按比例把 LP 往下压。看 8 年下来你是越爬越高，还是被压回原地。</p>
+    <div class="slider"><label>重置比例</label><input id="reset" type="range" min="0" max="50" step="5" value="30"><span id="resetV">30%</span></div>
+    <div class="slider"><label>每周上分收益</label><input id="gain" type="range" min="100" max="600" step="50" value="500"><span id="gainV">500</span></div>
+    <div class="slider"><label>保底（重置后不低于）</label><input id="floor" type="range" min="0" max="4500" step="500" value="2000"><span id="floorV">2000</span></div>
+    <div class="row"><button class="primary" id="runD">跑 8 年</button></div>
+    <p class="note" id="capNote"></p>
+    <table id="tD"></table>
+    <p class="note">规则：每年年末 LP × (1 − 重置比例)，不低于保底；分档按现实段位（黑铁 0 / 白银 800 / 黄金 1200 / 铂金 1600 / 翡翠 2000 / 钻石 2400 / 大师 2800 / 宗师 4000 / 王者 4500）。</p>
+  </section>
+
+  <section>
+    <h2>E · 升段事件化</h2>
+    <p class="sub">每跨一段就挂一个专属事件。切一下「每段」和「只关键段」，看内容量差多少。</p>
+    <div class="row">
+      <button id="modeAll" class="primary">每段一个</button>
+      <button id="modeKey">只关键段</button>
+    </div>
+    <div id="slots"></div>
+    <p class="note" id="eCount"></p>
+  </section>
+
+  <section>
+    <h2>F · 排名显示</h2>
+    <p class="sub">宗师和王者按名次算，不显示点数。下面是编出来的 3000 人榜单。</p>
+    <div class="slider"><label>你的 LP</label><input id="myLp" type="range" min="2400" max="9999" step="100" value="4500"><span id="myLpV">4500</span></div>
+    <div class="row"><button class="primary" id="runF">跑一年</button></div>
+    <div><span class="big" id="rank">第 — 名</span> <span id="rankNote" class="note"></span></div>
+    <table id="tF"></table>
+    <p class="note">榜单分布是编的：均值 2600、标准差 700 的正态，截断在 800–9999。真实榜单的长尾比这个更狠。</p>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const TIERS = [["黑铁",0],["青铜",400],["白银",800],["黄金",1200],["铂金",1600],["翡翠",2000],["钻石",2400],["大师",2800],["宗师",4000],["王者",4500]];
+function tierOf(lp){ let t = TIERS[0][0]; for (const [n,v] of TIERS) if (lp >= v) t = n; return t; }
+
+// ---- D ----
+function runD(){
+  const pct = +$("reset").value/100, floor = +$("floor").value, gain = +$("gain").value;
+  const weeksToCap = Math.ceil((9999 - 2800) / gain);
+  const rows = [["年", "年末 LP", "段位", "次年开局"]];
+  let lp = 2800;
+  for (let y = 1; y <= 8; y++){
+    const end = Math.min(9999, lp + 26 * gain);
+    const next = Math.max(floor, Math.round(end * (1 - pct)));
+    rows.push([`第 ${y} 年`, end, tierOf(end), next]);
+    lp = next;
+  }
+  $("capNote").textContent = `每周 ${gain} × 26 周 = 一年 ${26*gain} LP；从 2800 到封顶要 ${weeksToCap} 周。`;
+  $("tD").innerHTML = rows.map((r,i)=>`<tr>${r.map(c=>`<t${i?'d':'h'}>${c}</t${i?'d':'h'}>`).join("")}</tr>`).join("");
+}
+
+// ---- E ----
+const EVT = {
+  "青铜": ["定级赛十连，前九局你都被同一个人抓"],
+  "白银": ["队友公屏打字：哥带带我"],
+  "黄金": ["开始有人截图你的战绩发论坛"],
+  "铂金": ["对面打野开局来蹲你三次"],
+  "翡翠": ["有主播在直播里喊你名字"],
+  "钻石": ["有队伍的小号加你好友"],
+  "大师": ["职业队的分析师开始翻你的 replays"],
+  "宗师": ["你排到了现役选手，他打字认出你"],
+  "王者": ["邀请函到了"],
+  "黑铁": ["第一次上分，网吧的键盘有粘手"]
+};
+const KEY = ["黑铁", "黄金", "钻石", "大师", "王者"];
+function drawE(onlyKey){
+  const list = onlyKey ? KEY : TIERS.map(t => t[0]);
+  $("slots").innerHTML = list.map(n => {
+    const txt = EVT[n] ? EVT[n][0] : "（还没写）";
+    return `<div class="slot"><span><b>${n}</b></span><span>${txt}</span></div>`;
+  }).join("");
+  $("eCount").textContent = onlyKey
+    ? `只关键段：${list.length} 个事件，够不够撑一条生涯？`
+    : `每段一个：${list.length} 个事件——这是要写的文案量。`;
+  $("modeAll").className = onlyKey ? "" : "primary";
+  $("modeKey").className = onlyKey ? "primary" : "";
+}
+
+// ---- F ----
+let board = [];
+function makeBoard(){
+  const n = 3000, arr = [];
+  for (let i = 0; i < n; i++){
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    const z = Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+    arr.push(Math.max(800, Math.min(9999, Math.round(2600 + 700*z))));
+  }
+  return arr.sort((a,b)=>b-a);
+}
+function drawF(){
+  const lp = +$("myLp").value;
+  if (!board.length) board = makeBoard();
+  const rank = board.filter(s => s > lp).length + 1;
+  $("rank").textContent = `第 ${rank} 名`;
+  const pct = (rank / board.length * 100).toFixed(1);
+  $("rankNote").textContent = `（共 ${board.length} 人，前 ${pct}%；LP ${lp}，${tierOf(lp)}）`;
+  const rows = [["名次", "LP", "段位"]];
+  [1, 10, 50, 200, rank, board.length].forEach((r,i)=>{
+    const s = r === rank ? lp : board[r-1];
+    rows.push([`第 ${r}${r===rank?"（你）":""}`, s, tierOf(s)]);
+  });
+  $("tF").innerHTML = rows.map((r,i)=>`<tr>${r.map(c=>`<t${i?"d":"h"}>${c}</t${i?"d":"h"}>`).join("")}</tr>`).join("");
+}
+function runF(){
+  let lp = 2800;
+  for (let y = 1; y <= 8; y++){
+    lp = Math.min(9999, lp + 26*500);
+    lp = Math.max(2000, Math.round(lp * 0.7));
+  }
+  $("myLp").value = lp;
+  $("myLpV").textContent = lp;
+  drawF();
+}
+
+$("reset").oninput = e => { $("resetV").textContent = e.target.value + "%"; runD(); };
+$("floor").oninput = e => { $("floorV").textContent = e.target.value; runD(); };
+$("gain").oninput = e => { $("gainV").textContent = e.target.value; runD(); };
+$("myLp").oninput = e => { $("myLpV").textContent = e.target.value; drawF(); };
+$("runD").onclick = runD;
+$("runF").onclick = runF;
+$("modeAll").onclick = () => drawE(false);
+$("modeKey").onclick = () => drawE(true);
+runD(); drawE(false); drawF();
+</script>
+</body>
+</html>
