@@ -87,7 +87,23 @@ const clearOverlays = async () => {
   }
 };
 
+/** 三格必须排满才能结周：把空格补成休息。 */
+const fillSlots = async () => {
+  for (let i = 0; i < 3; i++) {
+    const slots = await page.$$('.slot');
+    const slot = slots[i];
+    if (!slot) continue;
+    const v = await slot.$eval('.v', (el) => el.textContent.trim());
+    if (v === '空') {
+      await slot.click();
+      const rest = await page.$('.sheet [data-act="pick-action"][data-id="rest"]');
+      if (rest) await rest.click();
+    }
+  }
+};
+
 const endWeek = async () => {
+  await fillSlots();
   await page.click('[data-act="end-week"]');
   await new Promise((r) => setTimeout(r, 80));
   await clearOverlays();

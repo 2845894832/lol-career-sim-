@@ -2,6 +2,7 @@ import { CONFIG } from '../config';
 import { ATTR_LABEL, DECLINE_ATTRS, type ActionId, type AttrKey, type GameState } from '../types';
 import { applyAttrDelta, gainExp } from './growth';
 import { createRng } from '../rng';
+import { FEEDBACK } from '../data/feedback';
 import { clamp, rankExpMultiplier, rankTier } from './state';
 
 export interface ActionInfo {
@@ -77,6 +78,16 @@ function gainPopularity(state: GameState, base: number): number {
   return applyAttrDelta(state, 'popularity', delta);
 }
 
+/** 从反馈池里抽一句；池子空就退回原来的固定文案。 */
+function say(state: GameState, action: ActionId, fallback: string): string {
+  const pool = FEEDBACK[action];
+  if (!pool || pool.length === 0) return fallback;
+  const ctx = createRng(state.rngState);
+  const line = pool[ctx.rng.int(pool.length)] ?? fallback;
+  state.rngState = ctx.state();
+  return line;
+}
+
 /** 执行一个行动，返回给玩家看的反馈行。 */
 export function applyAction(
   state: GameState,
@@ -100,23 +111,24 @@ export function applyAction(
       state.rngState = ctx.state();
       state.rankPoints = clamp(state.rankPoints + Math.max(50, gained), 0, CONFIG.rank.max);
       logs.push(`你上分了，现在是${rankTier(state.rankPoints).name}。`);
+      logs.push(say(state, 'rank', '这一周都在排位。'));
       break;
     }
     case 'train': {
       const key = target ?? 'operation';
       gainExp(state, key, CONFIG.actions.train.exp);
-      logs.push(`这一周只练${ATTR_LABEL[key]}。`);
+      logs.push(say(state, 'train', `这一周只练${ATTR_LABEL[key]}。`));
       break;
     }
     case 'review':
       gainExp(state, 'awareness', CONFIG.actions.review.exp.awareness);
-      logs.push('你逐帧看了自己的团战，越看越沉默。');
+      logs.push(say(state, 'review', '你逐帧看了自己的团战，越看越沉默。'));
       break;
     case 'scrim':
       gainExp(state, 'teamfight', CONFIG.actions.scrim.exp.teamfight);
       gainExp(state, 'awareness', CONFIG.actions.scrim.exp.awareness);
       state.coachTrust = clamp(state.coachTrust + CONFIG.actions.scrim.coachTrust, 0, 100);
-      logs.push('训练赛打完，教练在本子上记了两笔。');
+      logs.push(say(state, 'scrim', '训练赛打完，教练在本子上记了两笔。'));
       break;
     case 'fitness':
       state.maxStamina = clamp(
@@ -124,21 +136,21 @@ export function applyAction(
         0,
         CONFIG.actions.fitness.maxStaminaCap,
       );
-      logs.push('你去了健身房，第二天楼梯都下不了。');
+      logs.push(say(state, 'fitness', '你去了健身房，第二天楼梯都下不了。'));
       break;
     case 'stream':
       state.money += CONFIG.actions.stream.money;
       gainPopularity(state, CONFIG.actions.stream.popularity);
-      logs.push('直播间飘过一句「不去打职业扬名立万」。');
+      logs.push(say(state, 'stream', '直播间飘过一句「不去打职业扬名立万」。'));
       break;
     case 'business':
       state.money += CONFIG.actions.business.money;
       gainPopularity(state, CONFIG.actions.business.popularity);
-      logs.push('商业活动结束，你记不清自己笑了多少次。');
+      logs.push(say(state, 'business', '商业活动结束，你记不清自己笑了多少次。'));
       break;
     case 'rest':
       state.stamina = clamp(state.stamina + CONFIG.actions.rest.restore, 0, state.maxStamina);
-      logs.push('你睡了一整天。');
+      logs.push(say(state, 'rest', '你睡了一整天。'));
       break;
   }
 
