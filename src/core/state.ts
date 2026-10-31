@@ -105,7 +105,7 @@ export function newGame(seed: number): GameState {
     yearGain: emptyStats(),
     stamina: CONFIG.start.stamina,
     maxStamina: CONFIG.start.maxStamina,
-    rankPoints: 0,
+    rankPoints: CONFIG.start.rankPoints,
     money: CONFIG.start.money,
     injury: 0,
     coachTrust: CONFIG.start.coachTrust,

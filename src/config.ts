@@ -31,6 +31,8 @@ export const CONFIG = {
     maxStamina: 100,
     stamina: 60,
     coachTrust: 50,
+    /** 开局就是大师 2800：高分路人王，还没人认识。 */
+    rankPoints: 2800,
     money: 0,
   },
 
@@ -54,7 +56,7 @@ export const CONFIG = {
     train: { stamina: 10, exp: 14 },
     review: { stamina: 6, exp: { awareness: 10 } },
     scrim: { stamina: 14, exp: { teamfight: 8, awareness: 8 }, coachTrust: 1 },
-    fitness: { stamina: 8, maxStamina: 4, maxStaminaCap: 150 },
+    fitness: { stamina: 8, maxStamina: 4, maxStaminaCap: 999 },
     stream: { stamina: 10, money: 90, popularity: 3 },
     business: { stamina: 18, money: 320, popularity: 5 },
     rest: { stamina: 0, restore: 24 },
