@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原型 5：冠军胜率公式</title>
+<style>
+  :root{--ink:#1b1b1b;--muted:#6b7280;--line:#e5e7eb;--navy:#1f3a5f;--teal:#2e8b7e;--red:#b04a4a;--bg:#fbfbfa;--warm:#c07a2e}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  main{max-width:760px;margin:0 auto;padding:24px 18px 60px}
+  h1{font-size:22px;margin:0 0 6px;color:var(--navy)}
+  .lead{color:var(--muted);font-size:14px;margin:0 0 20px}
+  section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  h2{font-size:15px;margin:0 0 10px;color:var(--navy)}
+  .state{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .field{font-size:13px;color:var(--muted)}
+  .field b{display:block;font-size:20px;font-weight:600;color:var(--ink)}
+  .field b.good{color:var(--teal)} .field b.bad{color:var(--red)}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+  button{font:inherit;font-size:14px;padding:9px 14px;border-radius:8px;border:1px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer}
+  button.primary{background:var(--navy);color:#fff}
+  button:active{transform:translateY(1px)}
+  .slider{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:8px 0}
+  input[type=range]{width:100%}
+  .seg{display:flex;gap:6px;margin:6px 0 10px}
+  .seg button{font-size:13px;padding:6px 12px;border-radius:999px}
+  .seg button[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+  th{background:#f4f7fa;color:var(--navy);font-weight:600}
+  td.hi{background:#e8f3ee;color:#1f6b52;font-weight:600}
+  td.lo{background:#f8eaea;color:#8f3535}
+  .log{font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.7;color:var(--muted);max-height:130px;overflow:auto;margin-top:10px;white-space:pre-wrap}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .tabs button{font-size:13px;padding:6px 10px;border-radius:999px}
+  .tabs button[aria-selected=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+  .scenario p{font-size:14px;color:var(--muted);margin:0 0 10px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <h1>原型 5：冠军胜率公式</h1>
+  <p class="lead">要验的问题：<b>这条公式下，春决会不会「必胜」、S 赛会不会「必输」？</b> 拖六维、切赛事、加赌注，看胜率怎么动，再连掷几十次看实际结果对不对得上。</p>
+
+  <section>
+    <h2>当前</h2>
+    <div class="state">
+      <div class="field">你的六维均值<b id="avg">70</b></div>
+      <div class="field">对手强度<b id="opp">65 · 春决</b></div>
+      <div class="field">选项加成<b id="bonus">+0%</b></div>
+      <div class="field">算出胜率<b id="rate">60%</b></div>
+      <div class="field">已掷次数<b id="n">0</b></div>
+      <div class="field">实际胜率<b id="real">—</b></div>
+    </div>
+    <div class="log" id="log">调参数，然后「掷一次」或「连掷 20 次」。</div>
+  </section>
+
+  <section>
+    <h2>参数</h2>
+    <div class="slider"><label>六维均值</label><input id="sAvg" type="range" min="30" max="100" value="70"><span id="sAvgV">70</span></div>
+    <div class="slider"><label>选项加成</label><input id="sBonus" type="range" min="-20" max="40" step="5" value="0"><span id="sBonusV">+0%</span></div>
+    <div>赛事</div>
+    <div class="seg">
+      <button data-opp="65" aria-pressed="true">春决 65</button>
+      <button data-opp="70" aria-pressed="false">夏决 70</button>
+      <button data-opp="78" aria-pressed="false">S 赛 78</button>
+    </div>
+    <p class="hint">胜率 = 0.5 +（六维均值 − 对手强度）÷ 50 + 加成，夹在 5%～95%。</p>
+  </section>
+
+  <section>
+    <h2>掷</h2>
+    <div class="row">
+      <button class="primary" data-act="once">掷一次</button>
+      <button data-act="twenty">连掷 20 次</button>
+      <button data-act="reset">重开</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>全表：不赌的时候</h2>
+    <table id="matrix"></table>
+    <p class="hint">行是你的六维均值，列是三个赛事。绿=七成以上，红=三成以下。这张表就是「难度曲线」。</p>
+  </section>
+
+  <section class="scenario">
+    <h2>跟着走</h2>
+    <div class="tabs" role="tablist"></div>
+    <div id="walk"></div>
+  </section>
+</main>
+
+<script>
+// ---- 纯逻辑 ----
+const OPP = { spring: 65, summer: 70, worlds: 78 };
+function winRate(avg, opp, bonus, lo = 0.05, hi = 0.95){
+  const r = 0.5 + (avg - opp) / 50 + bonus;
+  return Math.min(hi, Math.max(lo, r));
+}
+function clampNote(avg, opp, bonus){
+  const raw = 0.5 + (avg - opp) / 50 + bonus;
+  if (raw > 0.95) return `原始 ${Math.round(raw*100)}% → 被压到 95%（已经必赢）`;
+  if (raw < 0.05) return `原始 ${Math.round(raw*100)}% → 被抬到 5%（已经必输）`;
+  return '';
+}
+// ---- 页面 ----
+const $ = id => document.getElementById(id);
+let S = { avg: 70, opp: 65, oppName: '春决', bonus: 0, n: 0, wins: 0 };
+let lines = [];
+function rate(){ return winRate(S.avg, S.opp, S.bonus/100); }
+function render(){
+  $("avg").textContent = S.avg;
+  $("opp").textContent = `${S.opp} · ${S.oppName}`;
+  $("bonus").textContent = (S.bonus>=0?"+":"") + S.bonus + "%";
+  const pct = Math.round(rate()*100);
+  $("rate").textContent = pct + "%";
+  $("rate").className = pct >= 70 ? "good" : pct <= 30 ? "bad" : "";
+  $("n").textContent = S.n;
+  $("real").textContent = S.n ? Math.round(S.wins/S.n*100) + "%" : "—";
+  $("log").textContent = lines.slice(-12).join("\n");
+  drawMatrix();
+  const note = clampNote(S.avg, S.opp, S.bonus/100);
+  $("sAvgV").textContent = S.avg;
+  $("sBonusV").textContent = (S.bonus>=0?"+":"") + S.bonus + "%";
+}
+function drawMatrix(){
+  const avgs = [40,50,60,70,80,90];
+  const cols = [["春决",65],["夏决",70],["S 赛",78]];
+  let html = "<tr><th>六维</th>" + cols.map(c=>`<th>${c[0]}</th>`).join("") + "</tr>";
+  for (const a of avgs){
+    html += `<tr><th>${a}</th>`;
+    for (const [, opp] of cols){
+      const p = Math.round(winRate(a, opp, 0)*100);
+      const cls = p >= 70 ? "hi" : p <= 30 ? "lo" : "";
+      html += `<td class="${cls}">${p}%</td>`;
+    }
+    html += "</tr>";
+  }
+  $("matrix").innerHTML = html;
+}
+function roll(n){
+  for (let i=0;i<n;i++){
+    const win = Math.random() < rate();
+    S.n++; if (win) S.wins++;
+    lines.push(`第 ${S.n} 掷：${win ? "冠军" : "没拿到"}（胜率 ${Math.round(rate()*100)}%）`);
+  }
+  render();
+}
+function reset(){ S = { avg: 70, opp: 65, oppName: '春决', bonus: 0, n: 0, wins: 0 }; lines = []; render(); }
+document.addEventListener("click", e => {
+  const a = e.target.dataset && e.target.dataset.act;
+  const opp = e.target.dataset && e.target.dataset.opp;
+  if (opp){
+    S.opp = +opp;
+    S.oppName = opp === "65" ? "春决" : opp === "70" ? "夏决" : "S 赛";
+    [...document.querySelectorAll(".seg button")].forEach(b => b.setAttribute("aria-pressed", b.dataset.opp === opp));
+    S.n = 0; S.wins = 0; render(); return;
+  }
+  if (a === "once") roll(1);
+  if (a === "twenty") roll(20);
+  if (a === "reset") reset();
+});
+$("sAvg").addEventListener("input", e => { S.avg = +e.target.value; render(); });
+$("sBonus").addEventListener("input", e => { S.bonus = +e.target.value; render(); });
+
+const SCEN = [
+  { name:"春决：够强就该赢", text:"六维 70、春决、不赌；应该是六成上下。再拉到 85 看看——该接近九成。", steps:[["掷 20 次","twenty"]] },
+  { name:"S 赛：光靠实力不够", text:"切到 S 赛 78、加成 +0；六维 70 时只有三成多。这就是为什么需要赌。", steps:[["连掷 20 次","twenty"]] },
+  { name:"赌一把值不值", text:"加成拉到 +30（成功率选项），S 赛下六维 70 从三成多升到七成——一次赌注能翻倍胜率。", steps:[["连掷 20 次","twenty"]] },
+];
+const tabs = document.querySelector(".tabs");
+SCEN.forEach((s,i)=>{ const b=document.createElement("button"); b.textContent=(i+1)+". "+s.name; b.setAttribute("aria-selected",i===0); b.onclick=()=>show(i); tabs.appendChild(b); });
+function show(i){
+  [...tabs.children].forEach((b,j)=>b.setAttribute("aria-selected", j===i));
+  const s = SCEN[i], w = $("walk");
+  w.innerHTML = `<p>${s.text}</p>`;
+  const row = document.createElement("div"); row.className="row";
+  s.steps.forEach(([label, act], k)=>{ const b=document.createElement("button"); b.textContent=(k+1)+". "+label; b.dataset.act=act; row.appendChild(b); });
+  w.appendChild(row);
+}
+show(0); render();
+</script>
+</body>
+</html>
