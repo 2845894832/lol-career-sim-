@@ -84,6 +84,11 @@ export const CONFIG = {
     trustPivot: 50,
     minWinRate: 0.05,
     maxWinRate: 0.95,
+    /** 统一胜负公式：胜率 = 0.5 + (六维均值 − 对手) / K + 选项加成。 */
+    formulaK: 50,
+    /** 常规比赛与决赛的默认对手强度。 */
+    opponentDefault: 60,
+    opponentFinal: 78,
     winCoachTrust: 3,
     lossCoachTrust: 4,
     /** 胜场人气与经验。 */

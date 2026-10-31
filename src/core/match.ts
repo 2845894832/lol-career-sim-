@@ -26,13 +26,22 @@ export function benchReason(state: GameState): string | null {
  * 自动比赛：没有比赛事件时也照常打一场。
  * 读的是「当前有效值」——事件给的临场加减在这里生效。
  */
-export function autoMatch(state: GameState): { win: boolean; logs: LogEntry[] } {
-  const ctx = createRng(state.rngState);
+/**
+ * 所有比赛共用的胜率公式。
+ * 0.5 +（六维均值 − 对手强度）÷ K + 选项加成 + 教练信任微调，夹在 5%～95%。
+ */
+export function matchRate(state: GameState, opponent: number, bonus = 0): number {
   const total = MATCH_ATTRS.reduce((sum, key) => sum + effectiveAttr(state, key), 0);
   const avg = total / MATCH_ATTRS.length;
   const trustBonus = (state.coachTrust - CONFIG.match.trustPivot) * CONFIG.match.coachTrustFactor;
-  const rate = clamp(avg / CONFIG.attrs.cap + trustBonus, CONFIG.match.minWinRate, CONFIG.match.maxWinRate);
-  const win = ctx.rng.next() < rate;
+  const p = 0.5 + (avg - opponent) / CONFIG.match.formulaK + bonus + trustBonus;
+  return clamp(p, CONFIG.match.minWinRate, CONFIG.match.maxWinRate);
+}
+
+/** 自动比赛：没有比赛事件时也照常打一场。 */
+export function autoMatch(state: GameState, opponent: number): { win: boolean; logs: LogEntry[] } {
+  const ctx = createRng(state.rngState);
+  const win = ctx.rng.next() < matchRate(state, opponent);
   state.rngState = ctx.state();
   return { win, logs: [] };
 }

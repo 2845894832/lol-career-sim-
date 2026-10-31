@@ -157,7 +157,7 @@ function renderEvent(): string {
     .map((option, i) => {
       const rate =
         option.risk === 'roll'
-          ? `${Math.round(successRateOf(state, option) * 100)}%`
+          ? `${Math.round(successRateOf(state, event, option) * 100)}%`
           : option.risk === 'success'
             ? '必成'
             : '必败';

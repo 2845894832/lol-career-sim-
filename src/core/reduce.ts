@@ -170,7 +170,8 @@ function settleMatch(state: GameState, out: LogEntry[]): void {
     if (reason) out.push({ text: reason, tone: 'plain' });
     return;
   }
-  const { win } = autoMatch(state);
+  const opponent = isFinalWeek(state) ? CONFIG.match.opponentFinal : CONFIG.match.opponentDefault;
+  const { win } = autoMatch(state, opponent);
   out.push(...applyMatchOutcome(state, win, isFinalWeek(state)));
 }
 

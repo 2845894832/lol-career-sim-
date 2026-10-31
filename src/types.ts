@@ -89,8 +89,10 @@ export type RiskKind = 'roll' | 'success' | 'fail';
 export interface EventOption {
   label: string;
   risk: RiskKind;
-  /** 掷骰时读取的属性；成功率 = 这些属性的平均 / 100。 */
+  /** 非比赛事件：掷骰时读取的属性；成功率 = 这些属性的平均 / 100。 */
   attrs?: readonly AttrKey[];
+  /** 比赛事件：这个选项对胜率的加成（±小数，如 0.3 = +30%）。 */
+  bonus?: number;
   /** 命中成功分支的后果；必败选项只写 fail。 */
   success?: Consequence;
   fail?: Consequence;
@@ -107,6 +109,8 @@ export type EventKind = 'match' | 'life' | 'special';
 export interface GameEvent {
   id: string;
   kind: EventKind;
+  /** 比赛事件：对手强度。有它就走统一胜负公式。 */
+  opponent?: number;
   phase: Phase | 'any';
   /** 写死年份的必触发事件，如第 3 年决赛。 */
   year?: number;

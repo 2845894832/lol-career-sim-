@@ -1,5 +1,6 @@
 import { CONFIG } from '../config';
 import { createRng } from '../rng';
+import { matchRate } from './match';
 import { EVENTS, FILLER_EVENTS, findEvent } from '../data/events';
 import {
   ATTR_LABEL,
@@ -67,10 +68,17 @@ export function drawEvent(state: GameState): DrawResult {
   return { event: null, rngState: ctx.state() };
 }
 
-/** 掷骰选项的可见成功率。必成为 1，必败为 0。 */
-export function successRateOf(state: GameState, option: EventOption): number {
+/** 掷骰选项的可见成功率。必成为 1，必败为 0；比赛事件走统一胜负公式。 */
+export function successRateOf(state: GameState, event: GameEvent, option: EventOption): number {
   if (option.risk === 'success') return 1;
   if (option.risk === 'fail') return 0;
+  if (event.kind === 'match' || event.opponent !== undefined) {
+    return matchRate(
+      state,
+      event.opponent ?? CONFIG.match.opponentDefault,
+      option.bonus ?? 0,
+    );
+  }
   const attrs = option.attrs ?? ['teamfight'];
   const total = attrs.reduce((sum, key) => sum + effectiveAttr(state, key), 0);
   const avg = total / attrs.length;
@@ -156,7 +164,7 @@ export function resolveOption(state: GameState, event: GameEvent, index: number)
   } else if (option.risk === 'fail') {
     success = false;
   } else {
-    success = ctx.rng.next() < successRateOf(state, option);
+    success = ctx.rng.next() < successRateOf(state, event, option);
   }
   state.rngState = ctx.state();
 

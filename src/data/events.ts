@@ -10,6 +10,7 @@ export const EVENTS: readonly GameEvent[] = [
     id: 'E01',
     kind: 'match',
     phase: 'growth',
+    opponent: 60,
     tags: ['#比赛', '#河道', '#大龙', '#下路'],
     text: '你和队友被卡在河道，超级兵正推我方高地。你是 AD，手里还有闪现和大招。',
     once: false,
@@ -18,8 +19,7 @@ export const EVENTS: readonly GameEvent[] = [
       {
         label: '闪现进场开大',
         risk: 'roll',
-        attrs: ['teamfight', 'mentality'],
-        matchResult: 'win',
+        bonus: 0.15,
         success: {
           attrs: { mentality: 3 },
         },
@@ -33,8 +33,7 @@ export const EVENTS: readonly GameEvent[] = [
       {
         label: '拉扯等超级兵回推',
         risk: 'roll',
-        attrs: ['awareness'],
-        matchResult: 'win',
+        bonus: 0.05,
         success: {
           attrs: { awareness: 2 },
         },
@@ -46,12 +45,17 @@ export const EVENTS: readonly GameEvent[] = [
       },
       {
         label: '回守高地',
-        risk: 'success',
-        matchResult: 'loss',
+        risk: 'roll',
+        bonus: -0.15,
         success: {
-          attrs: { popularity: -2 },
+          attrs: { popularity: -1 },
         },
         successText: '高地守住了，但这局已经没了。',
+        fail: {
+          attrs: { popularity: -3 },
+          coachTrust: -3,
+        },
+        failText: '你回去了，可正面已经崩了。',
       },
     ],
   },
@@ -105,6 +109,7 @@ export const EVENTS: readonly GameEvent[] = [
     phase: 'peak',
     year: CONFIG.career.finalYear,
     week: CONFIG.career.finalWeek,
+    opponent: CONFIG.match.opponentFinal,
     tags: ['#S赛', '#决赛', '#特殊', '#请神'],
     text: '第 3 年，决赛。这一场决定你以后的历史地位。',
     once: true,
@@ -113,27 +118,32 @@ export const EVENTS: readonly GameEvent[] = [
       {
         label: '闭上双眼请神',
         risk: 'roll',
-        attrs: ['mentality', 'awareness'],
+        bonus: 0.25,
         success: {
-          temp: { operation: 8, laning: 8, teamfight: 8, awareness: 8 },
+          attrs: { mentality: 3 },
           flag: '请神',
         },
         successText: '请神成功，你化身神秘瓜皮头男。',
         fail: {
-          temp: { operation: -8, laning: -8, teamfight: -8, awareness: -8 },
+          attrs: { mentality: -4 },
         },
         failText: '你睁开眼，屏幕已经灰了。',
       },
       {
         label: '不想这些，专注游戏',
-        risk: 'success',
+        risk: 'roll',
+        bonus: 0.0,
         successText: '你把耳机音量调大了一格，世界安静了。',
       },
       {
         label: '向队友说些话',
-        risk: 'success',
+        risk: 'roll',
+        bonus: 0.05,
         success: {
           attrs: { mentality: 2 },
+        },
+        fail: {
+          attrs: { mentality: -2 },
         },
         successText: '你说「打完这把去吃火锅」，语音里有人笑出了声。',
       },

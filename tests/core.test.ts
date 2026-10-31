@@ -5,13 +5,13 @@ import { applyAction, canAfford } from '../src/core/actions';
 import { advanceYear, gainExp } from '../src/core/growth';
 import { autoMatch, applyMatchOutcome } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
-import { drawEvent } from '../src/core/events';
+import { drawEvent, successRateOf } from '../src/core/events';
 import { canPlay } from '../src/core/match';
 import { createRng } from '../src/rng';
 import { fromSaveJson, toSaveJson } from '../src/core/save';
 import { loadSaved, persist } from '../src/core/save';
 import { newGame, rankTier } from '../src/core/state';
-import { ATTR_KEYS, MATCH_ATTRS, type Action, type GameState } from '../src/types';
+import { ATTR_KEYS, MATCH_ATTRS, type Action, type GameEvent, type GameState } from '../src/types';
 
 /** 一周：排三格 → 结周 → 处理事件。 */
 function step(state: GameState): GameState {
@@ -201,7 +201,7 @@ describe('比赛', () => {
   it('自动比赛会改变教练信任或伤病', () => {
     const s = newGame(8);
     const before = s.coachTrust;
-    const { win } = autoMatch(s);
+    const { win } = autoMatch(s, CONFIG.match.opponentDefault);
     applyMatchOutcome(s, win, false);
     expect(s.coachTrust).not.toBe(before);
   });
@@ -212,12 +212,12 @@ describe('比赛', () => {
     let debuffed = 0;
     for (let i = 0; i < 200; i++) {
       const a = structuredClone(s);
-      if (autoMatch(a).win) normal++;
+      if (autoMatch(a, CONFIG.match.opponentDefault).win) normal++;
       s.rngState = a.rngState;
 
       const b = structuredClone(s);
       for (const key of MATCH_ATTRS) b.temp[key] = -1000;
-      if (autoMatch(b).win) debuffed++;
+      if (autoMatch(b, CONFIG.match.opponentDefault).win) debuffed++;
       s.rngState = b.rngState;
     }
     expect(normal).toBeGreaterThan(60);
@@ -446,5 +446,40 @@ describe('段位与邀请函', () => {
     expect(s.signed).toBe(false);
     expect(s.failedWindows).toBe(0);
     expect(s.ended).toBeNull();
+  });
+});
+
+
+describe('统一胜负公式', () => {
+  it('比赛事件按 (六维均值 − 对手) ÷ 50 + 加成 算胜率', () => {
+    const s = newGame(21);
+    for (const key of MATCH_ATTRS) s.attrs[key] = 70;
+    const event = {
+      id: 'X',
+      kind: 'match',
+      phase: 'growth',
+      opponent: 65,
+      text: '',
+      options: [{ label: 'x', risk: 'roll', bonus: 0 }],
+    } as unknown as GameEvent;
+    expect(successRateOf(s, event, event.options[0]!)).toBeCloseTo(0.6, 5);
+
+    const buffed = {
+      ...event,
+      options: [{ label: 'x', risk: 'roll', bonus: 0.3 }],
+    } as unknown as GameEvent;
+    expect(successRateOf(s, buffed, buffed.options[0]!)).toBeCloseTo(0.9, 5);
+  });
+
+  it('胜率被夹在 5%~95%', () => {
+    const s = newGame(22);
+    for (const key of MATCH_ATTRS) s.attrs[key] = 100;
+    const strong = { id:'Y', kind:'match', phase:'growth', opponent: 0, text:'', options:[{label:'x',risk:'roll',bonus:0}] } as unknown as GameEvent;
+    expect(successRateOf(s, strong, strong.options[0]!)).toBe(0.95);
+
+    const weak = newGame(23);
+    for (const key of MATCH_ATTRS) weak.attrs[key] = 0;
+    const hard = { id:'Z', kind:'match', phase:'growth', opponent: 100, text:'', options:[{label:'x',risk:'roll',bonus:0}] } as unknown as GameEvent;
+    expect(successRateOf(weak, hard, hard.options[0]!)).toBe(0.05);
   });
 });
