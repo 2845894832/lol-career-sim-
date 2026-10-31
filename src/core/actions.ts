@@ -1,6 +1,7 @@
 import { CONFIG } from '../config';
 import { ATTR_LABEL, DECLINE_ATTRS, type ActionId, type AttrKey, type GameState } from '../types';
 import { applyAttrDelta, gainExp } from './growth';
+import { createRng } from '../rng';
 import { clamp, rankExpMultiplier, rankTier } from './state';
 
 export interface ActionInfo {
@@ -90,11 +91,14 @@ export function applyAction(
       for (const key of DECLINE_ATTRS) {
         gainExp(state, key, Math.round(CONFIG.actions.rank.exp[key] * mult));
       }
-      state.rankPoints = clamp(
-        state.rankPoints + CONFIG.actions.rank.rankPoints,
-        0,
-        CONFIG.rank.max,
-      );
+      // 一周打包的排位：均值 500，实际每次有浮动。
+      const ctx = createRng(state.rngState);
+      const gained =
+        CONFIG.actions.rank.rankPoints -
+        CONFIG.actions.rank.rankPointsJitter +
+        ctx.rng.int(CONFIG.actions.rank.rankPointsJitter * 2 + 1);
+      state.rngState = ctx.state();
+      state.rankPoints = clamp(state.rankPoints + Math.max(50, gained), 0, CONFIG.rank.max);
       logs.push(`你上分了，现在是${rankTier(state.rankPoints).name}。`);
       break;
     }

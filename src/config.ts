@@ -52,7 +52,13 @@ export const CONFIG = {
 
   /** 每个行动的体力消耗与收益。 */
   actions: {
-    rank: { stamina: 12, rankPoints: 500, exp: { operation: 6, laning: 6, teamfight: 6, awareness: 6 } },
+    rank: {
+      stamina: 12,
+      /** 一次上分的 LP 均值；实际每次在 ±jitter 内随机。 */
+      rankPoints: 500,
+      rankPointsJitter: 100,
+      exp: { operation: 6, laning: 6, teamfight: 6, awareness: 6 },
+    },
     train: { stamina: 10, exp: 14 },
     review: { stamina: 6, exp: { awareness: 10 } },
     scrim: { stamina: 14, exp: { teamfight: 8, awareness: 8 }, coachTrust: 1 },
