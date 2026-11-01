@@ -107,7 +107,8 @@ export function applyAction(
       const gained = weeklyGain(state.rankPoints);
       // 不封顶：封顶之后名次就成了死局，谁到 9999 都是并列。
       state.rankPoints += gained;
-      state.placement = placementOf(state.rankPoints, weeksPlayed(state.year, state.week));
+      // 收益和对手在同一周结算：按「本周打完」的周数算名次，否则会先虚高再回落。
+      state.placement = placementOf(state.rankPoints, weeksPlayed(state.year, state.week) + 1);
       const tier = rankOf(state.rankPoints, state.placement);
       logs.push(`你上分了，现在是${tier.name}，第 ${state.placement} 名。`);
       logs.push(say(state, 'rank', '这一周都在排位。'));

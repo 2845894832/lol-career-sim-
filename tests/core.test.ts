@@ -540,3 +540,29 @@ describe('春决 / 夏决', () => {
     expect(after.honors).toContain('lpl-champion');
   });
 });
+
+describe('邀请函', () => {
+  it('到王者那一周触发，接受就直接签约', () => {
+    const s = newGame(41);
+    s.signed = false;
+    s.rankPoints = 4830;
+    s.placement = 1;
+    s.year = 1;
+    s.week = 5;
+    const ev = drawEvent(s).event!;
+    expect(ev.id).toBe('INV-1');
+    s.pendingEvent = { eventId: ev.id };
+    const after = reduce(s, { kind: 'chooseOption', option: 0 }).state;
+    expect(after.signed).toBe(true);
+  });
+
+  it('没到王者不触发', () => {
+    const s = newGame(42);
+    s.signed = false;
+    s.rankPoints = 4515;
+    s.placement = 521;
+    s.year = 1;
+    s.week = 5;
+    expect(drawEvent(s).event?.id).not.toBe('INV-1');
+  });
+});

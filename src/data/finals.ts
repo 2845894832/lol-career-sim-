@@ -1,3 +1,4 @@
+import { rankOf } from '../core/ladder';
 import type { GameEvent, GameState } from '../types';
 
 /**
@@ -116,4 +117,53 @@ export function finalById(id: string): GameEvent | null {
   if (!m) return null;
   const year = Number(m[2]);
   return m[1] === 'SPR' ? springFinal(year) : summerFinal(year);
+}
+
+/**
+ * 邀请函：段位到王者、还没签约时必触发一次。
+ * 接受就直接转职业（不用等第 30 周的签约窗口）；拒绝可以继续当路人，明年还会再来。
+ */
+export function inviteEvent(state: GameState): GameEvent | null {
+  if (state.signed) return null;
+  const top = rankOf(state.rankPoints, state.placement).index;
+  if (top < 9) return null;
+  return {
+    id: `INV-${state.year}`,
+    kind: 'special',
+    phase: 'any',
+    year: undefined,
+    auto: true,
+    tags: ['#邀请函', '#签约', '#王者'],
+    text: '私信里躺着一条邀请：一支 LPL 战队想让你去试训。发信人你认识。',
+    once: true,
+    weight: 1,
+    requires: (s) => !s.signed && rankOf(s.rankPoints, s.placement).index >= 9,
+    options: [
+      {
+        label: '回一句「什么时候」',
+        risk: 'success',
+        success: { signed: true, coachTrust: 10, attrs: { popularity: 6 } },
+        successText: '对方秒回了一个地址。你把行李塞进箱子，没跟任何人说。',
+      },
+      {
+        label: '再等等，我还想再打一季',
+        risk: 'success',
+        success: { attrs: { mentality: 2 }, flag: '#拒过邀请' },
+        successText: '你关掉对话框，把排位又开了一把。',
+      },
+    ],
+  };
+}
+
+/** 结算邀请函时从 id 还原（INV-1 = 第 1 年的邀请函）。 */
+export function inviteById(id: string): GameEvent | null {
+  const m = /^INV-(\d+)$/.exec(id);
+  if (!m) return null;
+  const year = Number(m[1]);
+  return inviteEvent({
+    signed: false,
+    year,
+    rankPoints: 4500,
+    placement: 1,
+  } as unknown as GameState);
 }

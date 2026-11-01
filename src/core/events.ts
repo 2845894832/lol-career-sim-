@@ -2,7 +2,7 @@ import { CONFIG } from '../config';
 import { createRng } from '../rng';
 import { matchRate } from './match';
 import { EVENTS, FILLER_EVENTS, findEvent } from '../data/events';
-import { finalFor, finalById } from '../data/finals';
+import { finalFor, finalById, inviteEvent, inviteById } from '../data/finals';
 import {
   ATTR_LABEL,
   HONOR_LABEL,
@@ -30,13 +30,15 @@ export function drawEvent(state: GameState): DrawResult {
   // 1. 写死年份/周的必触发事件（决赛、签约等），不走抽签。
   //    每年生成的决赛按年编号（E04-3），所以「去重」是逐年生效的。
   const final = finalFor(state);
-  const forced = [...(final ? [final] : []), ...EVENTS].find(
-    (e) =>
-      e.year === state.year &&
-      (e.week === undefined || e.week === state.week) &&
-      !state.triggeredEvents.includes(e.id) &&
-      (!e.requires || e.requires(state)),
-  );
+  const invite = inviteEvent(state);
+  const forced = [...(final ? [final] : []), ...EVENTS, ...(invite ? [invite] : [])].find((e) => {
+    if (state.triggeredEvents.includes(e.id)) return false;
+    if (e.year !== undefined && e.year !== state.year) return false;
+    if (e.week !== undefined && e.week !== state.week) return false;
+    // 既没写年份也没写周次的，只能靠条件触发（如邀请函）
+    if (e.year === undefined && e.week === undefined && !e.auto) return false;
+    return !e.requires || e.requires(state);
+  });
   if (forced) return { event: forced, rngState: ctx.state() };
 
   // 2. 随机池：排除写死年份的、填充池的；比赛事件只在本周有比赛时出现。
@@ -145,6 +147,11 @@ export function applyConsequence(state: GameState, c: Consequence): string[] {
     addFlag(state, c.flag);
     notes.push(`标记「${c.flag}」`);
   }
+  if (c.signed && !state.signed) {
+    state.signed = true;
+    addFlag(state, '#签约');
+    notes.push('你签约了');
+  }
 
   return notes;
 }
@@ -197,5 +204,5 @@ export function resolveOption(state: GameState, event: GameEvent, index: number)
 }
 
 export function getEvent(id: string): GameEvent | undefined {
-  return findEvent(id) ?? finalById(id) ?? undefined;
+  return findEvent(id) ?? finalById(id) ?? inviteById(id) ?? undefined;
 }

@@ -82,6 +82,8 @@ export interface Consequence {
   coachTrust?: number;
   honor?: HonorId;
   flag?: string;
+  /** 收到邀请函并接受：直接转成职业选手。 */
+  signed?: boolean;
 }
 
 export type RiskKind = 'roll' | 'success' | 'fail';
@@ -128,6 +130,8 @@ export interface GameEvent {
   requires?: (s: GameState) => boolean;
   /** 能否作为空池兜底。 */
   filler?: boolean;
+  /** 没有写死年份/周次、只靠 requires 触发的必触发事件（如邀请函）。 */
+  auto?: boolean;
 }
 
 export interface PendingEvent {
