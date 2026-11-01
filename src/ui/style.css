@@ -108,6 +108,10 @@ body {
   color: var(--fg);
   font-variant-numeric: tabular-nums;
 }
+.meta .mini {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
 
 .slots {
   display: grid;

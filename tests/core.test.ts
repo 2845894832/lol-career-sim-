@@ -11,6 +11,7 @@ import { createRng } from '../src/rng';
 import { fromSaveJson, toSaveJson } from '../src/core/save';
 import { loadSaved, persist } from '../src/core/save';
 import { newGame, rankTier } from '../src/core/state';
+import { placementOf, rankOf, weeklyGain } from '../src/core/ladder';
 import { ATTR_KEYS, MATCH_ATTRS, type Action, type GameEvent, type GameState } from '../src/types';
 
 /** 一周：排三格 → 结周 → 处理事件。 */
@@ -272,13 +273,30 @@ describe('整局', () => {
     expect(specialEnding(s).note.length).toBeGreaterThan(0);
   });
 
-  it('段位按现实 LP 结构映射', () => {
-    expect(rankTier(0).name).toBe('黑铁 Ⅳ');
-    expect(rankTier(100).name).toBe('黑铁 Ⅲ');
-    expect(rankTier(CONFIG.rank.masterAt).name).toBe('大师');
-    expect(rankTier(CONFIG.rank.grandmasterAt).name).toBe('宗师');
-    expect(rankTier(CONFIG.rank.kingAt).name).toBe('王者');
-    expect(rankTier(CONFIG.rank.max).name).toBe('王者');
+  it('段位看分档表', () => {
+    expect(rankTier(0).name).toBe('黑铁');
+    expect(rankTier(400).name).toBe('青铜');
+    expect(rankTier(2800).name).toBe('大师');
+    expect(rankTier(4500).name).toBe('王者');
+    expect(rankTier(9999).name).toBe('王者');
+  });
+
+  it('最高档还要名次：分数到王者但名次不够就封在宗师', () => {
+    expect(rankOf(9999, 1).name).toBe('王者');
+    expect(rankOf(9999, 5000).name).toBe('宗师');
+    expect(rankOf(2800, 5000).name).toBe('大师');
+  });
+
+  it('上分收益按档位递减', () => {
+    expect(weeklyGain(0)).toBe(CONFIG.rank.perWeek.start);
+    expect(weeklyGain(4500)).toBeLessThan(weeklyGain(0));
+    expect(weeklyGain(9999)).toBe(Math.round(CONFIG.rank.perWeek.start * CONFIG.rank.perWeek.keep));
+  });
+
+  it('名次是确定性算出来的：同样的分数与周数永远同一个名次', () => {
+    const a = placementOf(2800, 0);
+    expect(placementOf(2800, 0)).toBe(a);
+    expect(placementOf(9999, 0)).toBeLessThan(a);
   });
 });
 
@@ -389,15 +407,17 @@ describe('段位与邀请函', () => {
     return reduce(next, { kind: 'endWeek' }).state;
   }
 
-  it('一次上分给 500 LP', () => {
+  it('一次上分涨的正好是当前档位的收益', () => {
     let s = newGame(7);
     const before = s.rankPoints;
+    const gain = weeklyGain(before);
     s = reduce(s, { kind: 'selectAction', slot: 0, action: 'rank' }).state;
     s = reduce(s, { kind: 'selectAction', slot: 1, action: 'rest' }).state;
     s = reduce(s, { kind: 'selectAction', slot: 2, action: 'rest' }).state;
     s = reduce(s, { kind: 'endWeek' }).state;
     while (s.pendingEvent) s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
-    expect(s.rankPoints).toBeGreaterThanOrEqual(before + CONFIG.actions.rank.rankPoints - 200);
+    expect(s.rankPoints).toBe(before + gain);
+    expect(s.placement).toBeGreaterThan(0);
   });
 
   it('三格没排满不能结周', () => {
@@ -417,20 +437,22 @@ describe('段位与邀请函', () => {
     expect(s.actionGrid[0]).toBe('rest');
   });
 
-  it('这周没上分，按段位掉 LP', () => {
+  it('这周没上分，名次被榜上的人超过', () => {
     let s = newGame(13);
-    s.rankPoints = CONFIG.rank.masterAt;
     s.week = 5;
+    const before = s.placement;
     s = planWeek(s, ['rest', 'rest', 'rest']);
     while (s.pendingEvent) s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
-    expect(s.rankPoints).toBe(CONFIG.rank.masterAt - CONFIG.rank.decay.master);
+    expect(s.rankPoints).toBe(newGame(13).rankPoints);
+    expect(s.placement).toBeGreaterThan(before);
   });
 
-  it('段位到王者，签约窗口必定收到邀请函', () => {
+  it('到王者，签约窗口必定收到邀请函', () => {
     let s = newGame(14);
     s.year = 1;
     s.week = CONFIG.career.signingWindowWeek;
-    s.rankPoints = CONFIG.rank.kingAt;
+    // 名次是按分数与周数重算的；给一个远高于榜上任何人的分数才能稳住前 200。
+    s.rankPoints = 60000;
     s = planWeek(s, ['rest', 'rest', 'rest']);
     while (s.pendingEvent) s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
     expect(s.signed).toBe(true);

@@ -6,7 +6,8 @@ import { advanceYear } from './growth';
 import { applyMatchOutcome, autoMatch, benchReason, canPlay } from './match';
 import { drawEvent, getEvent, resolveOption } from './events';
 import { normalEnding, specialEnding } from './endings';
-import { attrTotal, cloneState, isMatchWeek, isSigningWindow, rankDecay } from './state';
+import { attrTotal, cloneState, isMatchWeek, isSigningWindow } from './state';
+import { placementOf, rankOf, weeksPlayed } from './ladder';
 
 /** 那场决赛：第 3 年 S 赛。 */
 export function isFinalWeek(state: GameState): boolean {
@@ -178,8 +179,8 @@ function settleMatch(state: GameState, out: LogEntry[]): void {
 function resolveSigningWindow(state: GameState, out: LogEntry[]): void {
   if (state.signed) return;
 
-  // 段位到王者就必定收到邀请函；人气不参与签约。
-  const qualified = state.rankPoints >= CONFIG.rank.kingAt;
+  // 王者 = 分数到最高档 + 名次进前 200。到了就必定收到邀请函；人气不参与签约。
+  const qualified = rankOf(state.rankPoints, state.placement).index === CONFIG.rank.tiers.length - 1;
 
   if (qualified) {
     state.signed = true;
@@ -220,18 +221,16 @@ function finishWeek(state: GameState, out: LogEntry[]): void {
     state.rngState = ctx.state();
   }
 
+  // 名次每周重算：榜上的人还在爬，你这周没动，名次就会往下掉。
+  // 先算名次再判签约——邀请函看的是这一刻的名次。
+  const before = state.placement;
+  state.placement = placementOf(state.rankPoints, weeksPlayed(state.year, state.week) + 1);
+  if (!state.actionGrid.includes('rank') && state.placement > before && before > 0) {
+    out.push({ text: `这周没打排位，掉到第 ${state.placement} 名了。`, tone: 'bad' });
+  }
+
   if (isSigningWindow(state.week)) resolveSigningWindow(state, out);
   if (state.ended) return;
-
-  // 这周没上分：按段位掉 LP。
-  if (!state.actionGrid.includes('rank')) {
-    const drop = rankDecay(state.rankPoints);
-    if (drop > 0) {
-      const before = state.rankPoints;
-      state.rankPoints = Math.max(0, state.rankPoints - drop);
-      out.push({ text: `这周没打排位，段位掉了 ${before - state.rankPoints}。`, tone: 'bad' });
-    }
-  }
 
   resetWeek(state);
 

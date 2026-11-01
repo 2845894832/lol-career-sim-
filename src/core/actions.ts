@@ -3,7 +3,8 @@ import { ATTR_LABEL, DECLINE_ATTRS, type ActionId, type AttrKey, type GameState 
 import { applyAttrDelta, gainExp } from './growth';
 import { createRng } from '../rng';
 import { FEEDBACK } from '../data/feedback';
-import { clamp, rankExpMultiplier, rankTier } from './state';
+import { clamp, rankExpMultiplier } from './state';
+import { placementOf, rankOf, weeklyGain, weeksPlayed } from './ladder';
 
 export interface ActionInfo {
   label: string;
@@ -102,15 +103,13 @@ export function applyAction(
       for (const key of DECLINE_ATTRS) {
         gainExp(state, key, Math.round(CONFIG.actions.rank.exp[key] * mult));
       }
-      // 一周打包的排位：均值 500，实际每次有浮动。
-      const ctx = createRng(state.rngState);
-      const gained =
-        CONFIG.actions.rank.rankPoints -
-        CONFIG.actions.rank.rankPointsJitter +
-        ctx.rng.int(CONFIG.actions.rank.rankPointsJitter * 2 + 1);
-      state.rngState = ctx.state();
-      state.rankPoints = clamp(state.rankPoints + Math.max(50, gained), 0, CONFIG.rank.max);
-      logs.push(`你上分了，现在是${rankTier(state.rankPoints).name}。`);
+      // 一周打包的排位：收益按当前档位递减，档位越高涨得越慢。
+      const gained = weeklyGain(state.rankPoints);
+      // 不封顶：封顶之后名次就成了死局，谁到 9999 都是并列。
+      state.rankPoints += gained;
+      state.placement = placementOf(state.rankPoints, weeksPlayed(state.year, state.week));
+      const tier = rankOf(state.rankPoints, state.placement);
+      logs.push(`你上分了，现在是${tier.name}，第 ${state.placement} 名。`);
       logs.push(say(state, 'rank', '这一周都在排位。'));
       break;
     }

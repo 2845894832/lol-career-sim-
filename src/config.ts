@@ -3,8 +3,8 @@
  * 全部是占位值，等试玩后再调。
  */
 export const CONFIG = {
-  /** 存档版本；不匹配时安全重开。 */
-  version: 1,
+  /** 存档版本；不匹配时安全重开。改成名次制后必须加一。 */
+  version: 2,
   storageKey: 'lpl-career-proto',
 
   career: {
@@ -54,9 +54,6 @@ export const CONFIG = {
   actions: {
     rank: {
       stamina: 12,
-      /** 一次上分的 LP 均值；实际每次在 ±jitter 内随机。 */
-      rankPoints: 500,
-      rankPointsJitter: 100,
       exp: { operation: 6, laning: 6, teamfight: 6, awareness: 6 },
     },
     train: { stamina: 10, exp: 14 },
@@ -69,17 +66,40 @@ export const CONFIG = {
   },
 
   /**
-   * 段位：现实 LP 结构。黑铁Ⅳ=0，每小段 100；
-   * 大师 2800、宗师 4000、王者 4500（进入王者），王者内部继续涨到 9999 封顶。
+   * 段位：不再靠「点数到了就升」，而是分数 + 名次一起决定。
+   * 分档表来自原型调参后的结果（prototype/rank-by-placement.html）。
+   * - 每档一条，`at` 是进入这一档所需分数；
+   * - 最高档（王者）还要名次进前 kingGate；
+   * - 第二档（宗师）要进前 secondGate（1%）。
    */
   rank: {
     max: 9999,
-    divisionSize: 100,
-    masterAt: 2800,
-    grandmasterAt: 4000,
-    kingAt: 4500,
-    /** 一周没上分，按段位掉多少 LP。 */
-    decay: { low: 20, platinum: 40, diamond: 60, master: 100 },
+    tiers: [
+      { name: '黑铁', at: 0 },
+      { name: '青铜', at: 400 },
+      { name: '白银', at: 900 },
+      { name: '黄金', at: 1500 },
+      { name: '铂金', at: 2100 },
+      { name: '翡翠', at: 2500 },
+      { name: '钻石', at: 2700 },
+      { name: '大师', at: 2800 },
+      { name: '宗师', at: 3800 },
+      { name: '王者', at: 4500 },
+    ],
+    /** 上分收益按档位递减：黑铁时每周 1400，最高档只剩 35%。 */
+    perWeek: { start: 1400, keep: 0.35 },
+    kingGate: 200,
+    secondGate: 0.01,
+  },
+
+  /** 榜上对手：不存进存档，由 (序号, 种子) 推出来。 */
+  ladder: {
+    population: 10000,
+    baseLp: 7000,
+    spreadLp: 5000,
+    baseRate: 1200,
+    rateSpread: 0.1,
+    seed: 20261101,
   },
 
   /** 比赛结算。 */

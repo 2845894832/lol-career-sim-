@@ -163,6 +163,8 @@ export interface GameState {
   stamina: number;
   maxStamina: number;
   rankPoints: number;
+  /** 全服名次（1 起）。由分数与已走周数算出，不手改。 */
+  placement: number;
   money: number;
   injury: number;
   coachTrust: number;

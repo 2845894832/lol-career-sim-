@@ -4,7 +4,8 @@ import { getEvent, successRateOf } from '../core/events';
 import { ACTION_INFO, canAfford, isActionUnlocked, staminaCost } from '../core/actions';
 import { loadSaved, persist } from '../core/save';
 import { expProgress } from '../core/growth';
-import { ageOf, isMatchWeek, newGame, phaseOfYear, rankTier } from '../core/state';
+import { ageOf, isMatchWeek, newGame, phaseOfYear } from '../core/state';
+import { rankOf } from '../core/ladder';
 import { randomSeed } from '../rng';
 import {
   ACTION_IDS,
@@ -62,7 +63,7 @@ function renderMeta(): string {
   return `<div class="panel">
     <div class="meta">
       <span>体力 <b>${state.stamina}/${state.maxStamina}</b></span>
-      <span>段位 <b>${rankTier(state.rankPoints).name}</b></span>
+      <span>段位 <b>${rankOf(state.rankPoints, state.placement).name}</b> <span class="mini">第 ${state.placement} 名</span></span>
       <span>金钱 <b>${state.money}</b></span>
       <span>伤病 <b>${state.injury}/3</b></span>
       <span>教练信任 <b>${state.coachTrust}</b></span>

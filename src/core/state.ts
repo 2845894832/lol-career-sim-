@@ -1,4 +1,5 @@
 import { CONFIG } from '../config';
+import { placementOf, tierAt, tierCount, tierIndex, weeksPlayed } from './ladder';
 import { createRng } from '../rng';
 import { ATTR_KEYS, type AttrKey, type GameState, type Phase, type Stats } from '../types';
 
@@ -40,47 +41,27 @@ export function isSigningWindow(week: number): boolean {
   return week === CONFIG.career.signingWindowWeek;
 }
 
-const DIVISION_TIERS = ['黑铁', '青铜', '白银', '黄金', '铂金', '翡翠', '钻石'] as const;
-const DIVISION_LABELS = ['Ⅳ', 'Ⅲ', 'Ⅱ', 'Ⅰ'] as const;
-
 /**
- * 现实 LP 结构：黑铁Ⅳ=0，每小段 100；大师 2800、宗师 4000、王者 4500。
- * 王者内部继续涨到封顶，name 仍是「王者」。
+ * 段位不只是看分数：最高档要名次，第二档要前 1%。
+ * 真正的换算在 ladder.ts，这里留一个只按分数取名的薄封装给日志用。
  */
-export function rankTier(points: number): { name: string; index: number; progress: number } {
-  const { masterAt, grandmasterAt, kingAt, max, divisionSize } = CONFIG.rank;
-  if (points >= kingAt) {
-    return { name: '王者', index: 9, progress: clamp((points - kingAt) / (max - kingAt), 0, 1) };
-  }
-  if (points >= grandmasterAt) {
-    return { name: '宗师', index: 8, progress: clamp((points - grandmasterAt) / (kingAt - grandmasterAt), 0, 1) };
-  }
-  if (points >= masterAt) {
-    return { name: '大师', index: 7, progress: clamp((points - masterAt) / (grandmasterAt - masterAt), 0, 1) };
-  }
-  const band = divisionSize * 4;
-  const seg = clamp(Math.floor(points / band), 0, DIVISION_TIERS.length - 1);
-  const within = points - seg * band;
-  const div = clamp(Math.floor(within / divisionSize), 0, 3);
-  return {
-    name: `${DIVISION_TIERS[seg]} ${DIVISION_LABELS[div]}`,
-    index: seg,
-    progress: (within % divisionSize) / divisionSize,
-  };
+export function rankTier(points: number): { name: string; index: number } {
+  const index = tierIndex(points);
+  return { name: tierAt(index).name, index };
 }
 
-/** 一周没上分掉多少 LP：段位越高掉得越多。 */
-export function rankDecay(points: number): number {
-  const { masterAt, decay } = CONFIG.rank;
-  if (points >= masterAt) return decay.master;
-  if (points >= 2400) return decay.diamond;
-  if (points >= 1600) return decay.platinum;
-  return decay.low;
+/** 只看分数时的档位进度（0–1），旧界面用到就还留着。 */
+export function rankProgress(points: number): number {
+  const idx = tierIndex(points);
+  if (idx >= tierCount() - 1) return 1;
+  const cur = tierAt(idx).at;
+  const next = tierAt(idx + 1).at;
+  return clamp((points - cur) / Math.max(1, next - cur), 0, 1);
 }
 
 /** 段位越高，上分给的经验越多。 */
 export function rankExpMultiplier(state: GameState): number {
-  return 1 + (state.rankPoints / CONFIG.rank.max) * 0.5;
+  return clamp(1 + (state.rankPoints / CONFIG.rank.max) * 0.5, 1, 1.5);
 }
 
 export function newGame(seed: number): GameState {
@@ -94,6 +75,8 @@ export function newGame(seed: number): GameState {
     }
   }
 
+  const startLp = CONFIG.start.rankPoints;
+
   return {
     version: CONFIG.version,
     seed,
@@ -105,7 +88,8 @@ export function newGame(seed: number): GameState {
     yearGain: emptyStats(),
     stamina: CONFIG.start.stamina,
     maxStamina: CONFIG.start.maxStamina,
-    rankPoints: CONFIG.start.rankPoints,
+    rankPoints: startLp,
+    placement: placementOf(startLp, weeksPlayed(1, 1)),
     money: CONFIG.start.money,
     injury: 0,
     coachTrust: CONFIG.start.coachTrust,
