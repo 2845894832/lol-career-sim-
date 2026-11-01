@@ -59,6 +59,10 @@
       <button id="resetTier">恢复默认</button>
     </div>
     <label class="check">
+      <input type="checkbox" id="rivalDecay" checked>
+      对手也按段位减速（勾掉就是对手永远匀速）
+    </label>
+    <label class="check">
       <input type="checkbox" id="rankRule" checked>
       最高一档按名次判（前 200 名），第二高按前 1%
     </label>
@@ -68,7 +72,8 @@
   <section>
     <h2>参数</h2>
     <div class="slider"><label>起始段位</label><select id="startTier"></select><span id="startV">2800</span></div>
-    <div class="slider"><label>你每周上分</label><input id="gain" type="range" min="100" max="2000" step="50" value="500"><span id="gainV">500</span></div>
+    <div class="slider"><label>黑铁时每周上分</label><input id="gain" type="range" min="200" max="2000" step="50" value="1400"><span id="gainV">1400</span></div>
+    <div class="slider"><label>段位越高上分越慢（衰减到）</label><input id="decay" type="range" min="0" max="85" step="5" value="65"><span id="decayV">35%</span></div>
     <div class="slider"><label>榜上平均每周上分</label><input id="rival" type="range" min="50" max="2000" step="50" value="450"><span id="rivalV">450</span></div>
     <div class="slider"><label>对手速度差异</label><input id="spread" type="range" min="0" max="60" step="5" value="40"><span id="spreadV">±40%</span></div>
     <div class="slider"><label>榜单人数</label><input id="n" type="range" min="1000" max="20000" step="1000" value="10000"><span id="nV">1 万</span></div>
@@ -168,6 +173,17 @@ function fillStartTiers(){
   else if (TIERS.some(t => t.name === "大师")) sel.value = "大师";
   else sel.value = TIERS[TIERS.length - 1].name;
 }
+function tierIndex(lp){
+  let idx = 0;
+  for (let i = 0; i < TIERS.length; i++) if (lp >= TIERS[i].at) idx = i;
+  return idx;
+}
+function gainFor(lp, g0){
+  const keep = +$("decay").value / 100;   // keep = 末档保留比例
+  const last = Math.max(1, TIERS.length - 1);
+  return Math.max(30, Math.round(g0 * (1 - (1 - keep) * tierIndex(lp) / last)));
+}
+function weeklyGain(lp){ return gainFor(lp, +$("gain").value); }
 function startTierAt(){
   const t = TIERS.find(x => x.name === $("startTier").value);
   return t ? t.at : 2800;
@@ -180,29 +196,31 @@ function reset(){
   START = startTierAt();
   SPREAD = +$("spread").value / 100;
   $("nV").textContent = fmt(n); $("rivalV").textContent = rival; $("gainV").textContent = $("gain").value;
+  $("decayV").textContent = (100 - +$("decay").value) + "%";
   $("spreadV").textContent = "±" + $("spread").value + "%";
   board = makeBoard(n, rival);
-  refBoard = board.map(x => ({ lp: x.lp }));
-  me = START;
-  fillStartTiers(); startLabel(); drawDist(); render(); run();
+  refBoard = board.map(x => ({ lp: x.lp, rate: x.rate }));
+  startLabel(); drawDist(); run();
 }
 function run(){
-  const gain = +$("gain").value;
   const marks = [[1, "1 周后"], [4, "4 周后"], [26, "1 年后"]];
-  let lp = me, week = 0;
+  const cur = refBoard.map(x => ({ lp: x.lp, rate: x.rate }));
+  let lp = START, week = 0;
   const rows = [["时点", "名次", "段位", "离最高段"]];
   for (const [target, label] of marks){
     while (week < target){
-      lp = Math.round(lp + gain);
-      for (const p of board) p.lp = Math.round(p.lp + p.rate);
+      lp = Math.round(lp + weeklyGain(lp));
+      const rd = $("rivalDecay").checked;
+      for (const x of cur) x.lp = Math.round(x.lp + (rd ? gainFor(x.lp, x.rate) : x.rate));
       week++;
     }
-    board.sort((a,b) => b.lp - a.lp);
-    const r = rankOf(lp);
+    cur.sort((a,b) => b.lp - a.lp);
+    const r = 1 + cur.filter(x => x.lp > lp).length;
     rows.push([label, `第 ${r} 名`, tierOf(lp, r), Math.max(0, r-200) + " 名"]);
   }
   $("t").innerHTML = rows.map((row, i) => "<tr>" + row.map(c => `<t${i?"d":"h"}>${c}</t${i?"d":"h"}>`).join("") + "</tr>").join("");
-  me = lp; render();
+  board = cur; me = lp;
+  render();
 }
 function applyTiers(){
   const parsed = parseTiers($("tierText").value);
@@ -218,11 +236,13 @@ function applyTiers(){
 $("applyTier").onclick = applyTiers;
 $("resetTier").onclick = () => { $("tierText").value = DEFAULT_TIERS; applyTiers(); };
 $("rankRule").onchange = () => { startLabel(); drawDist(); render(); };
+$("rivalDecay").onchange = reset;
 $("startTier").onchange = reset;
 $("n").oninput = reset;
 $("rival").oninput = reset;
 $("spread").oninput = reset;
-$("gain").oninput = () => { $("gainV").textContent = $("gain").value; };
+$("gain").oninput = () => { $("gainV").textContent = $("gain").value;
+  $("decayV").textContent = (100 - +$("decay").value) + "%"; };
 $("run").onclick = run;
 $("reset").onclick = reset;
 
