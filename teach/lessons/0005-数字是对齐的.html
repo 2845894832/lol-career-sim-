@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 课 · 数字是拿来比的，不是拿来读的</title>
+<link rel="stylesheet" href="../assets/base.css">
+<style>
+  table th:first-child, table td:first-child { width: 108px; }
+
+  .demo { background: #161b22; border-radius: 10px; padding: 16px; color: #e6edf3; font-size: 14px; line-height: 1.9; }
+
+  /* 榜单：左对齐 + 比例数字 = 现在的样子 */
+  .board { display: inline-block; }
+  .board .r { display: flex; gap: 20px; }
+  .board .r span:last-child { min-width: 78px; text-align: left; }
+  .board.tab { font-variant-numeric: tabular-nums; }
+  .board.right .r span:last-child { text-align: right; }
+
+  .toggle { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .toggle button { min-height: 44px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font-size: 14px; cursor: pointer; }
+  .toggle button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .hint { font-size: 13px; color: var(--ink-3); margin-top: 8px; }
+  code { background: #eef2f4; padding: 1px 5px; border-radius: 4px; font-size: 14px; }
+  .answer { display: none; margin-top: 8px; padding: 10px 12px; background: var(--tick); border-radius: 8px; font-size: 15px; }
+  .answer.show { display: block; }
+</style>
+</head>
+<body>
+<main class="sheet">
+
+  <p class="kicker">第 5 课 · 数字与排版</p>
+  <h1>数字是拿来比的，不是拿来读的</h1>
+
+  <p class="lede">
+    你那一行现在是：<strong>「段位 大师 第 6929 名 · 体力 60/100 · 伤病 0/3 · 金钱 0」</strong>。
+    玩这周的目的是比较——排名掉了多少、钱够不够、伤到几了。比较的前提是<strong>数字能竖着对齐</strong>，
+    而你现在四个数字用的是比例字形，每个数字宽度不同，连自己那一行都对不齐。
+  </p>
+
+  <div class="rule">
+    <p><strong>这一课只有一条规则：</strong>凡是会被拿来比较的数字，必须能竖着对齐——等宽数字、靠右、小数位一致。做不到这三点，玩家就只能一个个读，不能一眼比。</p>
+  </div>
+
+  <h2>先看见它歪在哪</h2>
+
+  <p>下面是你这局里的几种数字。点两个开关，看它们在做什么：</p>
+
+  <div class="toggle">
+    <button id="btnTab" aria-pressed="false">等宽数字</button>
+    <button id="btnRight" aria-pressed="false">靠右对齐</button>
+  </div>
+
+  <div class="demo">
+    <div class="board" id="board">
+      <div class="r"><span>第 6929 名</span><span>段位 大师</span></div>
+      <div class="r"><span>第 512 名</span><span>段位 宗师</span></div>
+      <div class="r"><span>第 89 名</span><span>段位 王者</span></div>
+      <div class="r"><span>第 1 名</span><span>段位 王者</span></div>
+      <div class="r"><span>体力 60/100</span><span>伤病 0/3</span></div>
+      <div class="r"><span>金钱 1250</span><span>金钱 80</span></div>
+    </div>
+  </div>
+
+  <p class="hint">左边那列是名次，右边是同时读到的另一个数。两个开关都关掉时，是「比例数字 + 左对齐」——也就是你现在的写法。</p>
+
+  <h2>三个动作，各有各的毛病</h2>
+
+  <table>
+    <thead><tr><th>动作</th><th>解决什么</th><th>不解决什么</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>等宽数字</td>
+        <td>每个数字占一样宽，<code>1</code> 不再比 <code>8</code> 窄</td>
+        <td>位数不同还是长短不一（89 与 6929 差两位）</td>
+      </tr>
+      <tr>
+        <td>靠右对齐</td>
+        <td>个位落在同一条竖线上，位数差别一眼看出</td>
+        <td>字形还是比例的话，小数点对不齐</td>
+      </tr>
+      <tr>
+        <td>小数位一致</td>
+        <td>5.6 与 14.6 不要写成 5.62 与 14.6</td>
+        <td>——这一条只能你自己盯</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    等宽数字在 CSS 里是一行：<code>font-variant-numeric: tabular-nums</code>。
+    规范的原话是「所有的数字都是同样大小，让它们能像表格里一样容易对齐」
+    （<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-numeric">MDN · font-variant-numeric</a>）。
+  </p>
+
+  <h2>中文里还有一格空隙</h2>
+
+  <p>
+    数字和汉字挨着的时候（「第 6929 名」「12 体力」），中文排版的惯例是留一点空隙，不要粘死。
+    这条写在 W3C 的<a href="https://www.w3.org/TR/clreq/">中文排版需求（clreq）</a>里；
+    CSS 正在加一个属性专门做这件事（<code>text-autospace</code>，
+    <a href="https://drafts.csswg.org/css-text-4/#text-autospace-property">CSS Text 4</a>，还是草案）。
+  </p>
+
+  <p>
+    你现在是<strong>手打空格</strong>：有的地方有（「第 6929 名」），有的地方没有（「60/100」「0/3」）。
+    手打不算错，但规则得定下来——以后统一用哪种，写进 P3 的规格表里。
+  </p>
+
+  <h2>三个数字</h2>
+
+  <table>
+    <thead><tr><th>项</th><th>值</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td>等宽数字</td><td><code>tabular-nums</code></td><td>所有会排成列、会被比较的数字都加，包括句子里的名次</td></tr>
+      <tr><td>数字列宽</td><td>固定，别用内容撑</td><td>宽度随内容变，一换数据整列就跳，玩家刚记住的位置全废</td></tr>
+      <tr><td>小数位</td><td>同列统一</td><td>胜率一列要么都 1 位（60%、34%），要么都 2 位（60.0%）</td></tr>
+    </tbody>
+  </table>
+
+  <h2>两道题</h2>
+
+  <p>1. 你那一行「体力 60/100」里的 <code>60/100</code>，最大的排版问题是哪个？</p>
+  <button class="btn-toggle" data-a="a1">看答案</button>
+  <div class="answer" id="a1">
+    不是「没空格」，是<strong>它和右边的「伤病 0/3」不是同一套写法</strong>：一个是三位的分数，一个是两位的分数，
+    又都没对齐，眼睛要分别读两遍才知道谁紧张。要么都写成「60 / 100」，要么都缩成「60%」。
+  </div>
+
+  <p>2. 名次从 6929 掉到 512，同样的字体宽度，为什么你希望它靠右而不是靠左？</p>
+  <button class="btn-toggle" data-a="a2">看答案</button>
+  <div class="answer" id="a2">
+    靠右时个位在同一列，<strong>位数变化会表现成「向左长出来」</strong>——从 4 位变 3 位，你能一眼看出数字变短了；
+    靠左时个位在动，位数变化只能靠数。
+  </div>
+
+  <h2>十分钟作业</h2>
+
+  <p>
+    在 P2 的界面上找出<strong>三处</strong>数字对不齐的地方（提示：「第 6929 名」那一行、日志里的「＋500」、
+    结局页的六维表）。每处写一行：
+  </p>
+
+  <p>
+    「哪里 · 现在什么样 · 该改成什么 CSS」。
+  </p>
+
+  <p class="hint">写完发给我，我按你的清单改——跟第 2、3 课一样。</p>
+
+</main>
+
+<script>
+  const board = document.getElementById('board');
+  const btnTab = document.getElementById('btnTab');
+  const btnRight = document.getElementById('btnRight');
+
+  function sync() {
+    board.classList.toggle('tab', btnTab.getAttribute('aria-pressed') === 'true');
+    board.classList.toggle('right', btnRight.getAttribute('aria-pressed') === 'true');
+  }
+
+  for (const b of [btnTab, btnRight]) {
+    b.addEventListener('click', () => {
+      b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+      sync();
+    });
+  }
+
+  for (const b of document.querySelectorAll('.btn-toggle')) {
+    b.addEventListener('click', () => {
+      const el = document.getElementById(b.dataset.a);
+      el.classList.toggle('show');
+      b.textContent = el.classList.contains('show') ? '收起' : '看答案';
+    });
+  }
+</script>
+</body>
+</html>
