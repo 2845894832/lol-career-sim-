@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 课 · 挤不是间距小</title>
+<link rel="stylesheet" href="../assets/base.css">
+</head>
+<body>
+<main class="sheet">
+
+  <p class="kicker">第 2 课 · 间距与分组</p>
+  <h1>挤，是因为东西没分组</h1>
+
+  <p class="lede">
+    你圈的那一行是：<em>体力 · 段位（第几名）· 金钱 · 伤病 · 教练信任</em>。
+    五件事排成一条，中间只隔 14px。手指没碰到它，眼睛先放弃了。
+  </p>
+
+  <p>你的直觉是「把间距加大」。这是最常见的错答案——加完你会发现它只是变长了，还是读不出来。</p>
+
+  <div class="rule">
+    <p><strong>这一课只有一条规则：</strong>先分组，再加间距。同一组内的东西用 <strong>4–8px</strong>，组与组之间用 <strong>16–24px</strong>。间距不是装饰，它是「这些是一伙的」这句话。</p>
+  </div>
+
+  <h2>五件事，其实是三组</h2>
+
+  <table>
+    <tr><th>组</th><th>包含</th><th>为什么它们是一伙的</th></tr>
+    <tr><td><strong>本钱</strong></td><td>体力、伤病</td><td>都是「这周还能不能打」</td></tr>
+    <tr><td><strong>处境</strong></td><td>段位、教练信任</td><td>都是「别人怎么看你」</td></tr>
+    <tr><td><strong>身家</strong></td><td>金钱</td><td>单独一个数，不是状态，是资源</td></tr>
+  </table>
+
+  <p>分组不是排版爱好，是<strong>玩法结构</strong>：本钱每结周回满，处境缓慢变，身家只增不减。三者的节奏完全不同，混成一行就等于说它们一样。</p>
+
+  <h2>拖一下，看间距到底在做什么</h2>
+
+  <div class="controls" style="flex-direction:column;align-items:center;gap:14px;">
+    <label style="font-size:14px;color:#4a5a6b;">
+      组内间距 <b id="v-gap">14</b> px　
+      <input id="gap" type="range" min="2" max="24" value="14" step="2" style="width:200px;vertical-align:middle;">
+    </label>
+    <button id="btn-group" aria-pressed="false">切换成分组显示</button>
+  </div>
+
+  <div class="phone" id="phone" style="width:340px;">
+    <div class="meta" id="meta">
+      <span>体力 <b>60/100</b></span>
+      <span>段位 <b>大师</b> <i>第 6929 名</i></span>
+      <span>金钱 <b>0</b></span>
+      <span>伤病 <b>0/3</b></span>
+      <span>教练信任 <b>50</b></span>
+    </div>
+    <div class="bar"><i style="width:60%"></i></div>
+  </div>
+
+  <p style="text-align:center;color:#7b8a99;font-size:13px;">
+    滑杆只改组内间距。分组按钮才会真正把它们拉开——注意变化发生在哪几个位置。
+  </p>
+
+  <h2>三个数字</h2>
+
+  <table>
+    <tr><th>关系</th><th>用多少</th><th>一句话</th></tr>
+    <tr><td>同一组内</td><td><strong>4 / 8</strong></td><td>贴着，但别粘住</td></tr>
+    <tr><td>组与组之间</td><td><strong>16 / 24</strong></td><td>至少是组内的两倍，否则看不出分组</td></tr>
+    <tr><td>整块与整块</td><td><strong>24 / 32</strong></td><td>数值区 ↔ 行动区 ↔ 按钮区</td></tr>
+  </table>
+
+  <p>全部取 <strong>4 的倍数</strong>。理由很实用：改一个数的时候，别的不会连锁抖动。</p>
+
+  <div class="check">
+    <p><strong>两道题</strong></p>
+    <ol>
+      <li>
+        组内间距从 8 加到 20，但组间还是 24。会发生什么？
+        <br><button data-i="0">看答案</button>
+        <div class="ans" id="a0">分组消失了。间距的意义是<strong>对比</strong>——组间不明显大于组内，就等于没分。</div>
+      </li>
+      <li>
+        为什么「金钱」不能和「体力」放一组？
+        <br><button data-i="1">看答案</button>
+        <div class="ans" id="a1">体力每周回满，金钱只增不减。把节奏相反的数放一起，玩家会误判「钱也会掉」。</div>
+      </li>
+    </ol>
+  </div>
+
+  <h2>顺带说一句「结周」</h2>
+
+  <p>
+    你圈的第三个地方是那个灰掉的结周按钮。它现在的问题是：<strong>它看起来像一块空地</strong>——灰字、细边框、没有说明。
+    「没排满不能点」这句话缩成了 11px 的小字，还压在按钮里。
+  </p>
+
+  <p>禁用态不该只靠变灰。要么把原因写在按钮外面（可见、够大），要么把按钮做得像「下一步」，点下去告诉你缺什么。这条不是间距问题，是第 3 课的内容，先记着。</p>
+
+  <h2>作业（十五分钟）</h2>
+  <ul class="plain">
+    <li>把你截图里那一行的五项，按你自己认可的方式分成三组，写下每组凭什么归在一起。</li>
+    <li>给每组一个「节奏」：每周变 / 每年变 / 只增不减。</li>
+    <li>不用改代码。分组定不下来，改 CSS 是白改。</li>
+  </ul>
+
+  <h2>一手来源</h2>
+  <ul class="plain">
+    <li><a href="https://www.w3.org/TR/2024/DNOTE-clreq-20241219/">W3C · clreq</a> —— 中西文之间留 1/4 字宽；标点避头尾。</li>
+    <li><a href="https://m3.material.io/">Material 3</a> —— 8dp 栅格（我取它的 4 作为最小单位）。</li>
+  </ul>
+
+  <p class="ask">
+    分组这件事没有标准答案，只有「说得通」和「说不通」。你分得跟我不同、理由更硬，就按你的来。
+  </p>
+
+</main>
+<style>
+  .phone .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; }
+  .phone .meta b { color: #e8eef5; font-variant-numeric: tabular-nums; }
+  .phone .meta i { font-style: normal; color: #8fa0b2; font-size: 12px; }
+  .phone .meta.grouped .g-a { margin-right: 20px; }
+  .phone .meta.grouped .g-b { margin-right: 20px; }
+  .phone .bar { margin-top: 8px; height: 4px; background: #26313d; border-radius: 2px; }
+  .phone .bar > i { display: block; height: 100%; background: #2f7fd4; border-radius: 2px; }
+</style>
+<script>
+  const meta = document.getElementById('meta');
+  const gap = document.getElementById('gap');
+  const vgap = document.getElementById('v-gap');
+  const btnGroup = document.getElementById('btn-group');
+
+  const groups = { 0: 'g-a', 1: 'g-a', 2: 'g-c', 3: 'g-a', 4: 'g-b' };
+
+  function applyGap() {
+    const v = gap.value;
+    vgap.textContent = v;
+    meta.style.gap = `6px ${v}px`;
+  }
+  gap.addEventListener('input', applyGap);
+  applyGap();
+
+  btnGroup.addEventListener('click', () => {
+    const on = btnGroup.getAttribute('aria-pressed') === 'true';
+    btnGroup.setAttribute('aria-pressed', String(!on));
+    btnGroup.textContent = on ? '切换成分组显示' : '切回一行到底';
+    meta.classList.toggle('grouped', !on);
+    [...meta.children].forEach((el, i) => {
+      el.classList.remove('g-a', 'g-b', 'g-c');
+      if (!on) el.classList.add(groups[i]);
+    });
+  });
+</script>
+</body>
+</html>
