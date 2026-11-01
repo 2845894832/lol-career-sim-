@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 课 · 颜色是编码，不是装饰</title>
+<link rel="stylesheet" href="../assets/base.css">
+<style>
+  table th:first-child, table td:first-child { width: 132px; }
+  table th:nth-child(2), table td:nth-child(2) { width: 120px; }
+
+  .demo { background: #161b22; border-radius: 10px; padding: 14px; color: #e6edf3; font-size: 14px; line-height: 1.9; }
+  .demo .ln { display: flex; gap: 8px; }
+  .demo .ln i { font-style: normal; width: 16px; text-align: center; }
+  .good { color: #3fb950; }
+  .bad { color: #f85149; }
+  .warn { color: #d29922; }
+  .muted { color: #8b949e; }
+
+  .swatches { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 4px; }
+  .sw { min-height: 44px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font-size: 13px; cursor: pointer; }
+  .calc { background: var(--tick); border-radius: 10px; padding: 14px; margin: 14px 0; }
+  .calc label { font-size: 13px; color: var(--ink-2); display: block; margin-bottom: 4px; }
+  .calc input[type="color"] { width: 100%; height: 40px; border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 2px; }
+  .calc .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ratio { font-size: 30px; font-weight: 700; margin-top: 12px; }
+  .verdict { font-size: 14px; margin-top: 2px; }
+</style>
+</head>
+<body>
+<main class="sheet">
+
+  <p class="kicker">第 4 课 · 颜色与对比</p>
+  <h1>颜色是编码，不是装饰</h1>
+
+  <p class="lede">
+    你的界面上现在有 8 个颜色：底色、面板、面板二级、分割线、正文、次要文字、强调蓝、好、坏、警告——其实是 10 个。
+    每个多出来的颜色都在说一句话，问题在于，<strong>你说的和玩家听到的是不是同一句</strong>。
+  </p>
+
+  <div class="rule">
+    <p><strong>这一课只有一条规则：</strong>每加一个颜色，必须能填完这句话——「这个颜色出现，表示 ___」。填不出来，它就是装饰，删掉，用回中性色。</p>
+  </div>
+
+  <h2>先看一个你每天都有的场景</h2>
+
+  <p>下面是同一段时间里三条日志，三种写法：</p>
+
+  <p><strong>① 只有颜色</strong>（现在很可能就是这样）</p>
+  <div class="demo">
+    <div class="ln"><i></i><span class="good">赢了，教练点了点头。</span></div>
+    <div class="ln"><i></i><span class="bad">输了，弹幕在刷你的名字。</span></div>
+    <div class="ln"><i></i><span class="warn">手腕有点响，你活动了两下。</span></div>
+  </div>
+
+  <p><strong>② 颜色 + 符号 + 动词</strong></p>
+  <div class="demo">
+    <div class="ln"><i class="good">＋</i><span class="good">赢了，教练点了点头。</span></div>
+    <div class="ln"><i class="bad">－</i><span class="bad">输了，弹幕在刷你的名字。</span></div>
+    <div class="ln"><i class="warn">！</i><span class="warn">手腕有点响，你活动了两下。</span></div>
+  </div>
+
+  <p><strong>③ 只有中性色 + 符号</strong>（色弱玩家的视角）</p>
+  <div class="demo">
+    <div class="ln"><i class="muted">＋</i><span class="muted">赢了，教练点了点头。</span></div>
+    <div class="ln"><i class="muted">－</i><span class="muted">输了，弹幕在刷你的名字。</span></div>
+    <div class="ln"><i class="muted">！</i><span class="muted">手腕有点响，你活动了两下。</span></div>
+  </div>
+
+  <p>
+    ② 和 ③ 读起来都还成立，① 在 ③ 的条件下<strong>完全读不出来</strong>。
+    这就是 <a href="https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html">SC 1.4.1 用颜色传达信息</a>要求的事：颜色不能是唯一通道。
+  </p>
+
+  <h2>算一下你自己那套色</h2>
+
+  <p>下面是你的 <code>style.css</code> 里的配色，点一下就填进去，比值是实时算的。</p>
+
+  <div class="calc">
+    <div class="swatches" id="presets"></div>
+    <div class="grid">
+      <div>
+        <label>文字色</label>
+        <input id="fg" type="color" value="#8b949e">
+      </div>
+      <div>
+        <label>背景色</label>
+        <input id="bg" type="color" value="#161b22">
+      </div>
+    </div>
+    <div class="ratio" id="ratio">—</div>
+    <div class="verdict" id="verdict"></div>
+  </div>
+
+  <h2>三个门槛</h2>
+
+  <table>
+    <tr><th>用途</th><th>最低比值</th><th>依据</th></tr>
+    <tr><td>正文（小于 18pt）</td><td><strong>4.5 : 1</strong></td><td>SC 1.4.3（AA）</td></tr>
+    <tr><td>大字（≥18pt，或 ≥14pt 加粗）</td><td><strong>3 : 1</strong></td><td>SC 1.4.3 的大字例外</td></tr>
+    <tr><td>控件边界与状态标识</td><td><strong>3 : 1</strong></td><td>SC 1.4.11（第 3 课用过）</td></tr>
+  </table>
+
+  <p>
+    注意 18pt 约等于 <strong>24px</strong>，14pt 约等于 <strong>18.5px</strong>（W3C 原文按 1pt = 1.333px 折算）。
+    你界面上 13px 的那些字，一律按 4.5 : 1 要求。
+  </p>
+
+  <div class="check">
+    <p><strong>两道题</strong></p>
+    <ol>
+      <li>
+        你的 <code>--muted: #8b949e</code> 放在 <code>--panel: #161b22</code> 上，够不够？
+        <br><button data-i="0">看答案</button>
+        <div class="ans" id="a0">上面那个计算器填的就是这一组，看数字。够 4.5 就是够——这类问题不该靠眼睛判断。</div>
+      </li>
+      <li>
+        为什么「禁用态豁免对比度」和这一课不矛盾？
+        <br><button data-i="1">看答案</button>
+        <div class="ans" id="a1">标准豁免的是「不要求达标」，不是「要求不达标」。禁用仍要被看见，只是它不需要按 4.5 那么严——但你不能让它消失在背景里。</div>
+      </li>
+    </ol>
+  </div>
+
+  <h2>作业（十五分钟）</h2>
+  <ul class="plain">
+    <li>把你界面上的颜色列出来（现在 10 个），每个后面写一句「它出现表示 ___」。</li>
+    <li>写不出含义的颜色，删掉，换成已有的中性色——<strong>不是我的意见，是规则的结论</strong>。</li>
+    <li>用上面的计算器，把「次要文字 / 面板」这一组测出来，把数字发我。</li>
+  </ul>
+
+  <h2>一手来源</h2>
+  <ul class="plain">
+    <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html">WCAG 2.2 · SC 1.4.3 Contrast (Minimum)</a> —— 4.5 : 1 / 大字 3 : 1；算出 1pt = 1.333px。</li>
+    <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html">WCAG 2.2 · SC 1.4.11</a> —— 控件与状态 3 : 1；禁用组件豁免。</li>
+    <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html">WCAG 2.2 · SC 1.4.1 Use of Color</a> —— 颜色不能是唯一手段。</li>
+  </ul>
+
+  <p class="ask">
+    这套色是我从你的 CSS 里抄的，一个都没改。所以算出来不达标，那也是你的现状，不是我的审美。
+  </p>
+
+</main>
+<script>
+  const PALETTE = [
+    ['正文 fg', '#e6edf3', '#161b22'],
+    ['次要 muted', '#8b949e', '#161b22'],
+    ['强调 accent', '#58a6ff', '#161b22'],
+    ['好 good', '#3fb950', '#161b22'],
+    ['坏 bad', '#f85149', '#161b22'],
+    ['警告 warn', '#d29922', '#161b22'],
+    ['分割线 line', '#30363d', '#0d1117'],
+  ];
+
+  const fgEl = document.getElementById('fg');
+  const bgEl = document.getElementById('bg');
+  const ratioEl = document.getElementById('ratio');
+  const verdictEl = document.getElementById('verdict');
+
+  function lum(hex) {
+    const v = hex.replace('#', '').match(/../g).map((h) => parseInt(h, 16) / 255);
+    const lin = v.map((c) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
+    return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+  }
+
+  function ratio(a, b) {
+    const la = lum(a);
+    const lb = lum(b);
+    const hi = Math.max(la, lb);
+    const lo = Math.min(la, lb);
+    return (hi + 0.05) / (lo + 0.05);
+  }
+
+  function update() {
+    const r = ratio(fgEl.value, bgEl.value);
+    ratioEl.textContent = r.toFixed(2) + ' : 1';
+    let msg;
+    if (r >= 4.5) {
+      msg = '正文达标（≥ 4.5 : 1）。';
+      ratioEl.style.color = '#14624f';
+    } else if (r >= 3) {
+      msg = '只够大字和控件边界（≥ 3 : 1），当正文不够。';
+      ratioEl.style.color = '#8a5a00';
+    } else {
+      msg = '连 3 : 1 都没到——这个组合只能当装饰。';
+      ratioEl.style.color = '#b4472f';
+    }
+    verdictEl.textContent = msg;
+    verdictEl.style.color = ratioEl.style.color;
+  }
+
+  const presets = document.getElementById('presets');
+  PALETTE.forEach(([name, f, b]) => {
+    const btn = document.createElement('button');
+    btn.className = 'sw';
+    btn.textContent = name;
+    btn.style.color = f;
+    btn.style.background = b;
+    btn.addEventListener('click', () => {
+      fgEl.value = f;
+      bgEl.value = b;
+      update();
+    });
+    presets.appendChild(btn);
+  });
+
+  fgEl.addEventListener('input', update);
+  bgEl.addEventListener('input', update);
+  update();
+
+  document.querySelectorAll('.check button').forEach((b) => {
+    b.addEventListener('click', () => {
+      document.getElementById('a' + b.dataset.i).classList.add('show');
+      b.disabled = true;
+    });
+  });
+</script>
+</body>
+</html>
