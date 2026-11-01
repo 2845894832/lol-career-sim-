@@ -2,6 +2,7 @@ import { CONFIG } from '../config';
 import { createRng } from '../rng';
 import { matchRate } from './match';
 import { EVENTS, FILLER_EVENTS, findEvent } from '../data/events';
+import { finalFor, finalById } from '../data/finals';
 import {
   ATTR_LABEL,
   HONOR_LABEL,
@@ -27,11 +28,14 @@ export function drawEvent(state: GameState): DrawResult {
   const ctx = createRng(state.rngState);
 
   // 1. 写死年份/周的必触发事件（决赛、签约等），不走抽签。
-  const forced = EVENTS.find(
+  //    每年生成的决赛按年编号（E04-3），所以「去重」是逐年生效的。
+  const final = finalFor(state);
+  const forced = [...(final ? [final] : []), ...EVENTS].find(
     (e) =>
       e.year === state.year &&
       (e.week === undefined || e.week === state.week) &&
-      !state.triggeredEvents.includes(e.id),
+      !state.triggeredEvents.includes(e.id) &&
+      (!e.requires || e.requires(state)),
   );
   if (forced) return { event: forced, rngState: ctx.state() };
 
@@ -193,5 +197,5 @@ export function resolveOption(state: GameState, event: GameEvent, index: number)
 }
 
 export function getEvent(id: string): GameEvent | undefined {
-  return findEvent(id);
+  return findEvent(id) ?? finalById(id) ?? undefined;
 }

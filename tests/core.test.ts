@@ -505,3 +505,38 @@ describe('统一胜负公式', () => {
     expect(successRateOf(weak, hard, hard.options[0]!)).toBe(0.05);
   });
 });
+
+describe('春决 / 夏决', () => {
+  it('只有签约之后才会在决赛周出现', () => {
+    const unsigned = newGame(31);
+    unsigned.week = 8;
+    expect(drawEvent(unsigned).event?.id).not.toBe('SPR-1');
+
+    const signed = newGame(31);
+    signed.signed = true;
+    signed.week = 8;
+    expect(drawEvent(signed).event?.id).toBe('SPR-1');
+  });
+
+  it('夏决在第 20 周，且按年编号不重复', () => {
+    const s = newGame(32);
+    s.signed = true;
+    s.week = 20;
+    expect(drawEvent(s).event?.id).toBe('SUM-1');
+
+    s.year = 3;
+    s.week = 20;
+    expect(drawEvent(s).event?.id).toBe('SUM-3');
+  });
+
+  it('赢了给联赛冠军', () => {
+    const s = newGame(33);
+    s.signed = true;
+    s.week = 8;
+    for (const key of MATCH_ATTRS) s.attrs[key] = 100;
+    const ev = drawEvent(s).event!;
+    s.pendingEvent = { eventId: ev.id };
+    const after = reduce(s, { kind: 'chooseOption', option: 1 }).state;
+    expect(after.honors).toContain('lpl-champion');
+  });
+});
