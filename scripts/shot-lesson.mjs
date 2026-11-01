@@ -1,0 +1,10 @@
+import puppeteer from 'puppeteer-core';
+const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+const [url, out, h] = process.argv.slice(2);
+const b = await puppeteer.launch({ executablePath: EDGE, headless: 'new' });
+const p = await b.newPage();
+await p.setViewport({ width: 820, height: Number(h ?? 1600), deviceScaleFactor: 1 });
+await p.goto(url, { waitUntil: 'networkidle0' });
+await p.screenshot({ path: out, fullPage: true });
+console.log('saved', out);
+await b.close();

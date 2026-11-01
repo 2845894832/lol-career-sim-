@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 6 课 · 动效只解释刚才发生了什么</title>
+<link rel="stylesheet" href="../assets/base.css">
+<style>
+  table th:first-child, table td:first-child { width: 112px; }
+  table th:nth-child(2), table td:nth-child(2) { width: 104px; white-space: nowrap; }
+
+  .stage { position: relative; height: 260px; background: #161b22; border-radius: 10px; overflow: hidden; margin: 12px 0; }
+  .stage .hintc { position: absolute; inset: 0; display: grid; place-items: center; color: #8b949e; font-size: 13px; }
+  .pop {
+    position: absolute; left: 12px; right: 12px; bottom: 12px;
+    background: #1c2128; border: 1px solid #30363d; border-radius: 10px;
+    padding: 14px; color: #e6edf3; font-size: 14px; line-height: 1.7;
+    opacity: 0; transform: translateY(8px); pointer-events: none;
+    transition: opacity 160ms ease-out, transform 160ms ease-out;
+  }
+  .pop.on { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .stage.instant .pop { transition: none; transform: none; }
+  /* 模拟系统「减少动态效果」 */
+  .stage.reduced .pop { transition: none; transform: none; }
+
+  .toggle { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 0; }
+  .toggle button { min-height: 44px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font-size: 14px; cursor: pointer; }
+  .toggle button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  code { background: #eef2f4; padding: 1px 5px; border-radius: 4px; font-size: 14px; }
+  .answer { display: none; margin-top: 8px; padding: 10px 12px; background: var(--tick); border-radius: 8px; font-size: 15px; }
+  .answer.show { display: block; }
+  .hint { font-size: 13px; color: var(--ink-3); margin-top: 8px; }
+</style>
+</head>
+<body>
+<main class="sheet">
+
+  <p class="kicker">第 6 课 · 动效与回执</p>
+  <h1>动效只解释刚才发生了什么</h1>
+
+  <p class="lede">
+    你的浮层现在是<strong>直接出现</strong>的：点「结周」→ 一秒后的结果页凭空盖上来。
+    玩家不会觉得快，只会觉得<strong>不知道发生了什么</strong>。
+    动效能补上这一秒，但它只能干一件事：<strong>说明哪一下导致了哪一下</strong>。
+  </p>
+
+  <div class="rule">
+    <p><strong>这一课只有一条规则：</strong>动效必须能回答「刚才那一下，是从哪儿来到哪儿去」。回答不了，它就是在拖时间——删掉。</p>
+  </div>
+
+  <h2>点三下，看三种</h2>
+
+  <p>下面是你的结果浮层，三种出现方式：</p>
+
+  <div class="toggle">
+    <button id="b1" aria-pressed="false">① 瞬间出现（你现在）</button>
+    <button id="b2" aria-pressed="false">② 160ms 淡入 + 上移 8px</button>
+    <button id="b3" aria-pressed="false">③ 系统开了「减少动态效果」</button>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="hintc">这周打完了</div>
+    <div class="pop" id="panel">
+      <strong>结果</strong><br>
+      第 4 周 · 你上分了，现在是宗师，第 521 名。
+    </div>
+  </div>
+
+  <p class="hint">三个按钮互相排斥，点一个会把另外两个关掉——它们改的是同一个浮层的三种行为。</p>
+
+  <h2>为什么是 160ms，不是 600ms</h2>
+
+  <table>
+    <thead><tr><th>项</th><th>值</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>浮层时长</td>
+        <td>120–200ms</td>
+        <td>短于 100ms 看不出是在「发生」，长过 300ms 像卡了一下。这是经验区间，不是标准值</td>
+      </tr>
+      <tr>
+        <td>位移</td>
+        <td>≤ 8px</td>
+        <td>位移只是提示方向（从下面上来）。飞入、缩放、旋转都在抢注意力</td>
+      </tr>
+      <tr>
+        <td>数字变化</td>
+        <td>0ms</td>
+        <td>六维数字滚动、名次跳动，都会让人读不准。数字直接换</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>必须留一条关掉的路</h2>
+
+  <p>
+    有人会因为动效头晕、恶心——这不是少数派问题。WCAG 2.2 的
+    <a href="https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html">SC 2.3.3 动画来自交互</a>
+    说的是：由交互触发的动效<strong>必须能关掉</strong>，除非它本身就是功能的一部分。
+    官方给的达标技术就一条：<a href="https://www.w3.org/WAI/WCAG22/Techniques/css/C39">C39</a>——用
+    <code>prefers-reduced-motion</code> 查询把动效去掉。
+  </p>
+
+  <p>落地就三行：</p>
+
+  <p>
+    <code>@media (prefers-reduced-motion: reduce) {</code><br>
+    <code>&nbsp;&nbsp;.pop { transition: none; transform: none; }</code><br>
+    <code>}</code>
+  </p>
+
+  <p class="hint">你如果不想写这段，也可以：动效做得足够小（只淡入、不动位置），那样在大多数情况下不会触发不适——但那不满足 SC 2.3.3。</p>
+
+  <h2>两道题</h2>
+
+  <p>1. 结果浮层「淡入」和「从下往上滑」两种，你选哪个，为什么？</p>
+  <button class="btn-toggle" data-a="a1">看答案</button>
+  <div class="answer" id="a1">
+    都不是必须的——但如果只留一个，选<strong>淡入</strong>。位移（滑入）会让前庭敏感的人不适，而
+    淡入传达「这一层是新的」已经够用。真要位移，控制在 8px 内，并在 reduced-motion 下归零。
+  </div>
+
+  <p>2. 六维数字结周后从 45 变成 47，要不要做个滚动？</p>
+  <button class="btn-toggle" data-a="a2">看答案</button>
+  <div class="answer" id="a2">
+    不要。滚动过程中数字是<strong>错的</strong>——玩家会在 46 那一帧看到它，然后误记。
+    数字直接换，用<strong>颜色或符号标出「变了」</strong>（比如短暂的绿点），那才是信息。
+  </div>
+
+  <h2>十分钟作业</h2>
+
+  <p>在你的 P3 规格表里写这三行，填数字：</p>
+
+  <p>
+    「结果浮层：___ms，___px 位移」<br>
+    「面板切换：___ms」<br>
+    「prefers-reduced-motion 下：全部 ___」
+  </p>
+
+  <p class="hint">写完发我，我按你填的数改 CSS。</p>
+
+</main>
+
+<script>
+  const stage = document.getElementById('stage');
+  const panel = document.getElementById('panel');
+  const btns = [document.getElementById('b1'), document.getElementById('b2'), document.getElementById('b3')];
+  const MODES = ['instant', 'smooth', 'reduced'];
+  let mode = 'smooth';
+  let timer = null;
+
+  function paint() {
+    stage.classList.toggle('instant', mode === 'instant');
+    stage.classList.toggle('reduced', mode === 'reduced');
+    btns.forEach((b, i) => b.setAttribute('aria-pressed', String(MODES[i] === mode)));
+  }
+
+  function play() {
+    clearTimeout(timer);
+    panel.classList.remove('on');
+    // 先关再开，才能让过渡重新跑一遍
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        panel.classList.add('on');
+        timer = setTimeout(() => panel.classList.remove('on'), 1300);
+      });
+    });
+  }
+
+  btns.forEach((b, i) =>
+    b.addEventListener('click', () => {
+      mode = MODES[i];
+      paint();
+      play();
+    }),
+  );
+
+  stage.addEventListener('click', () => {
+    panel.classList.toggle('on');
+    clearTimeout(timer);
+  });
+
+  for (const b of document.querySelectorAll('.btn-toggle')) {
+    b.addEventListener('click', () => {
+      const el = document.getElementById(b.dataset.a);
+      el.classList.toggle('show');
+      b.textContent = el.classList.contains('show') ? '收起' : '看答案';
+    });
+  }
+
+  paint();
+</script>
+</body>
+</html>
