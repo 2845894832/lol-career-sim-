@@ -70,7 +70,7 @@ export const CONFIG = {
    * 分档表来自原型调参后的结果（prototype/rank-by-placement.html）。
    * - 每档一条，`at` 是进入这一档所需分数；
    * - 最高档（王者）还要名次进前 kingGate；
-   * - 第二档（宗师）要进前 secondGate（1%）。
+   * - 第二档（宗师）要进前 secondGate（6% = 前 600 名）。
    */
   rank: {
     max: 9999,
@@ -86,18 +86,18 @@ export const CONFIG = {
       { name: '宗师', at: 3800 },
       { name: '王者', at: 4500 },
     ],
-    /** 上分收益按档位递减：黑铁时每周 1400，最高档只剩 35%。 */
-    perWeek: { start: 1400, keep: 0.35 },
+    /** 上分收益按档位递减：黑铁时每周 900，最高档只剩 35%。 */
+    perWeek: { start: 900, keep: 0.35 },
     kingGate: 200,
-    secondGate: 0.01,
+    secondGate: 0.06,
   },
 
   /** 榜上对手：不存进存档，由 (序号, 种子) 推出来。 */
   ladder: {
     population: 10000,
-    baseLp: 7000,
-    spreadLp: 5000,
-    baseRate: 1200,
+    baseLp: 3200,
+    spreadLp: 1000,
+    baseRate: 250,
     rateSpread: 0.1,
     seed: 20261101,
   },
