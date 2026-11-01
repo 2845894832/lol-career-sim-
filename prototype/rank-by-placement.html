@@ -207,10 +207,9 @@ function applyTiers(){
     return;
   }
   TIERS = parsed.tiers;
-  fillStartTiers();
+  fillStartTiers(); reset();
   $("tierNote").textContent = `已应用 ${parsed.tiers.length} 档：` + TIERS.map(t => `${t.name}(${t.at})`).join(" · ")
     + (parsed.bad.length ? `；忽略了 ${parsed.bad.length} 行格式不对的` : "");
-  startLabel(); drawDist(); render();
 }
 $("applyTier").onclick = applyTiers;
 $("resetTier").onclick = () => { $("tierText").value = DEFAULT_TIERS; applyTiers(); };
