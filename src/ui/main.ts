@@ -88,17 +88,16 @@ function renderSlots(): string {
 }
 
 function renderControls(): string {
-  const incomplete = state.actionGrid.some((id) => id === null);
+  const empty = state.actionGrid.filter((id) => id === null).length;
+  const incomplete = empty > 0;
   const blocked = state.pendingEvent || incomplete ? 'disabled' : '';
-  const hint = state.pendingEvent
-    ? '先处理事件'
-    : incomplete
-      ? '三个行动点都要排上'
-      : '结算三个行动并推进';
   return `<div class="panel" style="display:flex;flex-direction:column;gap:8px">
     <button class="btn primary" data-act="end-week" ${blocked}>
-      <span>结周</span><span class="hint">${hint}</span>
+      <span>结周</span><span class="hint">${blocked ? '' : '结算三个行动并推进'}</span>
     </button>
+    ${blocked
+      ? `<p class="why">${state.pendingEvent ? '这个事件还没处理完' : '还没排满行动格，点上面三个格子'}</p>`
+      : ''}
     <button class="btn" data-act="retire"><span>退役</span><span class="hint">立刻看结局</span></button>
     <button class="btn" data-act="skip-year"><span>跳到下一年</span><span class="hint">调试用</span></button>
   </div>`;

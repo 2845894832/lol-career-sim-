@@ -208,7 +208,19 @@ button {
 }
 .btn.primary:disabled {
   background: var(--panel-2);
+  border-color: var(--line);
   color: var(--muted);
+  opacity: 1;
+}
+/* 禁用原因：写在按钮外面，14px，与按钮相距 10px */
+.why {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg);
+  opacity: 0.85;
+  text-align: center;
+  padding: 0 4px;
 }
 
 .log {
