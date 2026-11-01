@@ -8,7 +8,7 @@ import { clamp, effectiveAttr, isMatchWeek } from './state';
 export function canPlay(state: GameState): boolean {
   if (!isMatchWeek(state.week)) return false;
   if (!state.signed) return false;
-  if (state.injury >= CONFIG.match.injuryMax) return false;
+  if (state.injury >= CONFIG.match.injuryBench) return false;
   if (state.coachTrust < CONFIG.match.benchThreshold) return false;
   return true;
 }
@@ -17,6 +17,7 @@ export function canPlay(state: GameState): boolean {
 export function benchReason(state: GameState): string | null {
   if (!state.signed) return null;
   if (state.injury >= CONFIG.match.injuryMax) return '你伤停了，这赛季剩下的时间都在康复室。';
+  if (state.injury >= CONFIG.match.injuryBench) return '伤到这个程度上不了场，这周只能养。';
   if (state.coachTrust < CONFIG.match.demoteThreshold) return '你被下放了，没有比赛可打。';
   if (state.coachTrust < CONFIG.match.benchThreshold) return '你坐替补席，看完了整场。';
   return null;

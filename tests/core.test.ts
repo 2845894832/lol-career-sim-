@@ -6,7 +6,7 @@ import { advanceYear, gainExp } from '../src/core/growth';
 import { autoMatch, applyMatchOutcome } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
 import { drawEvent, successRateOf } from '../src/core/events';
-import { canPlay } from '../src/core/match';
+import { canPlay, benchReason } from '../src/core/match';
 import { createRng } from '../src/rng';
 import { fromSaveJson, toSaveJson } from '../src/core/save';
 import { loadSaved, persist } from '../src/core/save';
@@ -367,6 +367,18 @@ describe('出场判定', () => {
     s.signed = true;
     s.injury = 3;
     expect(canPlay(s)).toBe(false);
+  });
+
+  it('伤病到 2 就上不了场，1 还能打', () => {
+    const s = newGame(1);
+    s.week = 5;
+    s.signed = true;
+    s.coachTrust = CONFIG.match.benchThreshold + 30;
+    s.injury = 1;
+    expect(canPlay(s)).toBe(true);
+    s.injury = 2;
+    expect(canPlay(s)).toBe(false);
+    expect(benchReason(s)).toContain('上不了场');
   });
 
   it('教练信任低于替补线不上场，高于则能打', () => {

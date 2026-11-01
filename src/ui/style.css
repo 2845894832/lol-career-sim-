@@ -98,11 +98,22 @@ body {
 }
 
 .meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 10px 16px;
   font-size: 13px;
   color: var(--muted);
+}
+/* 分组：组内 8px，两组之间一条竖线 */
+.meta .grp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.meta .grp:nth-child(even) {
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
 }
 .meta b {
   color: var(--fg);

@@ -62,11 +62,10 @@ function renderMeta(): string {
   const staminaPct = Math.round((state.stamina / state.maxStamina) * 100);
   return `<div class="panel">
     <div class="meta">
-      <span>体力 <b>${state.stamina}/${state.maxStamina}</b></span>
-      <span>段位 <b>${rankOf(state.rankPoints, state.placement).name}</b> <span class="mini">第 ${state.placement} 名</span></span>
-      <span>金钱 <b>${state.money}</b></span>
-      <span>伤病 <b>${state.injury}/3</b></span>
-      <span>教练信任 <b>${state.coachTrust}</b></span>
+      <span class="grp"><span>段位 <b>${rankOf(state.rankPoints, state.placement).name}</b> <span class="mini">第 ${state.placement} 名</span></span></span>
+      <span class="grp"><span>教练信任 <b>${state.coachTrust}</b></span><span>伤病 <b>${state.injury}/3</b></span></span>
+      <span class="grp"><span>体力 <b>${state.stamina}/${state.maxStamina}</b></span></span>
+      <span class="grp"><span>金钱 <b>${state.money}</b></span></span>
     </div>
     <div class="bar" style="margin-top:8px"><i style="width:${staminaPct}%"></i></div>
   </div>`;

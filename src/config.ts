@@ -126,6 +126,8 @@ export const CONFIG = {
     injuryChance: 0.12,
     /** 伤病上限，到这个数就是赛季报销。 */
     injuryMax: 3,
+    /** 伤到这个数就上不了场（还能做别的行动）。 */
+    injuryBench: 2,
     /** 替补席与下放的教练信任阈值。 */
     benchThreshold: 25,
     demoteThreshold: 10,
