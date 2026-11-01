@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 课 · 一屏只能有一件事</title>
+<link rel="stylesheet" href="../assets/base.css">
+</head>
+<body>
+<main class="sheet">
+
+  <p class="kicker">第 1 课 · 信息层级</p>
+  <h1>一屏只能有一件事</h1>
+
+  <p class="lede">
+    你的 P2 第一屏，现在有 <em>六维数值、体力、段位、名次、金钱、伤病、教练信任、三个空槽、结周、退役、跳到下一年、一句旁白</em>。
+    十三件东西，一样大小，一样颜色。
+  </p>
+
+  <p>玩家在这种屏上会做一件事：<strong>找不到该按哪里</strong>。不是难看，是读不出来。</p>
+
+  <div class="rule">
+    <p><strong>这一课只有一条规则：</strong>一屏之内，只有一件事可以拿到「最大的字号 + 最亮的位置」，其余全部退到第二层。你要能一句话说出那件事是什么。</p>
+  </div>
+
+  <h2>把同一屏做两遍，你自己看</h2>
+
+  <div class="controls">
+    <button id="btn-bad" aria-pressed="false">现在这样</button>
+    <button id="btn-good" aria-pressed="true">分出层级之后</button>
+  </div>
+
+  <div class="phone" id="phone">
+    <div class="row" style="justify-content:space-between;margin-bottom:8px;">
+      <span class="ttl">第 1 年 · 第 1 周</span>
+      <span class="dim">比赛周</span>
+    </div>
+    <div class="row" style="margin-bottom:8px;">
+      <span class="big">三个格子都没排</span>
+    </div>
+    <div class="row" style="margin-bottom:8px;">
+      <span class="dim">操作 53 · 对线 64 · 团战 58 · 意识 52 · 心态 64 · 人气 20</span>
+    </div>
+    <div class="row" style="margin-bottom:8px;">
+      <span class="dim">体力 60/100 · 大师 第 6929 名 · 金钱 0 · 伤病 0/3</span>
+    </div>
+    <div class="row" style="margin-bottom:8px;">
+      <div class="slot">行动 1</div>
+      <div class="slot">行动 2</div>
+      <div class="slot">行动 3</div>
+    </div>
+    <button class="cta">结周</button>
+  </div>
+
+  <p class="dim" style="text-align:center;color:#7b8a99;font-size:13px;">
+    左边按钮切回你现在这一版：字号一样、颜色一样、按钮还小。
+  </p>
+
+  <h2>三个数字，先背下来</h2>
+
+  <table>
+    <tr><th>数</th><th>值</th><th>为什么是这个数</th></tr>
+    <tr>
+      <td>点击目标</td>
+      <td><strong>44 × 44</strong> px（硬底线 24）</td>
+      <td>WCAG 2.2 规定最低 24×24 CSS px；Apple 的 iOS 按 44×44 pt 做。手机上手指面积约 9mm，低于 44 就容易点偏。</td>
+    </tr>
+    <tr>
+      <td>正文行高</td>
+      <td><strong>1.75</strong></td>
+      <td>中文字面比英文满，行距要更松；1.5 在手机竖屏上会挤成一片。</td>
+    </tr>
+    <tr>
+      <td>间距单位</td>
+      <td><strong>4</strong> 的倍数<br>（8 / 16 / 24 / 32）</td>
+      <td>所有边距取同一个基数，改一个数不会连锁打架。Material 用的是 8dp 栅格。</td>
+    </tr>
+  </table>
+
+  <p>字号不是「大一点小一点」，是<strong>几档</strong>。你现在写 P3 规格时，先定档，再往内容上套：</p>
+
+  <ul class="plain">
+    <li><strong>32 / 22 / 17 / 13</strong> —— 这四档够用一辈子（标题 / 段落标题 / 正文 / 注释）。</li>
+    <li>不要用 15.5、18.3 这种数。档位一多，层级就没了。</li>
+  </ul>
+
+  <div class="check">
+    <p><strong>两道题，答完再往下</strong></p>
+    <ol>
+      <li>
+        你的 P2 第一屏上，只有一件事能当「主」。是哪件？
+        <br><button data-i="0">看答案</button>
+        <div class="ans" id="a0">「三个格子都没排」——因为这一屏存在的唯一理由是让你去排格子。数值是给排完之后看的，不是给现在看的。</div>
+      </li>
+      <li>
+        如果主信息定成「第 1 年 · 第 1 周」，会出什么问题？
+        <br><button data-i="1">看答案</button>
+        <div class="ans" id="a1">时间不是你能操作的东西。主信息必须是「你要做但还没做的事」，否则玩家读完标题就没有下一步。</div>
+      </li>
+    </ol>
+  </div>
+
+  <h2>今天的作业（十分钟）</h2>
+  <p>
+    打开 <code>dist/index.html</code>，截图第一屏，用红笔（或手机自带标注）圈出<strong>三处</strong>：
+  </p>
+  <ul class="plain">
+    <li>你眼里最大的那个元素——它配不配</li>
+    <li>最小、但你其实最需要点的那个元素</li>
+    <li>两处你觉得「挤」的地方</li>
+  </ul>
+  <p>先别改。把这个清单留着，第 2 课我们会用「间距」把第三项拆掉。</p>
+
+  <h2>一手来源</h2>
+  <ul class="plain">
+    <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html">WCAG 2.2 · SC 2.5.8 Target Size (Minimum)</a> —— 24×24 CSS px 或足够间距。</li>
+    <li><a href="https://developer.apple.com/design/human-interface-guidelines/buttons">Apple HIG · Buttons</a> —— 触摸目标 44×44 pt。</li>
+    <li><a href="https://www.w3.org/TR/2024/DNOTE-clreq-20241219/">W3C · Requirements for Chinese Text Layout</a> —— 中文标点、行首行尾的规则。</li>
+  </ul>
+
+  <p class="ask">
+    哪句没看懂、或者你有反例（比如「游戏里字号可以更小」），直接问我。你反驳得对，规则就改。
+  </p>
+
+</main>
+<script>
+  const phone = document.getElementById('phone');
+  const bad = document.getElementById('btn-bad');
+  const good = document.getElementById('btn-good');
+
+  function setMode(isBad) {
+    phone.classList.toggle('bad', isBad);
+    bad.setAttribute('aria-pressed', String(isBad));
+    good.setAttribute('aria-pressed', String(!isBad));
+  }
+  bad.addEventListener('click', () => setMode(true));
+  good.addEventListener('click', () => setMode(false));
+
+  document.querySelectorAll('.check button').forEach((b) => {
+    b.addEventListener('click', () => {
+      document.getElementById('a' + b.dataset.i).classList.add('show');
+      b.disabled = true;
+    });
+  });
+</script>
+</body>
+</html>

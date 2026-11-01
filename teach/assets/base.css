@@ -1,0 +1,128 @@
+/* 教学页共用样式：4px 单位、1.75 行高、两档字号 */
+:root {
+  --ink: #1b2430;
+  --ink-2: #4a5a6b;
+  --ink-3: #7b8a99;
+  --line: #dfe6ec;
+  --bg: #f6f8fa;
+  --card: #ffffff;
+  --accent: #14624f;
+  --accent-2: #0f4a3c;
+  --warn: #b4472f;
+  --tick: #eef4f1;
+  --u: 4px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: calc(var(--u) * 12) calc(var(--u) * 6);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sheet {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: calc(var(--u) * 3);
+  padding: calc(var(--u) * 16) calc(var(--u) * 14);
+}
+
+.kicker {
+  font-size: 13px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0 0 calc(var(--u) * 3);
+}
+
+h1 {
+  font-size: 32px;
+  line-height: 1.3;
+  margin: 0 0 calc(var(--u) * 4);
+  letter-spacing: -.01em;
+}
+
+h2 {
+  font-size: 22px;
+  line-height: 1.4;
+  margin: calc(var(--u) * 12) 0 calc(var(--u) * 3);
+  padding-top: calc(var(--u) * 6);
+  border-top: 1px solid var(--line);
+}
+
+h3 { font-size: 17px; margin: calc(var(--u) * 6) 0 calc(var(--u) * 2); }
+
+p { margin: 0 0 calc(var(--u) * 3); color: var(--ink-2); }
+strong { color: var(--ink); }
+em { font-style: normal; background: var(--tick); padding: 0 3px; border-radius: 3px; }
+
+.lede { font-size: 18px; color: var(--ink); }
+
+.rule {
+  border-left: 3px solid var(--accent);
+  background: var(--tick);
+  padding: calc(var(--u) * 3) calc(var(--u) * 4);
+  margin: 0 0 calc(var(--u) * 4);
+  border-radius: 0 calc(var(--u) * 2) calc(var(--u) * 2) 0;
+}
+.rule p:last-child { margin-bottom: 0; }
+
+table { width: 100%; border-collapse: collapse; margin: 0 0 calc(var(--u) * 4); font-size: 15px; }
+th, td { text-align: left; padding: calc(var(--u) * 2) calc(var(--u) * 3); border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--ink-3); font-weight: 600; font-size: 13px; letter-spacing: .06em; }
+td code, p code { background: var(--tick); padding: 1px 5px; border-radius: 3px; font-size: 14px; }
+
+/* 手机预览框 */
+.phone {
+  width: 320px;
+  margin: calc(var(--u) * 4) auto;
+  background: #11161d;
+  border-radius: calc(var(--u) * 8);
+  padding: calc(var(--u) * 5);
+  color: #e8eef5;
+  font-size: 13px;
+  line-height: 1.6;
+  transition: all .24s ease;
+}
+.phone .row { display: flex; gap: 8px; }
+.phone .cell { flex: 1; }
+.phone .big { font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.phone .ttl { font-size: 13px; color: #8fa0b2; }
+.phone .dim { color: #8fa0b2; font-size: 12px; }
+.phone .slot { border: 1px dashed #3a4756; border-radius: 8px; padding: 10px 8px; text-align: center; }
+.phone .cta { display: block; width: 100%; border: 0; border-radius: 8px; padding: 12px; background: #2f7fd4; color: #fff; font-size: 15px; }
+
+/* 反例：全都一样大、挤在一起 */
+.bad .big { font-size: 13px; font-weight: 400; }
+.bad .ttl { color: #e8eef5; }
+.bad .dim { color: #e8eef5; font-size: 13px; }
+.bad .slot { padding: 2px; }
+.bad .cta { padding: 2px; font-size: 12px; }
+
+.controls { display: flex; gap: 8px; justify-content: center; margin: calc(var(--u) * 2) 0 calc(var(--u) * 5); }
+.controls button {
+  min-height: 44px; padding: 0 20px; border-radius: 10px;
+  border: 1px solid var(--line); background: #fff; color: var(--ink);
+  font-size: 15px; cursor: pointer;
+}
+.controls button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.check { background: var(--tick); border-radius: calc(var(--u) * 2); padding: calc(var(--u) * 4); margin: calc(var(--u) * 6) 0; }
+.check ol { margin: 0; padding-left: 22px; color: var(--ink-2); }
+.check li { margin-bottom: calc(var(--u) * 3); }
+.check button { min-height: 40px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--accent); background: #fff; color: var(--accent); font-size: 14px; cursor: pointer; margin-top: 8px; }
+.check .ans { display: none; margin-top: 8px; color: var(--accent-2); font-size: 14px; }
+.check .ans.show { display: block; }
+
+.ask { margin-top: calc(var(--u) * 8); padding-top: calc(var(--u) * 4); border-top: 1px dashed var(--line); color: var(--ink-3); font-size: 14px; }
+
+ul.plain { padding-left: 20px; color: var(--ink-2); }
+ul.plain li { margin-bottom: calc(var(--u) * 1); }
