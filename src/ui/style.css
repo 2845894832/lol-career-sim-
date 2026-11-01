@@ -104,8 +104,6 @@ body {
   gap: 10px 16px;
   font-size: 13px;
   color: var(--muted);
-  /* 数字要能竖着比：整行（不只粗体那几段）都用等宽数字 */
-  font-variant-numeric: tabular-nums;
 }
 /* 分组：组内 8px，两组之间一条竖线 */
 .meta .grp {
