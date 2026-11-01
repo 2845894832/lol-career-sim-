@@ -67,6 +67,7 @@
 
   <section>
     <h2>参数</h2>
+    <div class="slider"><label id="startLbl">起始分数</label><input id="start" type="range" min="0" max="9999" step="50" value="2800"><span id="startV">2800</span></div>
     <div class="slider"><label>你每周上分</label><input id="gain" type="range" min="100" max="700" step="50" value="500"><span id="gainV">500</span></div>
     <div class="slider"><label>榜上平均每周上分</label><input id="rival" type="range" min="100" max="700" step="50" value="450"><span id="rivalV">450</span></div>
     <div class="slider"><label>榜单人数</label><input id="n" type="range" min="1000" max="20000" step="1000" value="10000"><span id="nV">1 万</span></div>
@@ -83,7 +84,7 @@
 </main>
 <script>
 const $ = id => document.getElementById(id);
-const START = 2800;
+let START = 2800;
 const DEFAULT_TIERS = "黑铁,0\n青铜,400\n白银,800\n黄金,1200\n铂金,1600\n翡翠,2000\n钻石,2400\n大师,2800\n宗师,3000\n王者,4500";
 let TIERS = [], board = [], refBoard = [], me = START;
 
@@ -156,13 +157,19 @@ function drawDist(){
   }
   $("dist").innerHTML = rows.map((row, i) => "<tr>" + row.map(c => `<t${i?"d":"h"}>${c}</t${i?"d":"h"}>`).join("") + "</tr>").join("");
 }
+function startLabel(){
+  const v = +$("start").value;
+  $("startV").textContent = v;
+  $("startLbl").textContent = "起始分数（开局段位：" + tierOf(v, rankOf(v)) + "）";
+}
 function reset(){
   const n = +$("n").value, rival = +$("rival").value;
+  START = +$("start").value;
   $("nV").textContent = fmt(n); $("rivalV").textContent = rival; $("gainV").textContent = $("gain").value;
   board = makeBoard(n, rival);
   refBoard = board.map(x => ({ lp: x.lp }));
   me = START;
-  drawDist(); render(); run();
+  startLabel(); drawDist(); render(); run();
 }
 function run(){
   const gain = +$("gain").value;
@@ -191,11 +198,12 @@ function applyTiers(){
   TIERS = parsed.tiers;
   $("tierNote").textContent = `已应用 ${parsed.tiers.length} 档：` + TIERS.map(t => `${t.name}(${t.at})`).join(" · ")
     + (parsed.bad.length ? `；忽略了 ${parsed.bad.length} 行格式不对的` : "");
-  drawDist(); render();
+  startLabel(); drawDist(); render();
 }
 $("applyTier").onclick = applyTiers;
 $("resetTier").onclick = () => { $("tierText").value = DEFAULT_TIERS; applyTiers(); };
-$("rankRule").onchange = () => { drawDist(); render(); };
+$("rankRule").onchange = () => { startLabel(); drawDist(); render(); };
+$("start").oninput = reset;
 $("n").oninput = reset;
 $("rival").oninput = reset;
 $("gain").oninput = () => { $("gainV").textContent = $("gain").value; };
