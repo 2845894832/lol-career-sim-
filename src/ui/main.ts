@@ -3,7 +3,6 @@ import { reduce } from '../core/reduce';
 import { getEvent, successRateOf } from '../core/events';
 import { ACTION_INFO, canAfford, isActionUnlocked, staminaCost } from '../core/actions';
 import { loadSaved, persist } from '../core/save';
-import { expProgress } from '../core/growth';
 import { ageOf, isMatchWeek, newGame, phaseOfYear } from '../core/state';
 import { rankOf } from '../core/ladder';
 import { randomSeed } from '../rng';
@@ -48,8 +47,8 @@ function renderTopbar(): string {
 
 function renderAttrs(): string {
   const cells = ATTR_KEYS.map((key) => {
-    const prog = expProgress(state, key);
-    const pct = Math.round((prog.current / prog.needed) * 100);
+    // 条形 = 属性值 / 100（0–100 满分），不是经验进度：玩家看的是“我有多强”
+    const pct = Math.max(0, Math.min(100, Math.round(state.attrs[key])));
     return `<div class="attr">
       <div class="row"><span class="name">${ATTR_LABEL[key]}</span><span class="val">${state.attrs[key]}</span></div>
       <div class="bar"><i style="width:${pct}%"></i></div>
