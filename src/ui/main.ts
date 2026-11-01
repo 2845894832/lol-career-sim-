@@ -117,13 +117,17 @@ function renderSheet(): string {
       const unlocked = isActionUnlocked(state, id);
       const afford = canAfford(state, sheet!.slot, id);
       const disabled = !unlocked || !afford;
-      const hint = !unlocked
+      // 体力一律放右边、右对齐、等宽数字；描述降一行说「换来什么」
+      const pts = staminaCost(id);
+      const cost = unlocked && pts > 0 ? `<b class="opt-num">${pts}</b><span class="opt-unit">体力</span>` : '';
+      const sub = !unlocked
         ? '签约后解锁'
         : !afford
-          ? `体力不够（需 ${staminaCost(id)}）`
-          : `${staminaCost(id)} 体力 · ${ACTION_INFO[id].hint}`;
-      return `<button class="btn" data-act="pick-action" data-id="${id}" ${disabled ? 'disabled' : ''}>
-        <span>${ACTION_INFO[id].label}</span><span class="hint">${hint}</span>
+          ? '体力不够，这周排不上'
+          : ACTION_INFO[id].hint;
+      return `<button class="btn opt" data-act="pick-action" data-id="${id}" ${disabled ? 'disabled' : ''}>
+        <span class="opt-top"><span class="opt-name">${ACTION_INFO[id].label}</span><span class="opt-cost">${cost}</span></span>
+        <span class="opt-sub">${sub}</span>
       </button>`;
     }).join('');
     const filled = state.actionGrid[sheet.slot] !== null;

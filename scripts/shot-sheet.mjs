@@ -1,0 +1,14 @@
+import puppeteer from 'puppeteer-core';
+const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+const b = await puppeteer.launch({ executablePath: EDGE, headless: 'new' });
+const p = await b.newPage();
+await p.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
+await p.goto('http://127.0.0.1:8123/', { waitUntil: 'networkidle0' });
+await p.evaluate(() => localStorage.clear());
+await p.reload({ waitUntil: 'networkidle0' });
+const slots = await p.$$('.slot');
+await slots[0].click();
+await new Promise((r) => setTimeout(r, 250));
+await p.screenshot({ path: 'shots/sheet-actions.png' });
+console.log('saved shots/sheet-actions.png');
+await b.close();
