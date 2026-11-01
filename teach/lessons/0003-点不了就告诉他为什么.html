@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 课 · 点不了，就告诉他为什么</title>
+<link rel="stylesheet" href="../assets/base.css">
+</head>
+<body>
+<main class="sheet">
+
+  <p class="kicker">第 3 课 · 禁用态</p>
+  <h1>点不了，就告诉他为什么</h1>
+
+  <p class="lede">
+    你圈的那个「结周」按钮，现在是这样：灰字、灰边、一句 11px 的「三个行动点都要排上」压在按钮里。
+    玩家看到的第一反应不是「我要去排格子」，而是<strong>「这游戏卡住了」</strong>。
+  </p>
+
+  <div class="rule">
+    <p><strong>这一课只有一条规则：</strong>禁用态必须回答两个问题——<strong>为什么不能点</strong>、<strong>怎么才能点</strong>。答不出来的禁用态，等于一个坏掉的按钮。</p>
+  </div>
+
+  <h2>先说一个反直觉的事实</h2>
+
+  <p>
+    WCAG 的对比度条款 <a href="https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html">SC 1.4.11</a> 明文把<strong>「禁用组件」排除在外</strong>——也就是说，把按钮调成看不清的灰色，<em>并不违规</em>。
+  </p>
+
+  <p>所以这不是「合规问题」，是<strong>体验问题</strong>：你的玩家不会因为标准豁免就少一次困惑。</p>
+
+  <h2>三种做法，点着看</h2>
+
+  <div class="controls">
+    <button id="m0" aria-pressed="true">① 现在这样</button>
+    <button id="m1" aria-pressed="false">② 原因搬出去</button>
+    <button id="m2" aria-pressed="false">③ 按钮变成下一步</button>
+  </div>
+
+  <div class="phone" id="phone" style="width:340px;padding:14px;">
+    <div class="row" style="margin-bottom:10px;">
+      <div class="slot" id="s1" style="flex:1;">行动 1</div>
+      <div class="slot" id="s2" style="flex:1;">行动 2</div>
+      <div class="slot" id="s3" style="flex:1;">行动 3</div>
+    </div>
+
+    <button class="cta" id="cta" disabled>结周</button>
+    <div id="hint" style="margin-top:8px;font-size:11px;color:#5f7082;text-align:center;">三个行动点都要排上</div>
+    <div id="hint2" style="display:none;margin-top:10px;font-size:14px;color:#e8eef5;">还差 <b>3</b> 个格子没排——点上面任意一个开始。</div>
+  </div>
+
+  <p style="text-align:center;color:#7b8a99;font-size:13px;">
+    ③ 里按钮是可点的：点它会标出还空着的格子。这比「灰着不动」多给了一步。
+  </p>
+
+  <h2>三个数字</h2>
+
+  <table>
+    <tr><th>项</th><th>值</th><th>理由</th></tr>
+    <tr>
+      <td>原因文字字号</td>
+      <td><strong>≥ 14px</strong></td>
+      <td>现在这句是 11px。凡是「玩家不知道该干什么」的句子，都不该小于正文注释档（13–14）。</td>
+    </tr>
+    <tr>
+      <td>原因与按钮的间距</td>
+      <td><strong>8–12px</strong></td>
+      <td>贴太近会被当成按钮的一部分读，太远就断了关联。</td>
+    </tr>
+    <tr>
+      <td>可点区</td>
+      <td><strong>≥ 44px 高</strong></td>
+      <td>你现在的结周是 48px，够；问题不在大小，在「它说了什么」。</td>
+    </tr>
+  </table>
+
+  <div class="check">
+    <p><strong>两道题</strong></p>
+    <ol>
+      <li>
+        把「三个行动点都要排上」改成「还差 3 个格子」，最大的区别是什么？
+        <br><button data-i="0">看答案</button>
+        <div class="ans" id="a0">前者说规则，后者说<strong>现状</strong>。玩家需要的是现状 + 下一步，不是条款。</div>
+      </li>
+      <li>
+        为什么 ③ 那种「按钮可点、点了指出缺什么」在手机上更合适？
+        <br><button data-i="1">看答案</button>
+        <div class="ans" id="a1">手机没有鼠标悬停，也没有说明书。可点的按钮本身就是提示——点一下就知道缺什么，比读一行灰字快。</div>
+      </li>
+    </ol>
+  </div>
+
+  <h2>作业（十分钟，写字就行）</h2>
+  <ul class="plain">
+    <li>给「结周」写一句禁用原因，要求：<strong>说现状、说下一步、不超过 12 个字</strong>。</li>
+    <li>再写一句「点下去之后会发生什么」——如果你选 ③ 的做法。</li>
+    <li>两句都发我，我按你的句子改代码。不替你写。</li>
+  </ul>
+
+  <h2>一手来源</h2>
+  <ul class="plain">
+    <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html">WCAG 2.2 · SC 1.4.11 Non-text Contrast</a> —— 3:1 门槛，且明文豁免「inactive components」。</li>
+    <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html">WCAG 2.2 · SC 2.5.8</a> —— 24×24 下限（第 1 课用过）。</li>
+  </ul>
+
+  <p class="ask">
+    你要是有反例——比如「游戏就该让玩家自己摸索」——说出来，规则可以改，但得说清代价。
+  </p>
+
+</main>
+<style>
+  table th:first-child, table td:first-child { width: 120px; }
+  table th:nth-child(2), table td:nth-child(2) { width: 130px; }
+  .phone .row { display: flex; gap: 8px; }
+  .phone .slot { border: 1px dashed #3a4756; border-radius: 8px; padding: 10px 8px; text-align: center; font-size: 13px; color: #c7d3df; }
+  .phone .slot.flash { border-color: #d98a2b; background: #2a2013; color: #f0c07a; }
+  .phone .cta { display: block; width: 100%; border: 0; border-radius: 8px; padding: 12px; background: #2f7fd4; color: #fff; font-size: 15px; }
+  .phone .cta:disabled { background: #1a222c; color: #5f7082; border: 1px solid #2a3542; }
+  .phone .cta.next { background: #2f7fd4; color: #fff; }
+</style>
+<script>
+  const cta = document.getElementById('cta');
+  const hint = document.getElementById('hint');
+  const hint2 = document.getElementById('hint2');
+  const btns = [0, 1, 2].map((i) => document.getElementById('m' + i));
+  const slots = ['s1', 's2', 's3'].map((id) => document.getElementById(id));
+
+  function mode(i) {
+    btns.forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    slots.forEach((s) => s.classList.remove('flash'));
+
+    if (i === 0) {
+      cta.disabled = true;
+      cta.textContent = '结周';
+      cta.className = 'cta';
+      hint.style.display = 'block';
+      hint.textContent = '三个行动点都要排上';
+      hint2.style.display = 'none';
+      return;
+    }
+    if (i === 1) {
+      cta.disabled = true;
+      cta.textContent = '结周';
+      cta.className = 'cta';
+      hint.style.display = 'none';
+      hint2.style.display = 'block';
+      hint2.innerHTML = '还差 <b>3</b> 个格子没排——点上面任意一个开始。';
+      return;
+    }
+    cta.disabled = false;
+    cta.textContent = '先排行动点';
+    cta.className = 'cta next';
+    hint.style.display = 'none';
+    hint2.style.display = 'block';
+    hint2.textContent = '三格都排好之后，这里会变成「结周」。';
+  }
+
+  btns.forEach((b, i) => b.addEventListener('click', () => mode(i)));
+  cta.addEventListener('click', () => {
+    slots.forEach((s) => s.classList.add('flash'));
+    hint2.textContent = '这三个就是空着的——点一个看看。';
+  });
+  document.querySelectorAll('.check button').forEach((b) => {
+    b.addEventListener('click', () => {
+      document.getElementById('a' + b.dataset.i).classList.add('show');
+      b.disabled = true;
+    });
+  });
+  mode(0);
+</script>
+</body>
+</html>
