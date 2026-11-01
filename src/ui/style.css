@@ -146,7 +146,7 @@ body {
 }
 .slot.filled {
   border-style: solid;
-  border-color: var(--accent);
+  border-color: var(--fg);
 }
 .slot .k {
   font-size: 12px;
@@ -193,9 +193,10 @@ button {
 }
 
 .btn.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #04121f;
+  /* 蓝只归进度条：主按钮用白底深字，靠明度而不是色相抢注意力 */
+  background: var(--fg);
+  border-color: var(--fg);
+  color: var(--bg);
   font-weight: 700;
   flex-direction: column;
   justify-content: center;
@@ -275,7 +276,7 @@ button {
 
 .rate {
   font-variant-numeric: tabular-nums;
-  color: var(--accent);
+  color: var(--fg);
   font-size: 12px;
 }
 
