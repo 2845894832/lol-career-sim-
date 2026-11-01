@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原型 7：用名次代替点数</title>
+<style>
+  :root{--ink:#1b1b1b;--muted:#6b7280;--line:#e5e7eb;--navy:#1f3a5f;--teal:#2e8b7e;--red:#b04a4a;--bg:#fbfbfa}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  main{max-width:840px;margin:0 auto;padding:24px 18px 60px}
+  h1{font-size:22px;margin:0 0 6px;color:var(--navy)}
+  .lead{color:var(--muted);font-size:14px;margin:0 0 18px}
+  section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  h2{font-size:16px;margin:0 0 4px;color:var(--navy)}
+  .sub{font-size:13px;color:var(--muted);margin:0 0 12px}
+  .slider{display:grid;grid-template-columns:1fr 70px;align-items:center;gap:10px;font-size:13px;color:var(--muted);margin:8px 0}
+  input[type=range]{width:100%}
+  button{font:inherit;font-size:14px;padding:9px 14px;border-radius:8px;border:1px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer;margin-right:8px}
+  button.primary{background:var(--navy);color:#fff}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  .headline{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:6px 0 12px}
+  .cell{background:#f4f7fa;border-radius:8px;padding:10px 12px}
+  .cell span{font-size:12px;color:var(--muted);display:block}
+  .cell b{font-size:22px;color:var(--navy);font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+  th{background:#f4f7fa;color:var(--navy);font-weight:600}
+  td.hi{background:#e8f3ee;color:#1f6b52;font-weight:600}
+  .bar{height:10px;background:#e8edf3;border-radius:999px;overflow:hidden;margin:6px 0}
+  .bar > i{display:block;height:100%;background:var(--teal)}
+  .note{font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <h1>原型 7：用名次代替点数</h1>
+  <p class="lead">要验的问题：<b>如果玩家看到的是「第 372 名」，后半程会不会自己就有内容？</b> 关键在于——榜上其他人也在爬。名次不是分数的函数，是「你比别人快多少」的函数。</p>
+
+  <section>
+    <h2>你的位置</h2>
+    <div class="headline">
+      <div class="cell"><span>排名</span><b id="rank">—</b></div>
+      <div class="cell"><span>段位</span><b id="tier">—</b></div>
+      <div class="cell"><span>离第一名</span><b id="ahead">—</b></div>
+    </div>
+    <div class="bar"><i id="bar" style="width:0%"></i></div>
+    <p class="note" id="pctNote"></p>
+  </section>
+
+  <section>
+    <h2>参数</h2>
+    <div class="slider"><label>你每周上分</label><input id="gain" type="range" min="100" max="700" step="50" value="500"><span id="gainV">500</span></div>
+    <div class="slider"><label>榜上平均每周上分</label><input id="rival" type="range" min="100" max="700" step="50" value="450"><span id="rivalV">450</span></div>
+    <div class="slider"><label>榜单人数</label><input id="n" type="range" min="1000" max="20000" step="1000" value="10000"><span id="nV">1 万</span></div>
+    <div class="row"><button class="primary" id="run">跑 8 年</button><button id="reset">重开</button></div>
+    <table id="t"></table>
+    <p class="note">段位口径照现实：<b>大师往上按名次</b>——宗师 = 前 1%，王者 = 前 200 名。所以靠近王者时，涨的是名次，不是分数。</p>
+  </section>
+
+  <section>
+    <h2>榜首长什么样</h2>
+    <p class="sub">同一个榜单，从第 1 名到第 1000 名。你会看到「越往上越挤」的自然样子。</p>
+    <table id="dist"></table>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const START = 2800;
+let board = [], me = START, week = 0;
+
+function gauss(){
+  let u = 0, v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+}
+function makeBoard(n, rivalRate){
+  const arr = [];
+  for (let i = 0; i < n; i++){
+    // 起始分数：大部分人 800–2800，头部稀疏
+    const base = Math.max(800, Math.min(4500, 2400 + 700*gauss()));
+    // 每人一个成长速率：平均数 rivalRate，波动 ±40%
+    const rate = Math.max(50, rivalRate * (1 + 0.4*gauss()));
+    arr.push({ lp: base, rate });
+  }
+  arr.sort((a,b) => b.lp - a.lp);
+  return arr;
+}
+function rankOf(lp){
+  let lo = 0, hi = board.length;
+  while (lo < hi){ const mid = (lo + hi) >> 1; if (board[mid].lp > lp) lo = mid + 1; else hi = mid; }
+  return lo + 1;
+}
+function tierOf(lp, rank){
+  const n = board.length;
+  if (rank <= 200) return "王者";
+  if (rank <= Math.max(300, Math.round(n * 0.01))) return "宗师";
+  if (lp >= 2800) return "大师";
+  if (lp >= 2400) return "钻石";
+  if (lp >= 1600) return "铂金";
+  if (lp >= 1200) return "黄金";
+  if (lp >= 800) return "白银";
+  return "黑铁";
+}
+function fmt(n){ return n >= 10000 ? Math.round(n/10000) + " 万" : String(n); }
+
+function render(){
+  const n = board.length, r = rankOf(me);
+  $("rank").textContent = "第 " + r + " 名";
+  $("tier").textContent = tierOf(me, r);
+  $("ahead").textContent = board[0].lp - me + " 分";
+  $("bar").style.width = Math.max(1, (1 - r/n) * 100).toFixed(1) + "%";
+  $("pctNote").textContent = `共 ${fmt(n)} 人，你超过了 ${((1 - r/n)*100).toFixed(2)}% 的人（分数在界面里不显示）`;
+}
+function drawDist(){
+  const rows = [["名次", "分数", "段位"]];
+  for (const r of [1, 10, 50, 200, 500, 1000]){
+    if (r > board.length) continue;
+    const s = board[r-1].lp;
+    rows.push(["第 " + r + " 名", s, tierOf(s, r)]);
+  }
+  $("dist").innerHTML = rows.map((row, i) => "<tr>" + row.map(c => `<t${i?"d":"h"}>${c}</t${i?"d":"h"}>`).join("") + "</tr>").join("");
+}
+function reset(){
+  const n = +$("n").value, rival = +$("rival").value;
+  $("nV").textContent = fmt(n); $("rivalV").textContent = rival; $("gainV").textContent = $("gain").value;
+  board = makeBoard(n, rival);
+  me = START; week = 0;
+  drawDist(); render(); run();
+}
+function run(){
+  const gain = +$("gain").value;
+  let lp = me;
+  const rows = [["年", "名次", "段位", "离王者"]];
+  for (let y = 1; y <= 8; y++){
+    for (let w = 0; w < 26; w++){
+      lp += gain;
+      for (const p of board) p.lp += p.rate;          // 别人也在爬
+    }
+    board.sort((a,b) => b.lp - a.lp);
+    const r = rankOf(lp);
+    rows.push([`第 ${y} 年`, `第 ${r} 名`, tierOf(lp, r), Math.max(0, r-200) + " 名"]);
+  }
+  $("t").innerHTML = rows.map((row, i) => "<tr>" + row.map(c => `<t${i?"d":"h"}>${c}</t${i?"d":"h"}>`).join("") + "</tr>").join("");
+  me = lp; render();
+}
+$("n").oninput = reset;
+$("rival").oninput = reset;
+$("gain").oninput = () => { $("gainV").textContent = $("gain").value; };
+$("run").onclick = run;
+$("reset").onclick = reset;
+reset();
+</script>
+</body>
+</html>
