@@ -52,7 +52,7 @@
 
   <section>
     <h2>段位表（可自定义）</h2>
-    <p class="sub">一行一档：<code>名字,起始分数</code>。改完点「应用」。分数从低到高排；最低一档兜底。</p>
+    <p class="sub">这里定义的是<b>分档</b>——到多少分算哪一档，不是你的起始段位。一行一档：<code>名字,分数</code>，改完点「应用」。</p>
     <textarea id="tierText" rows="11"></textarea>
     <div class="row">
       <button class="primary" id="applyTier">应用</button>
@@ -67,7 +67,7 @@
 
   <section>
     <h2>参数</h2>
-    <div class="slider"><label id="startLbl">起始分数</label><input id="start" type="range" min="0" max="9999" step="50" value="2800"><span id="startV">2800</span></div>
+    <div class="slider"><label>起始段位</label><select id="startTier"></select><span id="startV">2800</span></div>
     <div class="slider"><label>你每周上分</label><input id="gain" type="range" min="100" max="700" step="50" value="500"><span id="gainV">500</span></div>
     <div class="slider"><label>榜上平均每周上分</label><input id="rival" type="range" min="100" max="700" step="50" value="450"><span id="rivalV">450</span></div>
     <div class="slider"><label>榜单人数</label><input id="n" type="range" min="1000" max="20000" step="1000" value="10000"><span id="nV">1 万</span></div>
@@ -157,19 +157,30 @@ function drawDist(){
   }
   $("dist").innerHTML = rows.map((row, i) => "<tr>" + row.map(c => `<t${i?"d":"h"}>${c}</t${i?"d":"h"}>`).join("") + "</tr>").join("");
 }
+function fillStartTiers(){
+  const sel = $("startTier");
+  const keep = sel.value;
+  sel.innerHTML = TIERS.slice().reverse()
+    .map(t => `<option value="${t.name}">${t.name}（${t.at} 分）</option>`).join("");
+  if (TIERS.some(t => t.name === keep)) sel.value = keep;
+  else if (TIERS.some(t => t.name === "大师")) sel.value = "大师";
+  else sel.value = TIERS[TIERS.length - 1].name;
+}
+function startTierAt(){
+  const t = TIERS.find(x => x.name === $("startTier").value);
+  return t ? t.at : 2800;
+}
 function startLabel(){
-  const v = +$("start").value;
-  $("startV").textContent = v;
-  $("startLbl").textContent = "起始分数（开局段位：" + tierOf(v, rankOf(v)) + "）";
+  $("startV").textContent = startTierAt() + " 分";
 }
 function reset(){
   const n = +$("n").value, rival = +$("rival").value;
-  START = +$("start").value;
+  START = startTierAt();
   $("nV").textContent = fmt(n); $("rivalV").textContent = rival; $("gainV").textContent = $("gain").value;
   board = makeBoard(n, rival);
   refBoard = board.map(x => ({ lp: x.lp }));
   me = START;
-  startLabel(); drawDist(); render(); run();
+  fillStartTiers(); startLabel(); drawDist(); render(); run();
 }
 function run(){
   const gain = +$("gain").value;
@@ -196,6 +207,7 @@ function applyTiers(){
     return;
   }
   TIERS = parsed.tiers;
+  fillStartTiers();
   $("tierNote").textContent = `已应用 ${parsed.tiers.length} 档：` + TIERS.map(t => `${t.name}(${t.at})`).join(" · ")
     + (parsed.bad.length ? `；忽略了 ${parsed.bad.length} 行格式不对的` : "");
   startLabel(); drawDist(); render();
@@ -203,7 +215,7 @@ function applyTiers(){
 $("applyTier").onclick = applyTiers;
 $("resetTier").onclick = () => { $("tierText").value = DEFAULT_TIERS; applyTiers(); };
 $("rankRule").onchange = () => { startLabel(); drawDist(); render(); };
-$("start").oninput = reset;
+$("startTier").onchange = reset;
 $("n").oninput = reset;
 $("rival").oninput = reset;
 $("gain").oninput = () => { $("gainV").textContent = $("gain").value; };
@@ -212,6 +224,7 @@ $("reset").onclick = reset;
 
 $("tierText").value = DEFAULT_TIERS;
 TIERS = parseTiers(DEFAULT_TIERS).tiers;
+fillStartTiers();
 reset();
 </script>
 </body>
