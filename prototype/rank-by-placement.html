@@ -53,9 +53,9 @@
     <div class="slider"><label>你每周上分</label><input id="gain" type="range" min="100" max="700" step="50" value="500"><span id="gainV">500</span></div>
     <div class="slider"><label>榜上平均每周上分</label><input id="rival" type="range" min="100" max="700" step="50" value="450"><span id="rivalV">450</span></div>
     <div class="slider"><label>榜单人数</label><input id="n" type="range" min="1000" max="20000" step="1000" value="10000"><span id="nV">1 万</span></div>
-    <div class="row"><button class="primary" id="run">跑 8 年</button><button id="reset">重开</button></div>
+    <div class="row"><button class="primary" id="run">看 1 周 / 4 周 / 1 年后</button><button id="reset">重开</button></div>
     <table id="t"></table>
-    <p class="note">段位口径照现实：<b>大师往上按名次</b>——宗师 = 前 1%，王者 = 前 200 名。所以靠近王者时，涨的是名次，不是分数。</p>
+    <p class="note">每次点按钮都是「从此处再往后看」：先到 1 周、再到 4 周、再到 1 年。段位口径照现实：<b>大师往上按名次</b>——宗师 = 前 1%，王者 = 前 200 名。所以靠近王者时，涨的是名次，不是分数。</p>
   </section>
 
   <section>
@@ -131,16 +131,18 @@ function reset(){
 }
 function run(){
   const gain = +$("gain").value;
-  let lp = me;
-  const rows = [["年", "名次", "段位", "离王者"]];
-  for (let y = 1; y <= 8; y++){
-    for (let w = 0; w < 26; w++){
+  const marks = [[1, "1 周后"], [4, "4 周后"], [26, "1 年后"]];
+  let lp = me, week = 0;
+  const rows = [["时点", "名次", "段位", "离王者"]];
+  for (const [target, label] of marks){
+    while (week < target){
       lp += gain;
-      for (const p of board) p.lp += p.rate;          // 别人也在爬
+      for (const p of board) p.lp += p.rate;          // 榜上的人也在爬
+      week++;
     }
     board.sort((a,b) => b.lp - a.lp);
     const r = rankOf(lp);
-    rows.push([`第 ${y} 年`, `第 ${r} 名`, tierOf(lp, r), Math.max(0, r-200) + " 名"]);
+    rows.push([label, `第 ${r} 名`, tierOf(lp, r), Math.max(0, r-200) + " 名"]);
   }
   $("t").innerHTML = rows.map((row, i) => "<tr>" + row.map(c => `<t${i?"d":"h"}>${c}</t${i?"d":"h"}>`).join("") + "</tr>").join("");
   me = lp; render();
