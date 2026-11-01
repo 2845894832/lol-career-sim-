@@ -105,8 +105,9 @@ function renderControls(): string {
 
 function renderLog(): string {
   const lines = state.log.slice(-6);
+  const mark = { good: '＋', bad: '－', plain: '' } as const;
   return `<div class="panel"><div class="log">${lines
-    .map((e) => `<div class="${e.tone}">${esc(e.text)}</div>`)
+    .map((e) => `<div class="${e.tone}">${mark[e.tone]}${mark[e.tone] ? ' ' : ''}${esc(e.text)}</div>`)
     .join('')}</div></div>`;
 }
 
