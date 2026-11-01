@@ -1,0 +1,21 @@
+import puppeteer from 'puppeteer-core';
+const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+const b = await puppeteer.launch({ executablePath: EDGE, headless: 'new' });
+const p = await b.newPage();
+await p.setViewport({ width: 390, height: 844, deviceScaleFactor: 1 });
+await p.goto('file:///D:/deepseek-harness/default-workspace/vibe-game-producer/dist/index.html', { waitUntil: 'networkidle0' });
+await p.evaluate(() => localStorage.clear());
+await p.reload({ waitUntil: 'networkidle0' });
+const out = await p.evaluate(() => {
+  const vals = [...document.querySelectorAll('.attr .val')];
+  const rows = vals.map((v) => v.textContent + '=' + Math.round(v.getBoundingClientRect().width * 10) / 10);
+  const meta = document.querySelector('.meta');
+  const probe = document.createElement('span');
+  meta.appendChild(probe);
+  const w = (t) => { probe.textContent = t; return Math.round(probe.getBoundingClientRect().width * 10) / 10; };
+  const res = { rows, metaFvn: getComputedStyle(meta).fontVariantNumeric, w11: w('11'), w88: w('88'), metaText: meta.innerText.replace(/\n/g, ' | ') };
+  probe.remove();
+  return res;
+});
+console.log(JSON.stringify(out, null, 1));
+await b.close();

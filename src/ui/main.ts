@@ -154,12 +154,11 @@ function renderEvent(): string {
   if (!event) return '';
   const rows = event.options
     .map((option, i) => {
+      // 只有掷骰的选项才写概率；必成/必败不写出来（右列只放数字，才能竖着扫）
       const rate =
         option.risk === 'roll'
           ? `${Math.round(successRateOf(state, event, option) * 100)}%`
-          : option.risk === 'success'
-            ? '必成'
-            : '必败';
+          : '';
       return `<button class="btn" data-act="choose" data-i="${i}">
         <span>${esc(option.label)}</span><span class="rate">${rate}</span>
       </button>`;
