@@ -16,6 +16,8 @@
   .sub{font-size:13px;color:var(--muted);margin:0 0 12px}
   .slider{display:grid;grid-template-columns:1fr 70px;align-items:center;gap:10px;font-size:13px;color:var(--muted);margin:8px 0}
   input[type=range]{width:100%}
+  textarea{width:100%;font:13px/1.5 ui-monospace,Menlo,monospace;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fcfcfb;color:var(--ink)}
+  label.check{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;margin:8px 0}
   button{font:inherit;font-size:14px;padding:9px 14px;border-radius:8px;border:1px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer;margin-right:8px}
   button.primary{background:var(--navy);color:#fff}
   .row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
@@ -26,16 +28,16 @@
   table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
   th,td{border:1px solid var(--line);padding:6px 8px;text-align:center}
   th{background:#f4f7fa;color:var(--navy);font-weight:600}
-  td.hi{background:#e8f3ee;color:#1f6b52;font-weight:600}
   .bar{height:10px;background:#e8edf3;border-radius:999px;overflow:hidden;margin:6px 0}
   .bar > i{display:block;height:100%;background:var(--teal)}
   .note{font-size:12px;color:var(--muted);margin-top:8px}
+  .err{color:var(--red)}
 </style>
 </head>
 <body>
 <main>
   <h1>原型 7：用名次代替点数</h1>
-  <p class="lead">要验的问题：<b>如果玩家看到的是「第 372 名」，后半程会不会自己就有内容？</b> 关键在于——榜上其他人也在爬。名次不是分数的函数，是「你比别人快多少」的函数。</p>
+  <p class="lead">要验的问题：<b>如果玩家看到的是「第 372 名」，后半程会不会自己就有内容？</b> 榜上其他人也在爬，所以名次 = 你比别人快多少。</p>
 
   <section>
     <h2>你的位置</h2>
@@ -49,26 +51,69 @@
   </section>
 
   <section>
+    <h2>段位表（可自定义）</h2>
+    <p class="sub">一行一档：<code>名字,起始分数</code>。改完点「应用」。分数从低到高排；最低一档兜底。</p>
+    <textarea id="tierText" rows="11"></textarea>
+    <div class="row">
+      <button class="primary" id="applyTier">应用</button>
+      <button id="resetTier">恢复默认</button>
+    </div>
+    <label class="check">
+      <input type="checkbox" id="rankRule" checked>
+      最高一档按名次判（前 200 名），第二高按前 1%
+    </label>
+    <p class="note" id="tierNote"></p>
+  </section>
+
+  <section>
     <h2>参数</h2>
     <div class="slider"><label>你每周上分</label><input id="gain" type="range" min="100" max="700" step="50" value="500"><span id="gainV">500</span></div>
     <div class="slider"><label>榜上平均每周上分</label><input id="rival" type="range" min="100" max="700" step="50" value="450"><span id="rivalV">450</span></div>
     <div class="slider"><label>榜单人数</label><input id="n" type="range" min="1000" max="20000" step="1000" value="10000"><span id="nV">1 万</span></div>
     <div class="row"><button class="primary" id="run">看 1 周 / 4 周 / 1 年后</button><button id="reset">重开</button></div>
     <table id="t"></table>
-    <p class="note">每次点按钮都是「从此处再往后看」：先到 1 周、再到 4 周、再到 1 年。段位口径照现实：<b>大师往上按名次</b>——宗师 = 前 1%，王者 = 前 200 名。所以靠近王者时，涨的是名次，不是分数。</p>
+    <p class="note">每次点按钮都是「从此处再往后看」：先到 1 周、再到 4 周、再到 1 年。</p>
   </section>
 
   <section>
     <h2>榜首长什么样</h2>
-    <p class="sub">同一个榜单，从第 1 名到第 1000 名。你会看到「越往上越挤」的自然样子。</p>
+    <p class="sub">榜单刚生成时的样子（第 1 名到第 1000 名）——越往上越挤。跑完一年会全部顶到 9999 封顶。</p>
     <table id="dist"></table>
   </section>
 </main>
 <script>
 const $ = id => document.getElementById(id);
 const START = 2800;
-let board = [], me = START, week = 0;
+const DEFAULT_TIERS = "黑铁,0\n青铜,400\n白银,800\n黄金,1200\n铂金,1600\n翡翠,2000\n钻石,2400\n大师,2800\n宗师,3000\n王者,4500";
+let TIERS = [], board = [], refBoard = [], me = START;
 
+function parseTiers(text){
+  const out = [], bad = [];
+  for (const raw of text.split(/\r?\n/)){
+    const line = raw.trim();
+    if (!line) continue;
+    const m = line.split(/[,，\t]/);
+    if (m.length < 2) { bad.push(line); continue; }
+    const name = m[0].trim(), at = Number(m[1]);
+    if (!name || !isFinite(at) || at < 0) { bad.push(line); continue; }
+    out.push({ name, at });
+  }
+  out.sort((a,b) => a.at - b.at);
+  return { tiers: out, bad };
+}
+function tierOf(lp, rank){
+  if (!TIERS.length) return "—";
+  const n = board.length;
+  const top = TIERS[TIERS.length - 1].name;
+  const second = TIERS.length > 1 ? TIERS[TIERS.length - 2].name : null;
+  if ($("rankRule").checked){
+    if (rank <= 200) return top;
+    if (second && rank <= Math.max(300, Math.round(n * 0.01))) return second;
+  }
+  let t = TIERS[0].name;
+  for (const x of TIERS) if (lp >= x.at) t = x.name;
+  return t;
+}
 function gauss(){
   let u = 0, v = 0;
   while (u === 0) u = Math.random();
@@ -78,11 +123,9 @@ function gauss(){
 function makeBoard(n, rivalRate){
   const arr = [];
   for (let i = 0; i < n; i++){
-    // 起始分数：大部分人 800–2800，头部稀疏
-    const base = Math.max(800, Math.min(4500, 2400 + 700*gauss()));
-    // 每人一个成长速率：平均数 rivalRate，波动 ±40%
-    const rate = Math.max(50, rivalRate * (1 + 0.4*gauss()));
-    arr.push({ lp: base, rate });
+    let base = 2400 + 700*gauss();
+    if (Math.random() < 0.02) base += Math.random()*2500;
+    arr.push({ lp: Math.max(800, Math.min(9999, Math.round(base))), rate: Math.max(50, rivalRate*(1 + 0.4*gauss())) });
   }
   arr.sort((a,b) => b.lp - a.lp);
   return arr;
@@ -92,32 +135,22 @@ function rankOf(lp){
   while (lo < hi){ const mid = (lo + hi) >> 1; if (board[mid].lp > lp) lo = mid + 1; else hi = mid; }
   return lo + 1;
 }
-function tierOf(lp, rank){
-  const n = board.length;
-  if (rank <= 200) return "王者";
-  if (rank <= Math.max(300, Math.round(n * 0.01))) return "宗师";
-  if (lp >= 2800) return "大师";
-  if (lp >= 2400) return "钻石";
-  if (lp >= 1600) return "铂金";
-  if (lp >= 1200) return "黄金";
-  if (lp >= 800) return "白银";
-  return "黑铁";
-}
 function fmt(n){ return n >= 10000 ? Math.round(n/10000) + " 万" : String(n); }
 
 function render(){
   const n = board.length, r = rankOf(me);
   $("rank").textContent = "第 " + r + " 名";
   $("tier").textContent = tierOf(me, r);
-  $("ahead").textContent = board[0].lp - me + " 分";
+  $("ahead").textContent = (board[0] ? board[0].lp - me : 0) + " 分";
   $("bar").style.width = Math.max(1, (1 - r/n) * 100).toFixed(1) + "%";
   $("pctNote").textContent = `共 ${fmt(n)} 人，你超过了 ${((1 - r/n)*100).toFixed(2)}% 的人（分数在界面里不显示）`;
 }
 function drawDist(){
   const rows = [["名次", "分数", "段位"]];
+  const src = refBoard.length ? refBoard : board;
   for (const r of [1, 10, 50, 200, 500, 1000]){
-    if (r > board.length) continue;
-    const s = board[r-1].lp;
+    if (r > src.length) continue;
+    const s = src[r-1].lp;
     rows.push(["第 " + r + " 名", s, tierOf(s, r)]);
   }
   $("dist").innerHTML = rows.map((row, i) => "<tr>" + row.map(c => `<t${i?"d":"h"}>${c}</t${i?"d":"h"}>`).join("") + "</tr>").join("");
@@ -126,18 +159,19 @@ function reset(){
   const n = +$("n").value, rival = +$("rival").value;
   $("nV").textContent = fmt(n); $("rivalV").textContent = rival; $("gainV").textContent = $("gain").value;
   board = makeBoard(n, rival);
-  me = START; week = 0;
+  refBoard = board.map(x => ({ lp: x.lp }));
+  me = START;
   drawDist(); render(); run();
 }
 function run(){
   const gain = +$("gain").value;
   const marks = [[1, "1 周后"], [4, "4 周后"], [26, "1 年后"]];
   let lp = me, week = 0;
-  const rows = [["时点", "名次", "段位", "离王者"]];
+  const rows = [["时点", "名次", "段位", "离最高段"]];
   for (const [target, label] of marks){
     while (week < target){
-      lp += gain;
-      for (const p of board) p.lp += p.rate;          // 榜上的人也在爬
+      lp = Math.min(9999, Math.round(lp + gain));
+      for (const p of board) p.lp = Math.min(9999, Math.round(p.lp + p.rate));
       week++;
     }
     board.sort((a,b) => b.lp - a.lp);
@@ -147,11 +181,28 @@ function run(){
   $("t").innerHTML = rows.map((row, i) => "<tr>" + row.map(c => `<t${i?"d":"h"}>${c}</t${i?"d":"h"}>`).join("") + "</tr>").join("");
   me = lp; render();
 }
+function applyTiers(){
+  const parsed = parseTiers($("tierText").value);
+  if (parsed.tiers.length < 2){
+    $("tierNote").innerHTML = '<span class="err">至少要两档</span>';
+    return;
+  }
+  TIERS = parsed.tiers;
+  $("tierNote").textContent = `已应用 ${parsed.tiers.length} 档：` + TIERS.map(t => `${t.name}(${t.at})`).join(" · ")
+    + (parsed.bad.length ? `；忽略了 ${parsed.bad.length} 行格式不对的` : "");
+  drawDist(); render();
+}
+$("applyTier").onclick = applyTiers;
+$("resetTier").onclick = () => { $("tierText").value = DEFAULT_TIERS; applyTiers(); };
+$("rankRule").onchange = () => { drawDist(); render(); };
 $("n").oninput = reset;
 $("rival").oninput = reset;
 $("gain").oninput = () => { $("gainV").textContent = $("gain").value; };
 $("run").onclick = run;
 $("reset").onclick = reset;
+
+$("tierText").value = DEFAULT_TIERS;
+TIERS = parseTiers(DEFAULT_TIERS).tiers;
 reset();
 </script>
 </body>
