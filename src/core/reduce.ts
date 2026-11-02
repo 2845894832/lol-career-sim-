@@ -5,7 +5,7 @@ import { applyAction, canAfford, isActionUnlocked, staminaCost } from './actions
 import { advanceYear } from './growth';
 import { applyMatchOutcome, autoMatch, benchReason, canPlay } from './match';
 import { drawEvent, getEvent, resolveOption } from './events';
-import { normalEnding, specialEnding } from './endings';
+import { normalEnding, sliceEnding, specialEnding } from './endings';
 import { attrTotal, cloneState, isMatchWeek, isSigningWindow } from './state';
 import { placementOf, rankOf, weeksPlayed } from './ladder';
 
@@ -231,6 +231,13 @@ function finishWeek(state: GameState, out: LogEntry[]): void {
 
   if (isSigningWindow(state.week)) resolveSigningWindow(state, out);
   if (state.ended) return;
+
+  // 切片版：这一周打完就停，不再推进周次。
+  if (CONFIG.career.sliceAtWeek > 0 && state.year === 1 && state.week === CONFIG.career.sliceAtWeek) {
+    state.ended = sliceEnding(state);
+    out.push({ text: '切片到此为止。', tone: 'plain' });
+    return;
+  }
 
   resetWeek(state);
 

@@ -1,3 +1,4 @@
+import { CONFIG } from '../config';
 import { ATTR_KEYS, ATTR_LABEL, HONOR_LABEL, type Ending, type GameState } from '../types';
 import { ageOf, rankTier } from './state';
 
@@ -45,6 +46,32 @@ export function normalEnding(state: GameState, reason: EndReason): Ending {
   ].join(' ');
 
   return { kind: 'normal', title, body, note: noteFor(state) };
+}
+
+/**
+ * 切片版收尾：不是结局，是「到此为止」。
+ * 说清三件事——你打到了哪、这一周发生了什么、完整版还差什么。
+ */
+export function sliceEnding(state: GameState): Ending {
+  const { best } = bestAndWorst(state);
+  const tier = rankTier(state.rankPoints).name;
+  const startTier = rankTier(CONFIG.start.rankPoints).name;
+  const wonSpring = state.honors.includes('lpl-champion');
+  const spring = wonSpring ? '春决你赢了，奖杯现在还在休息室的柜子里。' : '春决你输了，场馆灯灭得比想象中快。';
+
+  const title = '切片到此为止';
+  const body = [
+    `这 ${CONFIG.career.sliceAtWeek} 周，你从${startTier}打到${tier}，现在第 ${state.placement} 名。六维最强的是${best}。`,
+    spring,
+    '完整版是八年：春决之后还有 MSI、夏季赛、世界赛，和七次同样的春天。',
+  ].join('');
+
+  return {
+    kind: 'normal',
+    title,
+    body,
+    note: '这一页不是结局，是这道菜的试吃装——好吃不好吃，你说。',
+  };
 }
 
 export function specialEnding(state: GameState): Ending {

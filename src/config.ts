@@ -14,6 +14,11 @@ export const CONFIG = {
     /** 每年 26 个比赛周 + 4 个休赛期周。 */
     weeksPerYear: 30,
     matchWeeksPerYear: 26,
+    /**
+     * 切片构建专用：打完这一周就出「切片到此为止」的结算页。
+     * 0 = 不截断（正式版）。由 vite define 的 __SLICE_AT__ 注入。
+     */
+    sliceAtWeek: typeof __SLICE_AT__ === 'number' ? __SLICE_AT__ : 0,
     /** 休赛期最后一周是签约窗口。 */
     signingWindowWeek: 30,
     /** 每年 S 赛决赛周。 */
