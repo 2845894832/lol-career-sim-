@@ -271,6 +271,20 @@ button {
   color: var(--bad);
 }
 
+/* 动效：150ms / 200ms，位移 8px。用 animation 而不是 transition——
+   界面靠 innerHTML 整块重绘，新插入的元素不会触发 transition。 */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -279,8 +293,10 @@ button {
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  animation: fade 150ms ease-out;
 }
 .sheet {
+  animation: rise 200ms ease-out;
   width: 100%;
   max-width: 520px;
   max-height: 86dvh;
@@ -290,6 +306,17 @@ button {
   border-top-right-radius: 16px;
   border: 1px solid var(--line);
   padding: 16px 14px calc(16px + env(safe-area-inset-bottom));
+}
+.sheet[data-kind="result"] {
+  animation-duration: 150ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .sheet,
+  .sheet[data-kind="result"] {
+    animation: fade 150ms ease-out;
+    transform: none;
+  }
 }
 .sheet h2 {
   margin: 0 0 10px;

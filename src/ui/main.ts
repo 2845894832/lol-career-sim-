@@ -86,6 +86,20 @@ function renderSlots(): string {
   return `<div class="panel"><div class="slots">${cells}</div></div>`;
 }
 
+/**
+ * 结周为什么点不了：一句里要有「为什么」和「怎么做」。
+ * 体力不够是另一种处境——说成「点上面补上」会误导。
+ */
+function blockedWhy(empty: number): string {
+  if (state.pendingEvent) return '这个事件还没选完，先在上面选一个';
+  const slot = state.actionGrid.indexOf(null);
+  const canDoSomething = ACTION_IDS.some(
+    (id) => id !== 'rest' && isActionUnlocked(state, id) && canAfford(state, slot, id),
+  );
+  if (!canDoSomething) return `还剩 ${empty} 格，但体力只够排休息`;
+  return `还差 ${empty} 格没排，点上面补上`;
+}
+
 function renderControls(): string {
   const empty = state.actionGrid.filter((id) => id === null).length;
   const incomplete = empty > 0;
@@ -94,9 +108,7 @@ function renderControls(): string {
     <button class="btn primary" data-act="end-week" ${blocked}>
       <span>结周</span><span class="hint">${blocked ? '' : '结算三个行动并推进'}</span>
     </button>
-    ${blocked
-      ? `<p class="why">${state.pendingEvent ? '这个事件还没处理完' : '还没排满行动格，点上面三个格子'}</p>`
-      : ''}
+    ${blocked ? `<p class="why">${blockedWhy(empty)}</p>` : ''}
     <button class="btn" data-act="retire"><span>退役</span><span class="hint">立刻看结局</span></button>
     <button class="btn" data-act="skip-year"><span>跳到下一年</span><span class="hint">调试用</span></button>
   </div>`;
@@ -134,7 +146,7 @@ function renderSheet(): string {
     const clearRow = filled
       ? `<button class="btn" data-act="clear-slot"><span>清空这一格</span><span class="hint">恢复成空，重新排</span></button>`
       : '';
-    return `<div class="overlay" data-act="close-sheet"><div class="sheet" data-stop="1">
+    return `<div class="overlay" data-act="close-sheet"><div class="sheet" data-kind="pick" data-stop="1">
       <h2>${slotLabel(sheet.slot)}排什么</h2>
       <div class="options">${rows}${clearRow}</div>
     </div></div>`;
@@ -146,7 +158,7 @@ function renderSheet(): string {
         `<button class="btn" data-act="pick-target" data-key="${key}"><span>${ATTR_LABEL[key]}</span><span class="hint">集中提升</span></button>`,
     )
     .join('');
-  return `<div class="overlay" data-act="close-sheet"><div class="sheet" data-stop="1">
+  return `<div class="overlay" data-act="close-sheet"><div class="sheet" data-kind="pick" data-stop="1">
     <h2>专项训练练哪一项</h2>
     <div class="options">${rows}</div>
   </div></div>`;
@@ -168,7 +180,7 @@ function renderEvent(): string {
       </button>`;
     })
     .join('');
-  return `<div class="overlay"><div class="sheet">
+  return `<div class="overlay"><div class="sheet" data-kind="result">
     <h2>本周事件</h2>
     <p class="event-text">${esc(event.text)}</p>
     <div class="options">${rows}</div>
@@ -180,7 +192,7 @@ function renderOutcome(): string {
   const rows = outcome
     .map((e) => `<div class="${e.tone}">${esc(e.text)}</div>`)
     .join('');
-  return `<div class="overlay"><div class="sheet">
+  return `<div class="overlay"><div class="sheet" data-kind="result">
     <h2>结果</h2>
     <div class="log">${rows}</div>
     <div style="height:12px"></div>
