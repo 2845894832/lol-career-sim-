@@ -1,17 +1,6 @@
 import { CONFIG } from '../config';
-import { ATTR_LABEL, type AttrKey, type GameState, type Phase } from '../types';
+import { type AttrKey, type GameState, type Phase } from '../types';
 import { clamp, phaseOfYear } from './state';
-
-/** 涨到下一级所需经验：属性越高越贵。 */
-export function expNeeded(attr: number): number {
-  return Math.round(CONFIG.attrs.expBase + CONFIG.attrs.expSlope * attr);
-}
-
-/** 当前属性距离下一级的进度，界面用。 */
-export function expProgress(state: GameState, key: AttrKey): { current: number; needed: number } {
-  const needed = expNeeded(state.attrs[key]);
-  return { current: Math.min(state.exp[key], needed), needed };
-}
 
 export interface GainResult {
   /** 实际涨了几点（受年上限与 100 封顶约束）。 */
@@ -20,33 +9,40 @@ export interface GainResult {
   capped: number;
 }
 
+/** 练一次涨几点：成长阶段额外 +1，练到 100 就停。 */
+export function gainPoints(state: GameState, key: AttrKey, amount: number): GainResult {
+  const cap = CONFIG.attrs.cap;
+  let points = 0;
+
+  if (state.attrs[key] >= cap || amount <= 0) return { points, capped: 0 };
+
+  const bonus = phaseOfYear(state.year) === 'growth' ? CONFIG.attrs.growthBonus : 0;
+  const want = amount + bonus;
+  const before = state.attrs[key];
+  state.attrs[key] = clamp(before + want, 0, cap);
+  points = state.attrs[key] - before;
+  state.yearGain[key] += points;
+  return { points, capped: want - points };
+}
+
 /**
- * 给某项加整数经验，攒够阈值就 +1。
- * 年龄台阶决定每年最多涨多少：成长 8 / 巅峰 6 / 衰退 2。
+ * 旧的「攒经验换点数」通道，保留给事件与测试调用。
+ * 现在没有年度上限，只会撞 100 的硬封顶。
  */
 export function gainExp(state: GameState, key: AttrKey, amount: number): GainResult {
   const cap = CONFIG.attrs.cap;
-  const yearCap = CONFIG.attrs.yearGainCap[phaseOfYear(state.year)];
   let points = 0;
   let capped = 0;
 
   if (state.attrs[key] >= cap || amount <= 0) return { points, capped };
 
-  state.exp[key] += amount;
-  while (state.exp[key] >= expNeeded(state.attrs[key])) {
-    if (state.attrs[key] >= cap) break;
-    if (state.yearGain[key] >= yearCap) {
-      capped += 1;
-      // 已达年上限：经验不再滚进下一级，避免跨年补涨。
-      state.exp[key] = Math.min(state.exp[key], expNeeded(state.attrs[key]) - 1);
-      break;
-    }
-    state.exp[key] -= expNeeded(state.attrs[key]);
+  while (state.exp[key] >= 100 && state.attrs[key] < cap) {
+    state.exp[key] -= 100;
     state.attrs[key] += 1;
     state.yearGain[key] += 1;
     points += 1;
   }
-
+  state.exp[key] += amount;
   return { points, capped };
 }
 
@@ -63,12 +59,19 @@ export function advanceYear(state: GameState): string[] {
   const phase = phaseOfYear(state.year);
 
   if (phase === 'decline') {
-    for (const key of ['operation', 'laning', 'teamfight', 'awareness'] as const) {
+    // 四项总和降为 80%，损失平均摊到四项：老的掉得多，年轻的掉得少。
+    const keys = ['operation', 'laning', 'teamfight', 'awareness'] as const;
+    const total = keys.reduce((sum, key) => sum + state.attrs[key], 0);
+    const loss = total * (1 - CONFIG.attrs.declineRatio);
+    const each = loss / keys.length;
+    let dropped = 0;
+    for (const key of keys) {
       const before = state.attrs[key];
-      state.attrs[key] = clamp(before - CONFIG.attrs.declineDrop, 0, CONFIG.attrs.cap);
-      if (state.attrs[key] !== before) {
-        logs.push(`${ATTR_LABEL[key]} 掉了 ${before - state.attrs[key]} 点——手比脑子慢半拍。`);
-      }
+      state.attrs[key] = clamp(Math.round(before - each), 0, CONFIG.attrs.cap);
+      dropped += before - state.attrs[key];
+    }
+    if (dropped > 0) {
+      logs.push(`身体开始还账了：四项一共掉了 ${dropped} 点，手比脑子慢半拍。`);
     }
   }
 

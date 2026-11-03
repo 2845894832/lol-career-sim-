@@ -250,6 +250,7 @@ function renderSheet(): string {
       : '';
     return `<div class="overlay" data-act="close-sheet"><div class="sheet" data-kind="pick" data-stop="1">
       <h2>${slotLabel(sheet.slot)}排什么</h2>
+      ${phaseOfYear(state.year) === 'growth' ? '<div class="cap">成长阶段：每次练习多涨 1 点。</div>' : ''}
       <div class="options">${rows}${clearRow}</div>
     </div></div>`;
   }

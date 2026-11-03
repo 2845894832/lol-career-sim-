@@ -3,7 +3,7 @@ import { CONFIG } from '../src/config';
 import { isStarting, startRequirement } from '../src/core/league';
 import { reduce } from '../src/core/reduce';
 import { applyAction, canAfford } from '../src/core/actions';
-import { advanceYear, gainExp } from '../src/core/growth';
+import { advanceYear, gainExp, gainPoints } from '../src/core/growth';
 import { autoMatch, applyMatchOutcome } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
 import { drawEvent, successRateOf } from '../src/core/events';
@@ -144,18 +144,17 @@ describe('行动', () => {
 });
 
 describe('成长', () => {
-  it('属性越高，涨一点需要的经验越多', () => {
-    const low = newGame(1);
-    const high = newGame(1);
-    low.attrs.operation = 30;
-    high.attrs.operation = 90;
-    low.exp.operation = 0;
-    high.exp.operation = 0;
-    low.year = 1;
-    high.year = 1;
-    gainExp(low, 'operation', 200);
-    gainExp(high, 'operation', 200);
-    expect(low.attrs.operation - 30).toBeGreaterThan(high.attrs.operation - 90);
+  it('成长阶段练一次多涨 1 点，巅峰期只有本色收益', () => {
+    const young = newGame(1);
+    const old = newGame(1);
+    young.year = 1;
+    old.year = 3;
+    young.attrs.operation = 50;
+    old.attrs.operation = 50;
+    gainPoints(young, 'operation', 2);
+    gainPoints(old, 'operation', 2);
+    expect(young.attrs.operation).toBe(53);
+    expect(old.attrs.operation).toBe(52);
   });
 
   it('衰退期四项下降，心态与人气不降', () => {

@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer-core';
+import { startCareer } from './lib/start.mjs';
 import { existsSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -11,7 +12,7 @@ const browser = await puppeteer.launch({ executablePath: exe, headless: 'new' })
 const page = await browser.newPage();
 await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
 await page.goto('file://' + resolve('dist/index.html'), { waitUntil: 'load' });
-await new Promise((r) => setTimeout(r, 300));
+await startCareer(page);
 mkdirSync('shots', { recursive: true });
 await page.screenshot({ path: 'shots/rank-code.png', fullPage: false });
 const meta = await page.$eval('.meta', (el) => el.textContent?.trim());

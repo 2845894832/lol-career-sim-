@@ -1,9 +1,9 @@
 import { CONFIG } from '../config';
-import { ATTR_LABEL, DECLINE_ATTRS, type ActionId, type AttrKey, type GameState } from '../types';
-import { applyAttrDelta, gainExp } from './growth';
+import { ATTR_LABEL, type ActionId, type AttrKey, type GameState } from '../types';
+import { applyAttrDelta, gainPoints } from './growth';
 import { createRng } from '../rng';
 import { FEEDBACK } from '../data/feedback';
-import { clamp, rankExpMultiplier } from './state';
+import { clamp } from './state';
 import { placementOf, rankOf, weeklyGain, weeksPlayed } from './ladder';
 
 export interface ActionInfo {
@@ -15,14 +15,14 @@ export interface ActionInfo {
 }
 
 export const ACTION_INFO: Record<ActionId, ActionInfo> = {
-  rank: { label: '上分', hint: '操作/对线/团战/意识 ↑，累积段位', needsContract: false },
-  train: { label: '专项训练', hint: '指定一项 ↑（比上分集中）', needsContract: false },
-  review: { label: '复盘录像', hint: '意识 ↑，便宜稳定', needsContract: false },
-  scrim: { label: '训练赛', hint: '团战/意识 ↑，教练信任 +', needsContract: true },
-  fitness: { label: '健身', hint: '体力上限 ↑', needsContract: false },
-  stream: { label: '直播', hint: '金钱 ↑，人气 ↑', needsContract: false },
-  business: { label: '商业活动', hint: '金钱 ↑↑，人气 ↑，更耗体力', needsContract: true },
-  rest: { label: '休息', hint: '恢复体力', needsContract: false },
+  rank: { label: '上分', hint: '对线 +1、操作 +1；段位分数 ↑', needsContract: false },
+  train: { label: '专项训练', hint: '选一维 +2', needsContract: false },
+  review: { label: '复盘录像', hint: '意识 +1', needsContract: false },
+  scrim: { label: '训练赛', hint: '团战 +1、意识 +1、信任 +2', needsContract: true },
+  fitness: { label: '健身', hint: '体力上限 +4', needsContract: false },
+  stream: { label: '直播', hint: '钱 +1000、人气 +2', needsContract: false },
+  business: { label: '商业活动', hint: '钱 +2000、人气 +5', needsContract: true },
+  rest: { label: '休息', hint: '体力 +30', needsContract: false },
 };
 
 export function staminaCost(action: ActionId): number {
@@ -99,10 +99,8 @@ export function applyAction(
 
   switch (action) {
     case 'rank': {
-      const mult = rankExpMultiplier(state);
-      for (const key of DECLINE_ATTRS) {
-        gainExp(state, key, Math.round(CONFIG.actions.rank.exp[key] * mult));
-      }
+      gainPoints(state, 'laning', 1);
+      gainPoints(state, 'operation', 1);
       // 一周打包的排位：收益按当前档位递减，档位越高涨得越慢。
       const gained = weeklyGain(state.rankPoints);
       // 不封顶：封顶之后名次就成了死局，谁到 9999 都是并列。
@@ -116,17 +114,17 @@ export function applyAction(
     }
     case 'train': {
       const key = target ?? 'operation';
-      gainExp(state, key, CONFIG.actions.train.exp);
+      gainPoints(state, key, CONFIG.actions.train.gain);
       logs.push(say(state, 'train', `这一周只练${ATTR_LABEL[key]}。`));
       break;
     }
     case 'review':
-      gainExp(state, 'awareness', CONFIG.actions.review.exp.awareness);
+      gainPoints(state, 'awareness', CONFIG.actions.review.gain.awareness);
       logs.push(say(state, 'review', '你逐帧看了自己的团战，越看越沉默。'));
       break;
     case 'scrim':
-      gainExp(state, 'teamfight', CONFIG.actions.scrim.exp.teamfight);
-      gainExp(state, 'awareness', CONFIG.actions.scrim.exp.awareness);
+      gainPoints(state, 'teamfight', CONFIG.actions.scrim.gain.teamfight);
+      gainPoints(state, 'awareness', CONFIG.actions.scrim.gain.awareness);
       state.coachTrust = clamp(state.coachTrust + CONFIG.actions.scrim.coachTrust, 0, 100);
       logs.push(say(state, 'scrim', '训练赛打完，教练在本子上记了两笔。'));
       break;

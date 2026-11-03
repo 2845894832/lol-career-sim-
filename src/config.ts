@@ -43,13 +43,10 @@ export const CONFIG = {
 
   attrs: {
     cap: 100,
-    /** 涨到下一级所需经验 = base + slope × 当前值。 */
-    expBase: 24,
-    expSlope: 1.4,
-    /** 每项每年最多涨多少点真值。 */
-    yearGainCap: { growth: 8, peak: 6, decline: 2 },
-    /** 衰退期每年掉点（只掉四项）。 */
-    declineDrop: 3,
+    /** 成长阶段每次练习额外多涨的点数。 */
+    growthBonus: 1,
+    /** 衰退期年初：四项总和降为原来的 80%（损失平均摊到四项）。 */
+    declineRatio: 0.8,
     /** 每年自然增长的心态。 */
     mentalityGrowth: 2,
     mentalityGrowthDecline: 3,
@@ -57,17 +54,15 @@ export const CONFIG = {
 
   /** 每个行动的体力消耗与收益。 */
   actions: {
-    rank: {
-      stamina: 12,
-      exp: { operation: 6, laning: 6, teamfight: 6, awareness: 6 },
-    },
-    train: { stamina: 10, exp: 14 },
-    review: { stamina: 6, exp: { awareness: 10 } },
-    scrim: { stamina: 14, exp: { teamfight: 8, awareness: 8 }, coachTrust: 3 },
+    rank: { stamina: 12, gain: { laning: 1, operation: 1 } },
+    /** 数字 = 指定一维涨几点。 */
+    train: { stamina: 14, gain: 2 },
+    review: { stamina: 6, gain: { awareness: 1 } },
+    scrim: { stamina: 14, gain: { teamfight: 1, awareness: 1 }, coachTrust: 2 },
     fitness: { stamina: 8, maxStamina: 4, maxStaminaCap: 999 },
-    stream: { stamina: 10, money: 90, popularity: 3 },
-    business: { stamina: 18, money: 320, popularity: 5 },
-    rest: { stamina: 0, restore: 24 },
+    stream: { stamina: 10, money: 1000, popularity: 2 },
+    business: { stamina: 25, money: 2000, popularity: 5 },
+    rest: { stamina: 0, restore: 30 },
   },
 
   /**
@@ -140,7 +135,7 @@ export const CONFIG = {
     lossCoachTrust: 4,
     /** 胜场人气与经验。 */
     winPopularity: 1,
-    winExp: { operation: 4, laning: 4, teamfight: 4, awareness: 4 },
+    winGain: { operation: 1, laning: 1, teamfight: 1, awareness: 1 },
     /** 输比赛有一定概率受伤。 */
     injuryChance: 0.12,
     /** 伤病上限，到这个数就是赛季报销。 */
