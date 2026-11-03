@@ -84,6 +84,7 @@ export interface Consequence {
   flag?: string;
   /** 收到邀请函并接受：直接转成职业选手。 */
   signed?: boolean;
+  teamId?: string;
 }
 
 export type RiskKind = 'roll' | 'success' | 'fail';
@@ -151,6 +152,13 @@ export interface LogEntry {
   tone: 'good' | 'bad' | 'plain';
 }
 
+export interface SeasonResult {
+  week: number;
+  rivalId: string;
+  won: boolean;
+  kind: 'regular' | 'spring' | 'summer';
+}
+
 export interface GameState {
   version: number;
   /** 本局种子，用于复现。 */
@@ -176,6 +184,13 @@ export interface GameState {
   flags: string[];
   triggeredEvents: string[];
   signed: boolean;
+  /** 玩家自建角色的名字与分路。 */
+  playerName: string;
+  role: 'TOP' | 'JUNGLE' | 'MID' | 'ADC' | 'SUP';
+  /** 签约之后的队伍 id；未签约为 null。 */
+  teamId: string | null;
+  /** 今年打过的比赛。 */
+  seasonResults: SeasonResult[];
   freeAgent: boolean;
   /** 连续无人可签的签约窗口数。 */
   failedWindows: number;

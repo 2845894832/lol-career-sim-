@@ -5,6 +5,7 @@ import { ACTION_INFO, canAfford, isActionUnlocked, staminaCost } from '../core/a
 import { loadSaved, persist } from '../core/save';
 import { ageOf, isMatchWeek, newGame, phaseOfYear } from '../core/state';
 import { rankOf } from '../core/ladder';
+import { myPlace, mySquad, nextFixture, upcomingFixtures, standings, isStarting } from '../core/league';
 import { randomSeed } from '../rng';
 import {
   ACTION_IDS,
@@ -25,8 +26,27 @@ const app = root;
 type Sheet = { kind: 'actions'; slot: number } | { kind: 'targets'; slot: number };
 
 let state: GameState = loadSaved() ?? newGame(randomSeed());
+
+// 调试用：?dev=signed 直接在签约状态下开局，方便看赛程屏。正式流程不会走到这里。
+if (new URLSearchParams(location.search).get('dev') === 'signed') {
+  state = newGame(randomSeed());
+  state.signed = true;
+  state.teamId = 'RNG';
+  state.coachTrust = 65;
+  state.week = 13;
+  state.seasonResults = [
+    { week: 2, rivalId: 'WE', won: true, kind: 'regular' },
+    { week: 4, rivalId: 'IG', won: true, kind: 'regular' },
+    { week: 6, rivalId: 'BLG', won: false, kind: 'regular' },
+    { week: 8, rivalId: 'EDG', won: true, kind: 'regular' },
+    { week: 10, rivalId: 'SS', won: true, kind: 'regular' },
+    { week: 12, rivalId: 'JDG', won: false, kind: 'regular' },
+  ];
+}
 let sheet: Sheet | null = null;
 let outcome: LogEntry[] | null = null;
+/** 底部页签：本周 / 赛程。 */
+let tab: 'week' | 'schedule' = 'week';
 
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -212,9 +232,66 @@ function renderEnding(): string {
   </div>`;
 }
 
+function renderTabs(): string {
+  const item = (id: 'week' | 'schedule', label: string) =>
+    `<button class="tab${tab === id ? ' on' : ''}" data-act="tab" data-tab="${id}">${label}</button>`;
+  return `<nav class="tabs">${item('week', '本周')}${item('schedule', '赛程')}</nav>`;
+}
+
+function renderSchedule(): string {
+  if (!state.signed) {
+    return `<div class="panel"><div class="sub">还没签约，没有赛程。上王者之后会收到邀请。</div></div>`;
+  }
+  const rows = standings(state);
+  const place = myPlace(state);
+  const me = rows.find((r) => r.isMe);
+  const next = nextFixture(state);
+  const upcoming = upcomingFixtures(state, 4);
+
+  const rankLine = `<div class="rank-big"><b>第 ${place} 名</b><span class="mini">/ ${rows.length} 支</span>
+    <span class="rec">${me?.wins ?? 0} 胜 ${me?.losses ?? 0} 负</span></div>`;
+
+  const nextLine = next
+    ? `<div class="next"><span>下一场</span><b>${esc(next.rivalName)}</b><span class="mini">第 ${next.week} 周</span></div>`
+    : '<div class="next"><span>本季常规赛打完了</span></div>';
+
+  const list = upcoming
+    .map((f) => `<li><span class="w">W${f.week}</span><span class="t">${esc(f.rivalName)}</span></li>`)
+    .join('');
+
+  const squad = mySquad(state)
+    .map((p) => {
+      const meRow = p.me ? ' me' : '';
+      const sub = p.me && !isStarting(state) ? '<span class="mini">替补</span>' : '';
+      return `<li class="squad-row${meRow}">
+        <span class="pos">${p.pos}</span>
+        <span class="nm">${esc(p.name)}${sub}</span>
+        <span class="ovr">${p.ovr}</span>
+        <span class="bar"><i style="width:${p.ovr}%"></i></span>
+      </li>`;
+    })
+    .join('');
+
+  return `<div class="panel">
+      <div class="cap">赛季排名</div>
+      ${rankLine}
+      ${nextLine}
+      <ul class="weeks">${list}</ul>
+    </div>
+    <div class="panel">
+      <div class="cap">当前阵容 · ${esc(state.teamId ?? '')}</div>
+      <ul class="squad">${squad}</ul>
+      <div class="cap" style=" margin-top:10px">数值取名单里的五维均值；你是同一套算法下的当前值。</div>
+    </div>`;
+}
+
 function render(): void {
   if (state.ended) {
     app.innerHTML = renderTopbar() + renderEnding();
+    return;
+  }
+  if (tab === 'schedule') {
+    app.innerHTML = renderTopbar() + renderSchedule() + renderTabs() + renderSheet() + renderEvent() + renderOutcome();
     return;
   }
   app.innerHTML =
@@ -224,6 +301,7 @@ function render(): void {
     renderSlots() +
     renderControls() +
     renderLog() +
+    renderTabs() +
     renderSheet() +
     renderEvent() +
     renderOutcome();
@@ -243,6 +321,11 @@ app.addEventListener('click', (ev) => {
   const node = target.closest<HTMLElement>('[data-act]');
   if (!node) return;
   const act = node.dataset.act;
+  if (act === 'tab') {
+    tab = (node.dataset.tab as 'week' | 'schedule') ?? 'week';
+    render();
+    return;
+  }
 
   // 点浮层空白处关闭，点内容不关。
   if (act === 'close-sheet' && target.closest('[data-stop]')) return;

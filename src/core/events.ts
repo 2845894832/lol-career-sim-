@@ -147,6 +147,10 @@ export function applyConsequence(state: GameState, c: Consequence): string[] {
     addFlag(state, c.flag);
     notes.push(`标记「${c.flag}」`);
   }
+  if (c.teamId) {
+    state.teamId = c.teamId;
+    notes.push(`加入 ${c.teamId}`);
+  }
   if (c.signed && !state.signed) {
     state.signed = true;
     addFlag(state, '#签约');

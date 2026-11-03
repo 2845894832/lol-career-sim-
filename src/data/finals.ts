@@ -1,3 +1,5 @@
+import { CONFIG } from '../config';
+import { invitations } from '../core/league';
 import { rankOf } from '../core/ladder';
 import type { GameEvent, GameState } from '../types';
 
@@ -11,8 +13,8 @@ import type { GameEvent, GameState } from '../types';
  * 只有签约之后（职业选手）才打联赛。
  */
 
-const SPRING_WEEK = 8;
-const SUMMER_WEEK = 20;
+const SPRING_WEEK = CONFIG.league.springFinalWeek;
+const SUMMER_WEEK = CONFIG.league.summerFinalWeek;
 
 export function springFinal(year: number): GameEvent {
   return {
@@ -123,6 +125,20 @@ export function finalById(id: string): GameEvent | null {
  * 邀请函：段位到王者、还没签约时必触发一次。
  * 接受就直接转职业（不用等第 30 周的签约窗口）；拒绝可以继续当路人，明年还会再来。
  */
+/** 三个邀请：都是当年最弱的 3 支，选一支就签约。 */
+function inviteOptions(state: GameState) {
+  return invitations(state.year).map((t, i) => ({
+    label: `${t.name}（${t.id}）`,
+    risk: 'success' as const,
+    success: { signed: true, teamId: t.id, coachTrust: 10, attrs: { popularity: 4 } },
+    successText: [
+      `${t.name} 的经理只问了一句：「什么时候能到？」`,
+      `${t.name} 的训练室很小，墙上贴着去年倒数第一的战绩。`,
+      `你签了 ${t.name}。合同只有一页，最后一行写着「争取进季后赛」。`,
+    ][i] ?? `你签了 ${t.name}。`,
+  }));
+}
+
 export function inviteEvent(state: GameState): GameEvent | null {
   if (state.signed) return null;
   const top = rankOf(state.rankPoints, state.placement).index;
@@ -138,20 +154,12 @@ export function inviteEvent(state: GameState): GameEvent | null {
     once: true,
     weight: 1,
     requires: (s) => !s.signed && rankOf(s.rankPoints, s.placement).index >= 9,
-    options: [
-      {
-        label: '回一句「什么时候」',
-        risk: 'success',
-        success: { signed: true, coachTrust: 10, attrs: { popularity: 6 } },
-        successText: '对方秒回了一个地址。你把行李塞进箱子，没跟任何人说。',
-      },
-      {
-        label: '再等等，我还想再打一季',
-        risk: 'success',
-        success: { attrs: { mentality: 2 }, flag: '#拒过邀请' },
-        successText: '你关掉对话框，把排位又开了一把。',
-      },
-    ],
+    options: [...inviteOptions(state), {
+      label: '再等等，我还想再打一季',
+      risk: 'success' as const,
+      success: { attrs: { mentality: 2 }, flag: '#拒过邀请' },
+      successText: '你关掉对话框，把排位又开了一把。',
+    }],
   };
 }
 

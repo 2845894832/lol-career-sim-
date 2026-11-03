@@ -64,7 +64,7 @@ export function rankExpMultiplier(state: GameState): number {
   return clamp(1 + (state.rankPoints / CONFIG.rank.max) * 0.5, 1, 1.5);
 }
 
-export function newGame(seed: number): GameState {
+export function newGame(seed: number, playerName = '你', role: GameState['role'] = 'MID'): GameState {
   const { rng } = createRng(seed);
   const attrs = emptyStats();
   for (const key of ATTR_KEYS) {
@@ -97,6 +97,10 @@ export function newGame(seed: number): GameState {
     flags: [],
     triggeredEvents: [],
     signed: false,
+    playerName,
+    role,
+    teamId: null,
+    seasonResults: [],
     freeAgent: false,
     failedWindows: 0,
     actionGrid: [null, null, null],

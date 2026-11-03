@@ -2,6 +2,7 @@ import { CONFIG } from '../config';
 import { createRng } from '../rng';
 import { type GameState, type LogEntry, DECLINE_ATTRS, MATCH_ATTRS } from '../types';
 import { gainExp } from './growth';
+import { myTeamStrength } from './league';
 import { clamp, effectiveAttr, isMatchWeek } from './state';
 
 /** 能不能上场：签约、伤病、教练信任、是否在比赛周。 */
@@ -33,7 +34,9 @@ export function benchReason(state: GameState): string | null {
  */
 export function matchRate(state: GameState, opponent: number, bonus = 0): number {
   const total = MATCH_ATTRS.reduce((sum, key) => sum + effectiveAttr(state, key), 0);
-  const avg = total / MATCH_ATTRS.length;
+  const solo = total / MATCH_ATTRS.length;
+  // 签了约就是全队口径：五个人一起算，替补时算的是场上的五个人。
+  const avg = state.signed ? myTeamStrength(state) : solo;
   const trustBonus = (state.coachTrust - CONFIG.match.trustPivot) * CONFIG.match.coachTrustFactor;
   const p = 0.5 + (avg - opponent) / CONFIG.match.formulaK + bonus + trustBonus;
   return clamp(p, CONFIG.match.minWinRate, CONFIG.match.maxWinRate);

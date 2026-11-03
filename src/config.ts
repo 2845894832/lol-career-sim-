@@ -19,8 +19,8 @@ export const CONFIG = {
      * 0 = 不截断（正式版）。由 vite define 的 __SLICE_AT__ 注入。
      */
     sliceAtWeek: typeof __SLICE_AT__ === 'number' ? __SLICE_AT__ : 0,
-    /** 休赛期最后一周是签约窗口。 */
-    signingWindowWeek: 30,
+    /** 休赛期最后一周是签约窗口（夏决在 30，窗口挪到 29）。 */
+    signingWindowWeek: 29,
     /** 每年 S 赛决赛周。 */
     finalWeek: 26,
     /** 那场决赛发生在第几年。 */
@@ -35,7 +35,7 @@ export const CONFIG = {
     popularity: 20,
     maxStamina: 100,
     stamina: 60,
-    coachTrust: 50,
+    coachTrust: 40,
     /** 开局就是大师 2800：高分路人王，还没人认识。 */
     rankPoints: 2800,
     money: 0,
@@ -63,7 +63,7 @@ export const CONFIG = {
     },
     train: { stamina: 10, exp: 14 },
     review: { stamina: 6, exp: { awareness: 10 } },
-    scrim: { stamina: 14, exp: { teamfight: 8, awareness: 8 }, coachTrust: 1 },
+    scrim: { stamina: 14, exp: { teamfight: 8, awareness: 8 }, coachTrust: 3 },
     fitness: { stamina: 8, maxStamina: 4, maxStaminaCap: 999 },
     stream: { stamina: 10, money: 90, popularity: 3 },
     business: { stamina: 18, money: 320, popularity: 5 },
@@ -107,12 +107,24 @@ export const CONFIG = {
     seed: 20261101,
   },
 
+  /** 联赛：赛程、签约、首发。 */
+  league: {
+    /** 常规赛周次：双周，避开第 15 周（春决）与第 30 周（夏决）。 */
+    regularWeeks: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26],
+    springFinalWeek: 15,
+    summerFinalWeek: 30,
+    /** 上王者后给几个邀请。 */
+    invitations: 3,
+    /** 教练信任超过这个数才首发。 */
+    startThreshold: 60,
+  },
+
   /** 比赛结算。 */
   match: {
     /** 胜率 = 相关属性均值 / 100 + 教练信任修正。 */
     coachTrustFactor: 0.001,
-    /** 教练信任 50 视为中性。 */
-    trustPivot: 50,
+    /** 教练信任 40 视为中性（开局值）。 */
+    trustPivot: 40,
     minWinRate: 0.05,
     maxWinRate: 0.95,
     /** 统一胜负公式：胜率 = 0.5 + (六维均值 − 对手) / K + 选项加成。 */

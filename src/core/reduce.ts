@@ -1,4 +1,5 @@
 import { CONFIG } from '../config';
+import { fixtureThisWeek, matchLogLine, myTeamStrength, recordResult, rivalStrength, winChance } from './league';
 import { createRng } from '../rng';
 import type { Action, AttrKey, GameState, LogEntry, ReduceResult } from '../types';
 import { applyAction, canAfford, isActionUnlocked, staminaCost } from './actions';
@@ -227,6 +228,27 @@ function finishWeek(state: GameState, out: LogEntry[]): void {
   state.placement = placementOf(state.rankPoints, weeksPlayed(state.year, state.week) + 1);
   if (!state.actionGrid.includes('rank') && state.placement > before && before > 0) {
     out.push({ text: `这周没打排位，掉到第 ${state.placement} 名了。`, tone: 'bad' });
+  }
+
+  // 签约之后，到了比赛周就打一场。
+  if (state.signed && state.injury < CONFIG.match.injuryBench) {
+    const fixture = fixtureThisWeek(state);
+    if (fixture) {
+      const ctx = createRng(state.rngState);
+      const won = ctx.rng.next() < winChance(state, fixture.rivalId);
+      state.rngState = ctx.state();
+      recordResult(state, fixture, won);
+      out.push({
+        text: matchLogLine(
+          fixture,
+          won,
+          Math.round(myTeamStrength(state)),
+          Math.round(rivalStrength(state.year, fixture.rivalId)),
+        ),
+        tone: won ? 'good' : 'bad',
+      });
+      state.temp = {};
+    }
   }
 
   if (isSigningWindow(state.week)) resolveSigningWindow(state, out);
