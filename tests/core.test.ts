@@ -549,7 +549,7 @@ describe('春决 / 夏决', () => {
     const ev = drawEvent(s).event!;
     s.pendingEvent = { eventId: ev.id };
     const after = reduce(s, { kind: 'chooseOption', option: 1 }).state;
-    expect(after.honors).toContain('lpl-champion');
+    expect(after.honors.map((h) => h.id)).toContain('lpl-champion');
   });
 });
 

@@ -372,7 +372,7 @@ button {
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   background: var(--panel);
   border-top: 1px solid var(--line);
 }
@@ -387,6 +387,19 @@ button {
   min-height: 48px;
 }
 .tabs .tab.on { color: var(--fg); font-weight: 700; }
+.tabs .tab.off { color: var(--line); }
+
+/* ---- 生涯屏 ---- */
+.honor-year { margin-bottom: 14px; }
+.honor-year:last-child { margin-bottom: 0; }
+.honors { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.honors li {
+  font-size: 14px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--fg);
+}
 
 /* ---- 赛程屏 ---- */
 .cap { font-size: 12px; color: var(--muted); margin-bottom: 8px; }

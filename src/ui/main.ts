@@ -11,6 +11,7 @@ import {
   ACTION_IDS,
   ATTR_KEYS,
   ATTR_LABEL,
+  HONOR_LABEL,
   PHASE_LABEL,
   type Action,
   type ActionId,
@@ -59,7 +60,7 @@ if (devMode === 'signed' || devMode === 'bench') {
 let sheet: Sheet | null = null;
 let outcome: LogEntry[] | null = null;
 /** 底部页签：本周 / 赛程。 */
-let tab: 'week' | 'schedule' = 'week';
+let tab: 'week' | 'schedule' | 'career' = 'week';
 
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -316,9 +317,57 @@ function renderEnding(): string {
 }
 
 function renderTabs(): string {
-  const item = (id: 'week' | 'schedule', label: string) =>
+  const item = (id: 'week' | 'schedule' | 'career', label: string) =>
     `<button class="tab${tab === id ? ' on' : ''}" data-act="tab" data-tab="${id}">${label}</button>`;
-  return `<nav class="tabs">${item('week', '本周')}${item('schedule', '赛程')}</nav>`;
+  return `<nav class="tabs">${item('week', '本周')}${item('schedule', '赛程')}${item('career', '生涯')}<span class="tab off">预留</span></nav>`;
+}
+
+/** 生涯屏：上面是六维（含人气），下面是荣誉。 */
+function renderCareer(): string {
+  const rows = ATTR_KEYS.map((key) => {
+    const v = state.attrs[key];
+    return `<li class="squad-row">
+        <span class="pos">${ATTR_LABEL[key]}</span>
+        <span class="nm"></span>
+        <span class="ovr">${v}</span>
+        <span class="bar"><i style="width:${v}%"></i></span>
+      </li>`;
+  }).join('');
+
+  const byYear = new Map<number, string[]>();
+  for (const h of state.honors) {
+    const list = byYear.get(h.year) ?? [];
+    const label = HONOR_LABEL[h.id];
+    const at = list.indexOf(label);
+    if (at >= 0) {
+      const cur = list[at] ?? '';
+      const m = cur.match(/×(\d+)$/);
+      list[at] = m ? cur.replace(/×\d+$/, `×${Number(m[1]) + 1}`) : `${cur} ×2`;
+    } else {
+      list.push(label);
+    }
+    byYear.set(h.year, list);
+  }
+  const years = [...byYear.keys()].sort((a, b) => a - b);
+  const honorBlock = years.length
+    ? years
+        .map(
+          (y) => `<div class="honor-year">
+        <div class="cap">第 ${y} 年</div>
+        <ul class="honors">${byYear.get(y)!.map((t) => `<li>${t}</li>`).join('')}</ul>
+      </div>`,
+        )
+        .join('')
+    : '<div class="sub">荣誉柜是空的。打完一个赛季再看。</div>';
+
+  return `<div class="panel">
+      <div class="cap">能力</div>
+      <ul class="squad">${rows}</ul>
+    </div>
+    <div class="panel">
+      <div class="cap">荣誉</div>
+      ${honorBlock}
+    </div>`;
 }
 
 function renderSchedule(): string {
@@ -420,6 +469,10 @@ function render(): void {
     app.innerHTML = renderTopbar() + renderSchedule() + renderTabs() + renderSheet() + renderEvent() + renderOutcome();
     return;
   }
+  if (tab === 'career') {
+    app.innerHTML = renderTopbar() + renderCareer() + renderTabs() + renderSheet() + renderEvent() + renderOutcome();
+    return;
+  }
   app.innerHTML =
     renderTopbar() +
     renderAttrs() +
@@ -468,7 +521,7 @@ app.addEventListener('click', (ev) => {
     return;
   }
   if (act === 'tab') {
-    tab = (node.dataset.tab as 'week' | 'schedule') ?? 'week';
+    tab = (node.dataset.tab as 'week' | 'schedule' | 'career') ?? 'week';
     render();
     return;
   }

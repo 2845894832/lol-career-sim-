@@ -4,7 +4,7 @@
  */
 export const CONFIG = {
   /** 存档版本；不匹配时安全重开。改成名次制后必须加一。 */
-  version: 2,
+  version: 3,
   storageKey: 'lpl-career-proto',
 
   career: {

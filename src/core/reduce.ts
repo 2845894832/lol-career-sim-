@@ -7,7 +7,7 @@ import { advanceYear } from './growth';
 import { applyMatchOutcome, autoMatch, benchReason, canPlay } from './match';
 import { drawEvent, getEvent, resolveOption } from './events';
 import { normalEnding, sliceEnding, specialEnding } from './endings';
-import { attrTotal, cloneState, isMatchWeek, isSigningWindow } from './state';
+import { addHonor, attrTotal, cloneState, isMatchWeek, isSigningWindow } from './state';
 import { placementOf, rankOf, weeksPlayed } from './ladder';
 
 /** 那场决赛：第 3 年 S 赛。 */
@@ -298,7 +298,7 @@ function advanceToNextYear(state: GameState, out: LogEntry[]): void {
   }
 
   if (state.year === CONFIG.career.rookieSeason) {
-    state.honors.push('rookie-of-year');
+    addHonor(state, 'rookie-of-year');
     out.push({ text: '赛季末，你拿了最佳新秀。', tone: 'good' });
   }
 }

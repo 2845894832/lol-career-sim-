@@ -60,6 +60,11 @@ export type HonorId =
   | 'rookie-of-year'
   | 'hall-of-fame';
 
+export interface HonorEntry {
+  id: HonorId;
+  year: number;
+}
+
 export const HONOR_LABEL: Record<HonorId, string> = {
   'lpl-champion': '联赛冠军',
   'msi-champion': 'MSI 冠军',
@@ -180,7 +185,8 @@ export interface GameState {
   money: number;
   injury: number;
   coachTrust: number;
-  honors: HonorId[];
+  /** 荣誉流水：同一个荣誉拿两次就有两条记录（年份不同）。 */
+  honors: HonorEntry[];
   flags: string[];
   triggeredEvents: string[];
   signed: boolean;

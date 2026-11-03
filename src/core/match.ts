@@ -2,7 +2,7 @@ import { CONFIG } from '../config';
 import { createRng } from '../rng';
 import { type GameState, type LogEntry, MATCH_ATTRS } from '../types';
 import { myTeamStrength } from './league';
-import { clamp, effectiveAttr, isMatchWeek } from './state';
+import { addHonor, clamp, effectiveAttr, isMatchWeek } from './state';
 
 /** 能不能上场：签约、伤病、教练信任、是否在比赛周。 */
 export function canPlay(state: GameState): boolean {
@@ -70,7 +70,7 @@ export function applyMatchOutcome(state: GameState, win: boolean, isFinal: boole
   state.rngState = ctx.state();
 
   if (isFinal && win) {
-    state.honors.push('worlds-champion');
+    addHonor(state, 'worlds-champion');
     logs.push({ text: '你捧起了 S 赛奖杯。', tone: 'good' });
   }
   if (isFinal && !win) {

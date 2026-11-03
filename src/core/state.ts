@@ -1,7 +1,7 @@
 import { CONFIG } from '../config';
 import { placementOf, tierAt, tierCount, tierIndex, weeksPlayed } from './ladder';
 import { createRng } from '../rng';
-import { ATTR_KEYS, type AttrKey, type GameState, type Phase, type Stats } from '../types';
+import { ATTR_KEYS, type AttrKey, type GameState, type HonorId, type Phase, type Stats } from '../types';
 
 export const clamp = (v: number, lo: number, hi: number): number => (v < lo ? lo : v > hi ? hi : v);
 
@@ -133,8 +133,13 @@ export function addFlag(state: GameState, flag: string): void {
   if (!state.flags.includes(flag)) state.flags.push(flag);
 }
 
-export function addHonor(state: GameState, honor: GameState['honors'][number]): void {
-  if (!state.honors.includes(honor)) state.honors.push(honor);
+export function addHonor(state: GameState, honor: HonorId): void {
+  state.honors.push({ id: honor, year: state.year });
+}
+
+/** 这个荣誉拿过没有（不区分次数）。 */
+export function hasHonor(state: GameState, honor: HonorId): boolean {
+  return state.honors.some((h) => h.id === honor);
 }
 
 /** 临时加减：只在本场比赛内有效。 */

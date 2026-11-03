@@ -195,6 +195,16 @@ await check('连点 12 周不崩、无报错', async () => {
   const t = await text('.topbar .title');
   return t;
 });
+await check('生涯页有六维与荣誉两块', async () => {
+  await page.click('[data-tab="career"]');
+  const caps = await page.$$eval('.cap', (els) => els.map((e) => e.textContent?.trim()));
+  assert(caps.includes('能力'), '缺「能力」块');
+  assert(caps.includes('荣誉'), '缺「荣誉」块');
+  const rows = await page.$$eval('.panel .squad-row .pos', (els) => els.map((e) => e.textContent?.trim()));
+  assert(rows.length >= 6, `六维只有 ${rows.length} 行`);
+  await page.click('[data-tab="week"]');
+  return `${rows.length} 行能力`;
+});
 await check('体力与六维仍在合法区间', async () => {
   const data = await page.evaluate(() => {
     const nums = [...document.querySelectorAll('.attr .val')].map((e) => Number(e.textContent));

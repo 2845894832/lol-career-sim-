@@ -1,5 +1,6 @@
 import { CONFIG } from '../config';
 import { ATTR_KEYS, ATTR_LABEL, HONOR_LABEL, type Ending, type GameState } from '../types';
+import { hasHonor } from './state';
 import { ageOf, rankTier } from './state';
 
 export type EndReason = 'expired' | 'retired';
@@ -22,7 +23,8 @@ function bestAndWorst(state: GameState): { best: string; worst: string } {
 
 function honorLine(state: GameState): string {
   if (state.honors.length === 0) return '你的荣誉柜是空的。';
-  return `荣誉：${state.honors.map((h) => HONOR_LABEL[h]).join('、')}。`;
+  const names = [...new Set(state.honors.map((h) => HONOR_LABEL[h.id]))];
+  return `荣誉：${names.join('、')}。`;
 }
 
 function noteFor(state: GameState): string {
@@ -56,7 +58,7 @@ export function sliceEnding(state: GameState): Ending {
   const { best } = bestAndWorst(state);
   const tier = rankTier(state.rankPoints).name;
   const startTier = rankTier(CONFIG.start.rankPoints).name;
-  const wonSpring = state.honors.includes('lpl-champion');
+  const wonSpring = hasHonor(state, 'lpl-champion');
   const spring = wonSpring ? '春决你赢了，奖杯现在还在休息室的柜子里。' : '春决你输了，场馆灯灭得比想象中快。';
 
   const title = '切片到此为止';
