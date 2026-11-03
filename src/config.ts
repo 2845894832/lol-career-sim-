@@ -69,7 +69,6 @@ export const CONFIG = {
     clinic: { price: 600 },
     trainer: { price: 2000, restBonus: 6 },
     coach: { price: 3500, scrimTrust: 1 },
-    analyst: { price: 4500 },
     sparring: { price: 6000, awarenessBonus: 1 },
     agent: { price: 3000, businessMultiplier: 1.5 },
   },

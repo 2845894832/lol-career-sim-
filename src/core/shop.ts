@@ -58,14 +58,6 @@ export const SHOP: ShopItem[] = [
     price: CONFIG.shop.coach.price,
   },
   {
-    id: 'analyst',
-    label: '分析师',
-    effect: '赛程里看得到对手强度（一年）',
-    shape: 'year',
-    price: CONFIG.shop.analyst.price,
-    needsContract: true,
-  },
-  {
     id: 'sparring',
     label: '陪练团队',
     effect: `复盘与训练赛额外 +${CONFIG.shop.sparring.awarenessBonus} 意识（一年）`,
@@ -145,10 +137,6 @@ export function scrimTrustBonus(state: GameState): number {
 
 export function awarenessBonus(state: GameState): number {
   return subActive(state, 'sparring') ? CONFIG.shop.sparring.awarenessBonus : 0;
-}
-
-export function hasAnalyst(state: GameState): boolean {
-  return subActive(state, 'analyst');
 }
 
 /** 这条能不能买，返回 null 表示能买。 */

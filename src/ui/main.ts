@@ -5,12 +5,11 @@ import { ACTION_INFO, canAfford, isActionUnlocked, staminaCost } from '../core/a
 import { loadSaved, persist } from '../core/save';
 import { ageOf, isMatchWeek, newGame, phaseOfYear } from '../core/state';
 import { rankOf } from '../core/ladder';
-import { myPlace, myOvr, mySquad, nextFixture, rivalStrength, startRequirement, upcomingFixtures, standings, isStarting } from '../core/league';
+import { myPlace, myOvr, mySquad, nextFixture, startRequirement, upcomingFixtures, standings, isStarting } from '../core/league';
 import {
   SHOP,
   buy,
   buyBlocker,
-  hasAnalyst,
   hasOnce,
   subActive,
   subUntil,
@@ -444,14 +443,8 @@ function renderSchedule(): string {
     ? `<div class="next"><span>下一场</span><b>${esc(next.rivalName)}</b><span class="mini">第 ${next.week} 周</span></div>`
     : '<div class="next"><span>本季常规赛打完了</span></div>';
 
-  const showStrength = hasAnalyst(state);
   const list = upcoming
-    .map((f) => {
-      const st = showStrength
-        ? `<span class="mini">${Math.round(rivalStrength(state.year, f.rivalId))}</span>`
-        : '';
-      return `<li><span class="w">W${f.week}</span><span class="t">${esc(f.rivalName)}</span>${st}</li>`;
-    })
+    .map((f) => `<li><span class="w">W${f.week}</span><span class="t">${esc(f.rivalName)}</span></li>`)
     .join('');
 
   const squadRows = mySquad(state);
