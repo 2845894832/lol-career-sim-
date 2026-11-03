@@ -1,0 +1,11 @@
+import puppeteer from 'puppeteer-core';
+const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+const url = 'file:///D:/deepseek-harness/default-workspace/vibe-game-producer/prototype/screen2-schedule.html';
+const out = process.argv[2] ?? 'shots/screen2.png';
+const b = await puppeteer.launch({ executablePath: EDGE, headless: 'new' });
+const p = await b.newPage();
+await p.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
+await p.goto(url, { waitUntil: 'networkidle0' });
+await p.screenshot({ path: out });
+console.log('saved', out);
+await b.close();

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8" />
+<title>第二屏效果图 · 赛程与当前阵容</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-2: #1c2128;
+    --line: #30363d;
+    --fg: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 15px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  }
+  .app {
+    width: 390px;
+    min-height: 844px;
+    margin: 0 auto;
+    padding: 18px 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* 顶栏 */
+  .top { display: flex; align-items: baseline; justify-content: space-between; }
+  .top h1 { margin: 0; font-size: 20px; letter-spacing: -.01em; }
+  .tag { font-size: 12px; color: var(--muted); }
+
+  /* 卡片 */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .card h2 {
+    margin: 0 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    color: var(--muted);
+  }
+
+  /* 排名 */
+  .rank { display: flex; align-items: baseline; gap: 8px; }
+  .rank b { font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .rank .of { font-size: 13px; color: var(--muted); }
+  .rank .rec { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* 下一场 */
+  .next {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .next .who { font-size: 17px; font-weight: 600; }
+  .next .vs { font-size: 13px; color: var(--muted); }
+  .next .week { margin-left: auto; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* 五周 */
+  .weeks { margin: 10px 0 0; padding: 0; list-style: none; }
+  .weeks li {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 0;
+    border-top: 1px solid var(--panel-2);
+    font-size: 14px;
+  }
+  .weeks li:first-child { border-top: 0; }
+  .weeks .w { width: 40px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .weeks .t { font-weight: 500; }
+  .weeks .ha { margin-left: auto; font-size: 12px; color: var(--muted); }
+  .weeks li.now .t { color: var(--accent); }
+
+  /* 阵容 */
+  .five { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .five li { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 10px; }
+  .five .pos { font-size: 12px; color: var(--muted); letter-spacing: .06em; }
+  .five .who { font-size: 15px; }
+  .five .me { color: var(--accent); }
+  .bar { height: 4px; margin-top: 5px; border-radius: 2px; background: var(--panel-2); overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--accent); }
+  .five .val { text-align: right; font-variant-numeric: tabular-nums; font-size: 14px; }
+  .hint { margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+
+  /* 页签 */
+  .tabs {
+    position: sticky;
+    bottom: 0;
+    margin-top: auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+    padding: 8px 0 14px;
+  }
+  .tab {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .tab .ico { display: block; font-size: 18px; line-height: 1.2; }
+  .tab.on { color: var(--fg); font-weight: 600; }
+  .tab.soon { color: #4a5560; }
+</style>
+
+<div class="app">
+  <div class="top">
+    <h1>第 1 年 · 第 3 周</h1>
+    <span class="tag">比赛周 · 已签约</span>
+  </div>
+
+  <section class="card">
+    <h2>赛季排名</h2>
+    <div class="rank">
+      <b>第 6 名</b>
+      <span class="of">/ 14 支</span>
+      <span class="rec">5 胜 2 负</span>
+    </div>
+
+    <div class="next">
+      <span class="vs">下一场</span>
+      <span class="who">EDG</span>
+      <span class="vs">客场</span>
+      <span class="week">第 3 周</span>
+    </div>
+
+    <ul class="weeks">
+      <li><span class="w">W4</span><span class="t">WE</span><span class="ha">主场</span></li>
+      <li><span class="w">W5</span><span class="t">IG</span><span class="ha">客场</span></li>
+      <li><span class="w">W6</span><span class="t">BLG</span><span class="ha">主场</span></li>
+      <li><span class="w">W7</span><span class="t">SS</span><span class="ha">客场</span></li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>当前阵容 · 2018 春</h2>
+    <ul class="five">
+      <li>
+        <span class="pos">TOP</span>
+        <div>
+          <span class="who">Letme</span>
+          <div class="bar"><i style="width: 86%"></i></div>
+        </div>
+        <span class="val">86</span>
+      </li>
+      <li>
+        <span class="pos">JUNGLE</span>
+        <div>
+          <span class="who">Mlxg</span>
+          <div class="bar"><i style="width: 86%"></i></div>
+        </div>
+        <span class="val">86</span>
+      </li>
+      <li>
+        <span class="pos">MID</span>
+        <div>
+          <span class="who me">你</span>
+          <div class="bar"><i style="width: 62%"></i></div>
+        </div>
+        <span class="val">62</span>
+      </li>
+      <li>
+        <span class="pos">ADC</span>
+        <div>
+          <span class="who">Uzi</span>
+          <div class="bar"><i style="width: 94%"></i></div>
+        </div>
+        <span class="val">94</span>
+      </li>
+      <li>
+        <span class="pos">SUP</span>
+        <div>
+          <span class="who">Ming</span>
+          <div class="bar"><i style="width: 90%"></i></div>
+        </div>
+        <span class="val">90</span>
+      </li>
+    </ul>
+    <p class="hint">数值取名单里的五维均值；你的是同一套算法下的当前值。</p>
+  </section>
+
+  <nav class="tabs">
+    <div class="tab"><span class="ico">◱</span>本周</div>
+    <div class="tab on"><span class="ico">▤</span>赛程</div>
+    <div class="tab soon"><span class="ico">◌</span>预留</div>
+    <div class="tab soon"><span class="ico">◌</span>预留</div>
+  </nav>
+</div>
+</html>
