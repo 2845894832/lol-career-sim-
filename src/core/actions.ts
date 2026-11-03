@@ -1,6 +1,6 @@
 import { CONFIG } from '../config';
 import { ATTR_LABEL, type ActionId, type AttrKey, type GameState } from '../types';
-import { applyAttrDelta, gainPoints } from './growth';
+import { applyAttrDelta, gainPoints, trainGain } from './growth';
 import { createRng } from '../rng';
 import { FEEDBACK } from '../data/feedback';
 import { clamp } from './state';
@@ -15,10 +15,10 @@ export interface ActionInfo {
 }
 
 export const ACTION_INFO: Record<ActionId, ActionInfo> = {
-  rank: { label: '上分', hint: '对线 +1、操作 +1；段位分数 ↑', needsContract: false },
-  train: { label: '专项训练', hint: '选一维 +2', needsContract: false },
-  review: { label: '复盘录像', hint: '意识 +1', needsContract: false },
-  scrim: { label: '训练赛', hint: '团战 +1、意识 +1、信任 +2', needsContract: true },
+  rank: { label: '上分', hint: '对线、操作各涨 3/2/1；段位分数 ↑', needsContract: false },
+  train: { label: '专项训练', hint: '选一维涨 3/2/1（越低越快）', needsContract: false },
+  review: { label: '复盘录像', hint: '意识涨 3/2/1', needsContract: false },
+  scrim: { label: '训练赛', hint: '团战、意识各涨 3/2/1；信任 +2', needsContract: true },
   fitness: { label: '健身', hint: '体力上限 +4', needsContract: false },
   stream: { label: '直播', hint: '钱 +1000、人气 +2', needsContract: false },
   business: { label: '商业活动', hint: '钱 +2000、人气 +5', needsContract: true },
@@ -99,8 +99,8 @@ export function applyAction(
 
   switch (action) {
     case 'rank': {
-      gainPoints(state, 'laning', 1);
-      gainPoints(state, 'operation', 1);
+      gainPoints(state, 'laning', trainGain(state, 'laning'));
+      gainPoints(state, 'operation', trainGain(state, 'operation'));
       // 一周打包的排位：收益按当前档位递减，档位越高涨得越慢。
       const gained = weeklyGain(state.rankPoints);
       // 不封顶：封顶之后名次就成了死局，谁到 9999 都是并列。
@@ -114,17 +114,17 @@ export function applyAction(
     }
     case 'train': {
       const key = target ?? 'operation';
-      gainPoints(state, key, CONFIG.actions.train.gain);
+      gainPoints(state, key, trainGain(state, key));
       logs.push(say(state, 'train', `这一周只练${ATTR_LABEL[key]}。`));
       break;
     }
     case 'review':
-      gainPoints(state, 'awareness', CONFIG.actions.review.gain.awareness);
+      gainPoints(state, 'awareness', trainGain(state, 'awareness'));
       logs.push(say(state, 'review', '你逐帧看了自己的团战，越看越沉默。'));
       break;
     case 'scrim':
-      gainPoints(state, 'teamfight', CONFIG.actions.scrim.gain.teamfight);
-      gainPoints(state, 'awareness', CONFIG.actions.scrim.gain.awareness);
+      gainPoints(state, 'teamfight', trainGain(state, 'teamfight'));
+      gainPoints(state, 'awareness', trainGain(state, 'awareness'));
       state.coachTrust = clamp(state.coachTrust + CONFIG.actions.scrim.coachTrust, 0, 100);
       logs.push(say(state, 'scrim', '训练赛打完，教练在本子上记了两笔。'));
       break;
