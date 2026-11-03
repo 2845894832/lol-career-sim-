@@ -104,9 +104,38 @@ export function weeksUntil(state: GameState, week: number): number {
   return week - state.week;
 }
 
-/** 教练信任过了阈值才算首发。 */
+/** 我在场上的数值（六维均值）。 */
+export function myOvr(state: GameState): number {
+  const a = state.attrs;
+  return Math.round((a.operation + a.laning + a.teamfight + a.awareness + a.mentality) / 5);
+}
+
+/** 队里同位置的那个首发；没签约或名单里没人打这个位置就返回 null。 */
+export function rivalAtMySlot(state: GameState): { name: string; ovr: number } | null {
+  if (!state.teamId) return null;
+  const team = rosterOf(state.year).find((t) => t.id === state.teamId);
+  const p = team?.players.find((x) => x.pos === state.role);
+  return p ? { name: p.name, ovr: p.ovr } : null;
+}
+
+/**
+ * 首发条件：信任与对位差距互相拉扯，但有两条底线。
+ * - 底线一：教练信任必须 > 60。
+ * - 底线二：对位差距（首发 − 你）不得 > 10；弱超过 10 点，信任再高也上不了。
+ * - 互补：你比他弱几点，就要多几点信任（1 点差距 = 1 点信任）。
+ */
+export function startRequirement(state: GameState): { needTrust: number; gap: number; ok: boolean } {
+  const rival = rivalAtMySlot(state);
+  const mine = myOvr(state);
+  const gap = rival ? rival.ovr - mine : 0;
+  const needTrust = CONFIG.league.startThreshold + Math.max(0, gap);
+  const ok = state.coachTrust > needTrust && gap <= CONFIG.league.maxGap;
+  return { needTrust, gap, ok };
+}
+
+/** 教练信任与对位差距都过了才算首发。 */
 export function isStarting(state: GameState): boolean {
-  return state.coachTrust > CONFIG.league.startThreshold;
+  return startRequirement(state).ok;
 }
 
 /** 我这边的 5 个人：首发时是「名单 4 人 + 我」，替补时是名单原班。 */

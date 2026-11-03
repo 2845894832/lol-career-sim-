@@ -5,7 +5,7 @@ import { ACTION_INFO, canAfford, isActionUnlocked, staminaCost } from '../core/a
 import { loadSaved, persist } from '../core/save';
 import { ageOf, isMatchWeek, newGame, phaseOfYear } from '../core/state';
 import { rankOf } from '../core/ladder';
-import { myPlace, mySquad, nextFixture, upcomingFixtures, standings, isStarting } from '../core/league';
+import { myPlace, myOvr, mySquad, nextFixture, startRequirement, upcomingFixtures, standings, isStarting } from '../core/league';
 import { randomSeed } from '../rng';
 import {
   ACTION_IDS,
@@ -356,12 +356,19 @@ function renderSchedule(): string {
     })
     .join('');
 
+  const req = startRequirement(state);
+  const mine = myOvr(state);
+  const why = (() => {
+    if (req.gap > 10) return `差 ${req.gap} 点，超过 10 点上不了场`;
+    if (state.coachTrust <= req.needTrust) return `信任 ${state.coachTrust}/${req.needTrust}，还差 ${req.needTrust - state.coachTrust + 1}`;
+    return '可以首发';
+  })();
   const meRow = benched
     ? `<li class="squad-row me sub-row">
         <span class="pos">替补</span>
-        <span class="nm">${esc(state.playerName)}<span class="mini">信任 ${state.coachTrust}，过 60 才首发</span></span>
-        <span class="ovr">${Math.round((state.attrs.operation + state.attrs.laning + state.attrs.teamfight + state.attrs.awareness + state.attrs.mentality) / 5)}</span>
-        <span class="bar"><i style="width:${Math.round((state.attrs.operation + state.attrs.laning + state.attrs.teamfight + state.attrs.awareness + state.attrs.mentality) / 5)}%"></i></span>
+        <span class="nm">${esc(state.playerName)}<span class="mini">${why}</span></span>
+        <span class="ovr">${mine}</span>
+        <span class="bar"><i style="width:${mine}%"></i></span>
       </li>`
     : '';
 
@@ -374,7 +381,7 @@ function renderSchedule(): string {
     <div class="panel">
       <div class="cap">当前阵容 · ${esc(state.teamId ?? '')}</div>
       <ul class="squad">${squad}${meRow}</ul>
-      <div class="cap" style=" margin-top:10px">数值取名单里的五维均值；你是同一套算法下的当前值。</div>
+      <div class="cap" style=" margin-top:10px">首发两关：信任 > ${req.needTrust}，且差距 ≤ 10（现在差 ${req.gap}）。</div>
     </div>`;
 }
 

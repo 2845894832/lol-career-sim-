@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CONFIG } from '../src/config';
+import { isStarting, startRequirement } from '../src/core/league';
 import { reduce } from '../src/core/reduce';
 import { applyAction, canAfford } from '../src/core/actions';
 import { advanceYear, gainExp } from '../src/core/growth';
@@ -521,30 +522,30 @@ describe('统一胜负公式', () => {
 describe('春决 / 夏决', () => {
   it('只有签约之后才会在决赛周出现', () => {
     const unsigned = newGame(31);
-    unsigned.week = 8;
+    unsigned.week = CONFIG.league.springFinalWeek;
     expect(drawEvent(unsigned).event?.id).not.toBe('SPR-1');
 
     const signed = newGame(31);
     signed.signed = true;
-    signed.week = 8;
+    signed.week = CONFIG.league.springFinalWeek;
     expect(drawEvent(signed).event?.id).toBe('SPR-1');
   });
 
-  it('夏决在第 20 周，且按年编号不重复', () => {
+  it('夏决在第 30 周，且按年编号不重复', () => {
     const s = newGame(32);
     s.signed = true;
-    s.week = 20;
+    s.week = CONFIG.league.summerFinalWeek;
     expect(drawEvent(s).event?.id).toBe('SUM-1');
 
     s.year = 3;
-    s.week = 20;
+    s.week = CONFIG.league.summerFinalWeek;
     expect(drawEvent(s).event?.id).toBe('SUM-3');
   });
 
   it('赢了给联赛冠军', () => {
     const s = newGame(33);
     s.signed = true;
-    s.week = 8;
+    s.week = CONFIG.league.springFinalWeek;
     for (const key of MATCH_ATTRS) s.attrs[key] = 100;
     const ev = drawEvent(s).event!;
     s.pendingEvent = { eventId: ev.id };
@@ -576,5 +577,38 @@ describe('邀请函', () => {
     s.year = 1;
     s.week = 5;
     expect(drawEvent(s).event?.id).not.toBe('INV-1');
+  });
+});
+
+describe('首发：信任 × 对位差距', () => {
+  it('信任刚过 60 且你不弱于同位置，能首发', () => {
+    const s = newGame(41);
+    s.signed = true;
+    s.teamId = 'RNG';
+    s.coachTrust = 61;
+    for (const key of MATCH_ATTRS) s.attrs[key] = 95; // 均值 95，远强于 Xiaohu 87
+    expect(startRequirement(s).ok).toBe(true);
+  });
+
+  it('弱 3 点就要 63 点信任：61 不够，64 可以', () => {
+    const s = newGame(42);
+    s.signed = true;
+    s.teamId = 'RNG';
+    for (const key of MATCH_ATTRS) s.attrs[key] = 84; // 均值 84，Xiaohu 87 → 差 3
+    s.coachTrust = 61;
+    expect(startRequirement(s).needTrust).toBe(63);
+    expect(isStarting(s)).toBe(false);
+    s.coachTrust = 64;
+    expect(isStarting(s)).toBe(true);
+  });
+
+  it('弱超过 10 点，信任再高也上不了', () => {
+    const s = newGame(43);
+    s.signed = true;
+    s.teamId = 'RNG';
+    for (const key of MATCH_ATTRS) s.attrs[key] = 70; // 差 17
+    s.coachTrust = 100;
+    expect(startRequirement(s).gap).toBeGreaterThan(10);
+    expect(isStarting(s)).toBe(false);
   });
 });
