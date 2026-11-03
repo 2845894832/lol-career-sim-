@@ -142,9 +142,8 @@ export const CONFIG = {
     opponentFinal: 78,
     winCoachTrust: 3,
     lossCoachTrust: 4,
-    /** 胜场人气与经验。 */
+    /** 胜场只给人气：属性只来自训练与事件，比赛不给。 */
     winPopularity: 1,
-    winGain: { operation: 1, laning: 1, teamfight: 1, awareness: 1 },
     /** 输比赛有一定概率受伤。 */
     injuryChance: 0.12,
     /** 伤病上限，到这个数就是赛季报销。 */

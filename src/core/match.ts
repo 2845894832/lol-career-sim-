@@ -1,7 +1,6 @@
 import { CONFIG } from '../config';
 import { createRng } from '../rng';
-import { type GameState, type LogEntry, DECLINE_ATTRS, MATCH_ATTRS } from '../types';
-import { gainPoints } from './growth';
+import { type GameState, type LogEntry, MATCH_ATTRS } from '../types';
 import { myTeamStrength } from './league';
 import { clamp, effectiveAttr, isMatchWeek } from './state';
 
@@ -58,9 +57,6 @@ export function applyMatchOutcome(state: GameState, win: boolean, isFinal: boole
   if (win) {
     state.coachTrust = clamp(state.coachTrust + CONFIG.match.winCoachTrust, 0, 100);
     state.attrs.popularity = clamp(state.attrs.popularity + CONFIG.match.winPopularity, 0, 100);
-    for (const key of DECLINE_ATTRS) {
-      gainPoints(state, key, CONFIG.match.winGain[key]);
-    }
     logs.push({ text: '赢了。', tone: 'good' });
   } else {
     state.coachTrust = clamp(state.coachTrust - CONFIG.match.lossCoachTrust, 0, 100);
