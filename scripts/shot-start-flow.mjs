@@ -1,0 +1,18 @@
+import puppeteer from 'puppeteer-core';
+const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+const browser = await puppeteer.launch({ executablePath: EDGE, headless: 'new' });
+const page = await browser.newPage();
+await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
+await page.goto('http://127.0.0.1:8123/', { waitUntil: 'networkidle0' });
+await page.evaluate(() => localStorage.clear());
+await page.reload({ waitUntil: 'networkidle0' });
+await page.click('[data-act="role"][data-role="JUNGLE"]');
+await page.click('[data-act="reroll"]');
+await page.type('#nameInput', 'Night');
+await page.click('[data-act="start"]');
+await new Promise((r) => setTimeout(r, 300));
+const saved = await page.evaluate(() => Boolean(localStorage.getItem('lpl-career-proto')));
+const title = await page.$eval('.title', (n) => n.textContent);
+console.log('saved:', saved, 'title:', title);
+await page.screenshot({ path: 'shots/after-start.png' });
+await browser.close();

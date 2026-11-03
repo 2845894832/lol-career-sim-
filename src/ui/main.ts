@@ -25,14 +25,27 @@ const app = root;
 
 type Sheet = { kind: 'actions'; slot: number } | { kind: 'targets'; slot: number };
 
+type RoleId = GameState['role'];
+
+const ROLES: { id: RoleId; label: string; note: string }[] = [
+  { id: 'TOP', label: '上单', note: '一条线，抗压' },
+  { id: 'JUNGLE', label: '打野', note: '满地图跑' },
+  { id: 'MID', label: '中单', note: '中线，最容易被打野抓' },
+  { id: 'ADC', label: '射手', note: '要靠人保' },
+  { id: 'SUP', label: '辅助', note: '不补刀，给视野' },
+];
+
 let state: GameState = loadSaved() ?? newGame(randomSeed());
 
+
+
 // 调试用：?dev=signed 直接在签约状态下开局，方便看赛程屏。正式流程不会走到这里。
-if (new URLSearchParams(location.search).get('dev') === 'signed') {
+const devMode = new URLSearchParams(location.search).get('dev');
+if (devMode === 'signed' || devMode === 'bench') {
   state = newGame(randomSeed());
   state.signed = true;
   state.teamId = 'RNG';
-  state.coachTrust = 65;
+  state.coachTrust = devMode === 'bench' ? 55 : 65;
   state.week = 13;
   state.seasonResults = [
     { week: 2, rivalId: 'WE', won: true, kind: 'regular' },
@@ -52,6 +65,75 @@ const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 const slotLabel = (slot: number): string => `行动 ${slot + 1}`;
+
+/** 开局屏：还没开始生涯时先在这里摇人。 */
+const starter = {
+  open: !loadSaved(),
+  role: null as RoleId | null,
+  name: '',
+  attrs: rollAttrs(),
+};
+
+function rollAttrs(): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const key of ATTR_KEYS) {
+    if (key === 'popularity') {
+      out[key] = 20;
+      continue;
+    }
+    out[key] = 40 + Math.floor(Math.random() * 31); // 40–70
+  }
+  return out;
+}
+
+function renderStarter(): void {
+  const roleBtns = ROLES.map(
+    (r) => `<button class="role${starter.role === r.id ? ' on' : ''}" data-act="role" data-role="${r.id}">
+      <b>${r.label}</b><span>${r.note}</span></button>`,
+  ).join('');
+
+  const attrRows = ATTR_KEYS.map((key) => {
+    const v = starter.attrs[key] ?? 0;
+    const muted = key === 'popularity' ? ' muted' : '';
+    const note = key === 'popularity' ? '<span class="cap">不摇，靠打出来</span>' : '';
+    return `<li class="roll-row${muted}">
+      <span class="nm">${ATTR_LABEL[key]}</span>
+      <span class="val">${v}</span>
+      <span class="bar"><i style="width:${v}%"></i></span>${note}
+    </li>`;
+  }).join('');
+
+  const nameLen = [...starter.name].length;
+  const canStart = Boolean(starter.role) && nameLen >= 2 && nameLen <= 8;
+
+  app.innerHTML = `<div class="starter">
+    <h1 class="s-title">开始生涯</h1>
+    <div class="cap">一共三步：选分路、摇数值、取名字。</div>
+
+    <div class="s-block">
+      <div class="s-cap">1 · 你打哪个位置</div>
+      <div class="roles">${roleBtns}</div>
+    </div>
+
+    <div class="s-block">
+      <div class="s-cap">2 · 你的数值</div>
+      <ul class="rolls">${attrRows}</ul>
+      <button class="btn" data-act="reroll">重摇一次</button>
+      <div class="cap">五项 40–70 随机；不满意就再摇，不限次数。</div>
+    </div>
+
+    <div class="s-block">
+      <div class="s-cap">3 · 你叫什么</div>
+      <input class="name-input" id="nameInput" maxlength="8" placeholder="2–8 个字，不能留空" value="${esc(starter.name)}" />
+      <div class="cap">${nameLen}/8</div>
+    </div>
+
+    <button class="btn primary start${canStart ? '' : ' disabled'}" data-act="start"${canStart ? '' : ' disabled'}>
+      开始生涯
+    </button>
+    <div class="cap s-note">${canStart ? '' : '选一个分路、填上名字才能开始。'}</div>
+  </div>`;
+}
 
 function renderTopbar(): string {
   const phase = phaseOfYear(state.year);
@@ -259,7 +341,9 @@ function renderSchedule(): string {
     .map((f) => `<li><span class="w">W${f.week}</span><span class="t">${esc(f.rivalName)}</span></li>`)
     .join('');
 
-  const squad = mySquad(state)
+  const squadRows = mySquad(state);
+  const benched = state.signed && !isStarting(state);
+  const squad = squadRows
     .map((p) => {
       const meRow = p.me ? ' me' : '';
       const sub = p.me && !isStarting(state) ? '<span class="mini">替补</span>' : '';
@@ -272,6 +356,15 @@ function renderSchedule(): string {
     })
     .join('');
 
+  const meRow = benched
+    ? `<li class="squad-row me sub-row">
+        <span class="pos">替补</span>
+        <span class="nm">${esc(state.playerName)}<span class="mini">信任 ${state.coachTrust}，过 60 才首发</span></span>
+        <span class="ovr">${Math.round((state.attrs.operation + state.attrs.laning + state.attrs.teamfight + state.attrs.awareness + state.attrs.mentality) / 5)}</span>
+        <span class="bar"><i style="width:${Math.round((state.attrs.operation + state.attrs.laning + state.attrs.teamfight + state.attrs.awareness + state.attrs.mentality) / 5)}%"></i></span>
+      </li>`
+    : '';
+
   return `<div class="panel">
       <div class="cap">赛季排名</div>
       ${rankLine}
@@ -280,12 +373,37 @@ function renderSchedule(): string {
     </div>
     <div class="panel">
       <div class="cap">当前阵容 · ${esc(state.teamId ?? '')}</div>
-      <ul class="squad">${squad}</ul>
+      <ul class="squad">${squad}${meRow}</ul>
       <div class="cap" style=" margin-top:10px">数值取名单里的五维均值；你是同一套算法下的当前值。</div>
     </div>`;
 }
 
+function wireStarter(): void {
+  const input = document.getElementById('nameInput') as HTMLInputElement | null;
+  if (!input) return;
+  input.addEventListener('input', () => {
+    starter.name = input.value;
+    const len = [...starter.name].length;
+    const ok = Boolean(starter.role) && len >= 2 && len <= 8;
+    const btn = document.querySelector<HTMLButtonElement>('[data-act="start"]');
+    if (btn) {
+      btn.disabled = !ok;
+      btn.classList.toggle('disabled', !ok);
+    }
+    const note = document.querySelector('.s-note');
+    if (note) note.textContent = ok ? '' : '选一个分路、填上名字才能开始。';
+    const counter = input.parentElement?.querySelector('.cap:last-child');
+    if (counter) counter.textContent = `${len}/8`;
+  });
+  input.focus();
+}
+
 function render(): void {
+  if (starter.open && !devMode) {
+    renderStarter();
+    wireStarter();
+    return;
+  }
   if (state.ended) {
     app.innerHTML = renderTopbar() + renderEnding();
     return;
@@ -321,6 +439,26 @@ app.addEventListener('click', (ev) => {
   const node = target.closest<HTMLElement>('[data-act]');
   if (!node) return;
   const act = node.dataset.act;
+  if (act === 'role') {
+    starter.role = (node.dataset.role as RoleId) ?? null;
+    render();
+    return;
+  }
+  if (act === 'reroll') {
+    starter.attrs = rollAttrs();
+    render();
+    return;
+  }
+  if (act === 'start') {
+    if (!starter.role) return;
+    const name = starter.name.trim();
+    if ([...name].length < 2 || [...name].length > 8) return;
+    state = newGame(randomSeed(), name, starter.role, starter.attrs as GameState['attrs']);
+    starter.open = false;
+    persist(state);
+    render();
+    return;
+  }
   if (act === 'tab') {
     tab = (node.dataset.tab as 'week' | 'schedule') ?? 'week';
     render();
@@ -389,8 +527,12 @@ app.addEventListener('click', (ev) => {
       render();
       break;
     case 'restart':
+      // 再来一局 = 回到开局屏，重新选人。
       state = newGame(randomSeed());
-      persist(state);
+      starter.open = true;
+      starter.role = null;
+      starter.name = '';
+      starter.attrs = rollAttrs();
       outcome = null;
       sheet = null;
       render();

@@ -64,12 +64,20 @@ export function rankExpMultiplier(state: GameState): number {
   return clamp(1 + (state.rankPoints / CONFIG.rank.max) * 0.5, 1, 1.5);
 }
 
-export function newGame(seed: number, playerName = '你', role: GameState['role'] = 'MID'): GameState {
+export function newGame(
+  seed: number,
+  playerName = '你',
+  role: GameState['role'] = 'MID',
+  /** 开局屏摇好的五项；不传就现场摇。 */
+  rolled?: Stats,
+): GameState {
   const { rng } = createRng(seed);
   const attrs = emptyStats();
   for (const key of ATTR_KEYS) {
     if (key === 'popularity') {
       attrs[key] = CONFIG.start.popularity;
+    } else if (rolled) {
+      attrs[key] = rolled[key];
     } else {
       attrs[key] = CONFIG.start.attrMin + rng.int(CONFIG.start.attrMax - CONFIG.start.attrMin + 1);
     }

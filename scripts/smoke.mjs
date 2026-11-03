@@ -110,6 +110,32 @@ const endWeek = async () => {
 };
 
 await page.goto(url, { waitUntil: 'load' });
+await page.evaluate(() => localStorage.clear());
+await page.goto(url, { waitUntil: 'load' });
+
+section('开局屏');
+await check('开局先停在“开始生涯”', async () => {
+  const t = await text('.s-title');
+  assert(t === '开始生涯', `实际：${t}`);
+  return t;
+});
+await check('分路可选、名字必填才能开始', async () => {
+  const disabled = await page.$eval('[data-act="start"]', (b) => b.disabled);
+  await page.click('[data-act="role"][data-role="MID"]');
+  const stillDisabled = await page.$eval('[data-act="start"]', (b) => b.disabled);
+  await page.type('#nameInput', '测试');
+  const enabled = await page.$eval('[data-act="start"]', (b) => !b.disabled);
+  assert(disabled && stillDisabled && enabled, `disabled=${disabled} still=${stillDisabled} enabled=${enabled}`);
+  return '空名字禁用、填完可点';
+});
+await check('点开始生涯进入第 1 周并落盘', async () => {
+  await page.click('[data-act="start"]');
+  await new Promise((r) => setTimeout(r, 150));
+  const t = await text('.topbar .title');
+  const saved = await page.evaluate(() => Object.keys(localStorage).some((k) => k.startsWith('lpl-career-proto')));
+  assert(saved, '没写存档');
+  return `${t}，已存档`;
+});
 
 section('主流程');
 await check('页面加载无 JS 报错', async () => {
@@ -192,9 +218,9 @@ await check('结局有正文与尾注', async () => {
 });
 await check('「再来一局」能重开', async () => {
   await page.click('[data-act="restart"]');
-  const t = await text('.topbar .title');
-  assert(/第 1 年/.test(t), `重开后是 ${t}`);
-  return t;
+  const t = await text('.s-title');
+  assert(t === '开始生涯', `重开后是 ${t}`);
+  return '回到开局屏';
 });
 
 section('响应式');
