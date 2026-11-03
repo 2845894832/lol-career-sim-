@@ -5,6 +5,14 @@ import { createRng } from '../rng';
 import { FEEDBACK } from '../data/feedback';
 import { clamp } from './state';
 import { placementOf, rankOf, weeklyGain, weeksPlayed } from './ladder';
+import {
+  awarenessBonus,
+  businessIncome,
+  earn,
+  restBonus,
+  scrimTrustBonus,
+  streamIncome,
+} from './shop';
 
 export interface ActionInfo {
   label: string;
@@ -119,13 +127,17 @@ export function applyAction(
       break;
     }
     case 'review':
-      gainPoints(state, 'awareness', trainGain(state, 'awareness'));
+      gainPoints(state, 'awareness', trainGain(state, 'awareness') + awarenessBonus(state));
       logs.push(say(state, 'review', '你逐帧看了自己的团战，越看越沉默。'));
       break;
     case 'scrim':
       gainPoints(state, 'teamfight', trainGain(state, 'teamfight'));
-      gainPoints(state, 'awareness', trainGain(state, 'awareness'));
-      state.coachTrust = clamp(state.coachTrust + CONFIG.actions.scrim.coachTrust, 0, 100);
+      gainPoints(state, 'awareness', trainGain(state, 'awareness') + awarenessBonus(state));
+      state.coachTrust = clamp(
+        state.coachTrust + CONFIG.actions.scrim.coachTrust + scrimTrustBonus(state),
+        0,
+        100,
+      );
       logs.push(say(state, 'scrim', '训练赛打完，教练在本子上记了两笔。'));
       break;
     case 'fitness':
@@ -137,17 +149,21 @@ export function applyAction(
       logs.push(say(state, 'fitness', '你去了健身房，第二天楼梯都下不了。'));
       break;
     case 'stream':
-      state.money += CONFIG.actions.stream.money;
+      earn(state, '直播', streamIncome(state));
       gainPopularity(state, CONFIG.actions.stream.popularity);
       logs.push(say(state, 'stream', '直播间飘过一句「不去打职业扬名立万」。'));
       break;
     case 'business':
-      state.money += CONFIG.actions.business.money;
+      earn(state, '商业活动', businessIncome(state));
       gainPopularity(state, CONFIG.actions.business.popularity);
       logs.push(say(state, 'business', '商业活动结束，你记不清自己笑了多少次。'));
       break;
     case 'rest':
-      state.stamina = clamp(state.stamina + CONFIG.actions.rest.restore, 0, state.maxStamina);
+      state.stamina = clamp(
+        state.stamina + CONFIG.actions.rest.restore + restBonus(state),
+        0,
+        state.maxStamina,
+      );
       logs.push(say(state, 'rest', '你睡了一整天。'));
       break;
   }

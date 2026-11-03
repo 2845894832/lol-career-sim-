@@ -3,7 +3,7 @@ import { CONFIG } from '../src/config';
 import { isStarting, startRequirement } from '../src/core/league';
 import { reduce } from '../src/core/reduce';
 import { applyAction, canAfford } from '../src/core/actions';
-import { advanceYear, gainExp, gainPoints } from '../src/core/growth';
+import { advanceYear, gainExp, gainPoints, trainGain } from '../src/core/growth';
 import { autoMatch, applyMatchOutcome } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
 import { drawEvent, successRateOf } from '../src/core/events';
@@ -14,6 +14,7 @@ import { loadSaved, persist } from '../src/core/save';
 import { newGame, rankTier } from '../src/core/state';
 import { placementOf, rankOf, weeklyGain } from '../src/core/ladder';
 import { ATTR_KEYS, MATCH_ATTRS, type Action, type GameEvent, type GameState } from '../src/types';
+import { SHOP, buy, buyBlocker, hasOnce, restBonus, streamIncome, subActive, subUntil, weekIncome, weekSpend } from '../src/core/shop';
 
 /** 一周：排三格 → 结周 → 处理事件。 */
 function step(state: GameState): GameState {
@@ -609,5 +610,70 @@ describe('首发：信任 × 对位差距', () => {
     s.coachTrust = 100;
     expect(startRequirement(s).gap).toBeGreaterThan(10);
     expect(isStarting(s)).toBe(false);
+  });
+});
+
+// ---- 商店 ----
+
+function richState(money = 20000): GameState {
+  const s = newGame(20260101, '阿呆', 'MID');
+  s.money = money;
+  return s;
+}
+
+describe('商店', () => {
+  it('买断类：扣钱、进 owned、效果立刻生效', () => {
+    const s = richState();
+    const before = s.money;
+    const item = SHOP.find((i) => i.id === 'streamGear')!;
+    expect(buyBlocker(s, item)).toBeNull();
+    buy(s, 'streamGear');
+
+    expect(s.money).toBe(before - item.price);
+    expect(hasOnce(s, 'streamGear')).toBe(true);
+    expect(streamIncome(s)).toBe(CONFIG.shop.streamGear.money);
+    // 再买一次会被挡住
+    expect(buyBlocker(s, item)).toBe('已经买了');
+  });
+
+  it('外设让训练多涨 1 点', () => {
+    const plain = richState();
+    const withPc = richState();
+    buy(withPc, 'peripherals');
+    expect(trainGain(withPc, 'operation')).toBe(trainGain(plain, 'operation') + CONFIG.shop.peripherals.trainBonus);
+  });
+
+  it('年费类：买到明年底，今年都有效', () => {
+    const s = richState();
+    buy(s, 'trainer');
+    expect(subActive(s, 'trainer')).toBe(true);
+    expect(subUntil(s, 'trainer')).toBe(2);
+    expect(restBonus(s)).toBe(CONFIG.shop.trainer.restBonus);
+    // 同样的年费不能重复买
+    expect(buyBlocker(s, SHOP.find((i) => i.id === 'trainer')!)).toContain('已买到');
+  });
+
+  it('钱不够就买不了', () => {
+    const s = richState(100);
+    const item = SHOP.find((i) => i.id === 'residence')!;
+    expect(buyBlocker(s, item)).toBe('钱不够');
+  });
+
+  it('康复只能治有伤的人', () => {
+    const s = richState();
+    expect(buyBlocker(s, SHOP.find((i) => i.id === 'clinic')!)).toBe('没伤可治');
+    s.injury = 2;
+    buy(s, 'clinic');
+    expect(s.injury).toBe(1);
+  });
+
+  it('买了就记一笔支出，收入也会进流水', () => {
+    const s = richState();
+    buy(s, 'residence');
+    expect(s.ledger[s.ledger.length - 1]?.amount).toBe(-CONFIG.shop.residence.price);
+    applyAction(s, 'stream', null);
+    expect(s.ledger[s.ledger.length - 1]).toEqual({ label: '直播', amount: CONFIG.actions.stream.money });
+    expect(weekIncome(s)).toBe(CONFIG.actions.stream.money);
+    expect(weekSpend(s)).toBe(-CONFIG.shop.residence.price);
   });
 });

@@ -195,6 +195,31 @@ await check('连点 12 周不崩、无报错', async () => {
   const t = await text('.topbar .title');
   return t;
 });
+await check('收支页有流水与商店，买得成就扣钱', async () => {
+  await page.click('[data-tab="money"]');
+  const caps = await page.$$eval('.cap', (els) => els.map((e) => e.textContent?.trim()));
+  assert(caps.some((c) => c && c.includes('收支')), '缺收支块');
+  assert(caps.includes('商店'), '缺商店块');
+  // 想办法凑够钱：直接改存档里的钱
+  const enough = await page.evaluate(() => {
+    const key = Object.keys(localStorage).find((k) => k.startsWith('lpl-career'));
+    const env = JSON.parse(localStorage.getItem(key));
+    env.state.money = 30000;
+    localStorage.setItem(key, JSON.stringify(env));
+    return env.state.money;
+  });
+  assert(enough === 30000, '改钱失败');
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.click('[data-tab="money"]');
+  const btn = await page.$('[data-act="buy"][data-id="residence"]');
+  assert(btn, '找不到购买按钮');
+  await btn.click();
+  await new Promise((r) => setTimeout(r, 200));
+  const owned = await page.$$eval('.shop-row .mini', (els) => els.map((e) => e.textContent?.trim()));
+  assert(owned.includes('已拥有'), '买完之后没有「已拥有」');
+  await page.click('[data-tab="week"]');
+  return '买下住处升级';
+});
 await check('生涯页有六维与荣誉两块', async () => {
   await page.click('[data-tab="career"]');
   const caps = await page.$$eval('.cap', (els) => els.map((e) => e.textContent?.trim()));

@@ -5,7 +5,16 @@ import { ACTION_INFO, canAfford, isActionUnlocked, staminaCost } from '../core/a
 import { loadSaved, persist } from '../core/save';
 import { ageOf, isMatchWeek, newGame, phaseOfYear } from '../core/state';
 import { rankOf } from '../core/ladder';
-import { myPlace, myOvr, mySquad, nextFixture, startRequirement, upcomingFixtures, standings, isStarting } from '../core/league';
+import { myPlace, myOvr, mySquad, nextFixture, rivalStrength, startRequirement, upcomingFixtures, standings, isStarting } from '../core/league';
+import {
+  SHOP,
+  buy,
+  buyBlocker,
+  hasAnalyst,
+  hasOnce,
+  subActive,
+  subUntil,
+} from '../core/shop';
 import { randomSeed } from '../rng';
 import {
   ACTION_IDS,
@@ -60,7 +69,7 @@ if (devMode === 'signed' || devMode === 'bench') {
 let sheet: Sheet | null = null;
 let outcome: LogEntry[] | null = null;
 /** 底部页签：本周 / 赛程。 */
-let tab: 'week' | 'schedule' | 'career' = 'week';
+let tab: 'week' | 'schedule' | 'career' | 'money' = 'week';
 
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -317,9 +326,9 @@ function renderEnding(): string {
 }
 
 function renderTabs(): string {
-  const item = (id: 'week' | 'schedule' | 'career', label: string) =>
+  const item = (id: 'week' | 'schedule' | 'career' | 'money', label: string) =>
     `<button class="tab${tab === id ? ' on' : ''}" data-act="tab" data-tab="${id}">${label}</button>`;
-  return `<nav class="tabs">${item('week', '本周')}${item('schedule', '赛程')}${item('career', '生涯')}<span class="tab off">预留</span></nav>`;
+  return `<nav class="tabs">${item('week', '本周')}${item('schedule', '赛程')}${item('career', '生涯')}${item('money', '收支')}</nav>`;
 }
 
 /** 生涯屏：上面是六维（含人气），下面是荣誉。 */
@@ -370,6 +379,54 @@ function renderCareer(): string {
     </div>`;
 }
 
+/** 收支屏：上面本周流水（为空时显示上周），下面是商店。 */
+function renderMoney(): string {
+  const useLast = state.ledger.length === 0 && state.lastLedger.length > 0;
+  const entries = useLast ? state.lastLedger : state.ledger;
+  const rows = entries
+    .map((e) => {
+      const sign = e.amount > 0 ? '+' : '−';
+      const cls = e.amount > 0 ? 'in' : 'out';
+      return `<li class="ledger-row"><span class="lb">${esc(e.label)}</span>
+        <span class="amt ${cls}">${sign}${Math.abs(e.amount)}</span></li>`;
+    })
+    .join('');
+  const income = entries.filter((e) => e.amount > 0).reduce((a, b) => a + b.amount, 0);
+  const spent = entries.filter((e) => e.amount < 0).reduce((a, b) => a + b.amount, 0);
+  const list = rows || '<li class="ledger-row"><span class="lb">还没有任何进出账</span><span class="amt"></span></li>';
+
+  const cart = SHOP.map((item) => {
+    const blocked = buyBlocker(state, item);
+    const owned =
+      item.shape === 'once' && hasOnce(state, item.id)
+        ? '已拥有'
+        : item.shape === 'year' && subActive(state, item.id)
+          ? `买到第 ${subUntil(state, item.id)} 年`
+          : '';
+    const right = owned
+      ? `<span class="mini owned">${owned}</span>`
+      : `<button class="btn buy" data-act="buy" data-id="${item.id}"${blocked ? ' disabled' : ''}>买 · ${item.price}</button>`;
+    const note = blocked && !owned ? `<span class="mini why">${esc(blocked)}</span>` : '';
+    return `<li class="shop-row">
+        <span class="nm">${item.label}<span class="mini">${esc(item.effect)}</span>${note}</span>
+        ${right}
+      </li>`;
+  }).join('');
+
+  return `
+    <section class="panel">
+      <div class="cap">${useLast ? '上周收支' : '本周收支'}</div>
+      <ul class="ledger">${list}</ul>
+      <div class="totals"><span>收入 ${income}</span><span>支出 ${Math.abs(spent)}</span>
+        <b>余额 ${state.money}</b></div>
+    </section>
+    <section class="panel">
+      <div class="cap">商店</div>
+      <ul class="shop">${cart}</ul>
+      <div class="cap" style="margin-top:10px">年费一次付清，管到明年底；买断的永久有效。</div>
+    </section>`;
+}
+
 function renderSchedule(): string {
   if (!state.signed) {
     return `<div class="panel"><div class="sub">还没签约，没有赛程。上王者之后会收到邀请。</div></div>`;
@@ -387,8 +444,14 @@ function renderSchedule(): string {
     ? `<div class="next"><span>下一场</span><b>${esc(next.rivalName)}</b><span class="mini">第 ${next.week} 周</span></div>`
     : '<div class="next"><span>本季常规赛打完了</span></div>';
 
+  const showStrength = hasAnalyst(state);
   const list = upcoming
-    .map((f) => `<li><span class="w">W${f.week}</span><span class="t">${esc(f.rivalName)}</span></li>`)
+    .map((f) => {
+      const st = showStrength
+        ? `<span class="mini">${Math.round(rivalStrength(state.year, f.rivalId))}</span>`
+        : '';
+      return `<li><span class="w">W${f.week}</span><span class="t">${esc(f.rivalName)}</span>${st}</li>`;
+    })
     .join('');
 
   const squadRows = mySquad(state);
@@ -473,6 +536,10 @@ function render(): void {
     app.innerHTML = renderTopbar() + renderCareer() + renderTabs() + renderSheet() + renderEvent() + renderOutcome();
     return;
   }
+  if (tab === 'money') {
+    app.innerHTML = renderTopbar() + renderMoney() + renderTabs() + renderSheet() + renderEvent() + renderOutcome();
+    return;
+  }
   app.innerHTML =
     renderTopbar() +
     renderAttrs() +
@@ -521,7 +588,7 @@ app.addEventListener('click', (ev) => {
     return;
   }
   if (act === 'tab') {
-    tab = (node.dataset.tab as 'week' | 'schedule' | 'career') ?? 'week';
+    tab = (node.dataset.tab as 'week' | 'schedule' | 'career' | 'money') ?? 'week';
     render();
     return;
   }
@@ -530,6 +597,16 @@ app.addEventListener('click', (ev) => {
   if (act === 'close-sheet' && target.closest('[data-stop]')) return;
 
   switch (act) {
+    case 'buy': {
+      const id = node.dataset.id;
+      if (!id) return;
+      const item = SHOP.find((i) => i.id === id);
+      if (!item || buyBlocker(state, item)) return;
+      for (const line of buy(state, id)) state.log.push({ text: line, tone: 'good' });
+      persist(state);
+      render();
+      break;
+    }
     case 'slot': {
       const slot = Number(node.dataset.slot);
       sheet = { kind: 'actions', slot };

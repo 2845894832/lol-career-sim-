@@ -1,6 +1,7 @@
 import { CONFIG } from '../config';
 import { fixtureThisWeek, matchLogLine, myTeamStrength, recordResult, rivalStrength, winChance } from './league';
 import { createRng } from '../rng';
+import { hasOnce } from './shop';
 import type { Action, AttrKey, GameState, LogEntry, ReduceResult } from '../types';
 import { applyAction, canAfford, isActionUnlocked, staminaCost } from './actions';
 import { advanceYear } from './growth';
@@ -276,6 +277,15 @@ function resetWeek(state: GameState): void {
   state.actionTargets = [null, null, null];
   state.eventDone = false;
   state.pendingEvent = null;
+  state.lastLedger = state.ledger;
+  state.ledger = [];
+  // 住处升级：每周开始自动恢复一点体力。
+  if (hasOnce(state, 'residence') && state.stamina < state.maxStamina) {
+    state.stamina = Math.min(
+      state.maxStamina,
+      state.stamina + CONFIG.shop.residence.stamina,
+    );
+  }
 }
 
 function advanceToNextYear(state: GameState, out: LogEntry[]): void {

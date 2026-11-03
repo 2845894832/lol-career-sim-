@@ -1,0 +1,15 @@
+import puppeteer from 'puppeteer-core';
+import { startCareer } from './lib/start.mjs';
+import { existsSync } from 'node:fs';
+const exe = ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Microsoft/Edge/Application/msedge.exe'].find((p)=>existsSync(p));
+const b = await puppeteer.launch({ executablePath: exe, headless: 'new' });
+const page = await b.newPage();
+await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
+await page.goto('http://127.0.0.1:8123/', { waitUntil: 'networkidle0' });
+await startCareer(page);
+console.log('slot html:', await page.$eval('.slot', (e) => e.outerHTML.slice(0, 160)));
+await page.click('.slot');
+await new Promise((r) => setTimeout(r, 300));
+console.log('overlay?', await page.evaluate(() => !!document.querySelector('.overlay')));
+console.log('sheet html:', await page.evaluate(() => document.querySelector('.overlay')?.outerHTML.slice(0, 200) ?? 'none'));
+await b.close();

@@ -61,6 +61,19 @@ export const CONFIG = {
     mentalityGrowthDecline: 3,
   },
 
+  /** 商店：只卖条件，不卖属性点与胜利。价格按「一年约 2.6 万」定。 */
+  shop: {
+    residence: { price: 4000, stamina: 6 },
+    peripherals: { price: 5000, trainBonus: 1 },
+    streamGear: { price: 3000, money: 600 },
+    clinic: { price: 600 },
+    trainer: { price: 2000, restBonus: 6 },
+    coach: { price: 3500, scrimTrust: 1 },
+    analyst: { price: 4500 },
+    sparring: { price: 6000, awarenessBonus: 1 },
+    agent: { price: 3000, businessMultiplier: 1.5 },
+  },
+
   /** 每个行动的体力消耗与收益。 */
   actions: {
     rank: { stamina: 12, gain: { laning: 1, operation: 1 } },
@@ -69,8 +82,8 @@ export const CONFIG = {
     review: { stamina: 6, gain: { awareness: 1 } },
     scrim: { stamina: 14, gain: { teamfight: 1, awareness: 1 }, coachTrust: 2 },
     fitness: { stamina: 8, maxStamina: 4, maxStaminaCap: 999 },
-    stream: { stamina: 10, money: 1000, popularity: 2 },
-    business: { stamina: 25, money: 2000, popularity: 5 },
+    stream: { stamina: 10, money: 400, popularity: 2 },
+    business: { stamina: 25, money: 800, popularity: 5 },
     rest: { stamina: 0, restore: 30 },
   },
 

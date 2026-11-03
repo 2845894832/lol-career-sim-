@@ -187,6 +187,14 @@ export interface GameState {
   coachTrust: number;
   /** 荣誉流水：同一个荣誉拿两次就有两条记录（年份不同）。 */
   honors: HonorEntry[];
+  /** 买断类物品的 id。 */
+  owned: string[];
+  /** 年费类：买到第几年年底。 */
+  subs: { id: string; untilYear: number }[];
+  /** 本周收支流水，结周清空。 */
+  ledger: { label: string; amount: number }[];
+  /** 上一周结转过来的流水，界面上用它补位。 */
+  lastLedger: { label: string; amount: number }[];
   flags: string[];
   triggeredEvents: string[];
   signed: boolean;
