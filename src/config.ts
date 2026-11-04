@@ -84,7 +84,7 @@ export const CONFIG = {
     stream: { stamina: 10, money: 400, popularity: 2 },
     business: { stamina: 25, money: 800, popularity: 5 },
     /** 休息按体力上限的比例恢复，所以健身从「纯亏」变成投资。 */
-    rest: { stamina: 0, restoreRatio: 0.2 },
+    rest: { stamina: 0, restoreRatio: 0.25 },
   },
 
   /**

@@ -30,7 +30,7 @@ export const ACTION_INFO: Record<ActionId, ActionInfo> = {
   fitness: { label: '健身', hint: '体力上限 +4', needsContract: false },
   stream: { label: '直播', hint: '钱 +400、人气 +2', needsContract: false },
   business: { label: '商业活动', hint: '钱 +800、人气 +5', needsContract: true },
-  rest: { label: '休息', hint: '按上限的 20% 回体力', needsContract: false },
+  rest: { label: '休息', hint: '按上限的 25% 回体力', needsContract: false },
 };
 
 /** 递增成本：属性越高，这一格越贵。 */
