@@ -2,7 +2,7 @@ import { CONFIG } from '../config';
 import { fixtureThisWeek, matchLogLine, myTeamStrength, recordResult, rivalStrength, winChance } from './league';
 import { createRng } from '../rng';
 import { hasOnce } from './shop';
-import type { Action, AttrKey, GameState, LogEntry, ReduceResult } from '../types';
+import type { Action, ActionId, AttrKey, GameState, LogEntry, ReduceResult } from '../types';
 import { applyAction, canAfford, isActionUnlocked, staminaCost } from './actions';
 import { advanceYear } from './growth';
 import { applyMatchOutcome, autoMatch, benchReason, canPlay } from './match';
@@ -59,7 +59,7 @@ export function reduce(prev: GameState, action: Action): ReduceResult {
 function selectAction(
   state: GameState,
   slot: number,
-  id: Parameters<typeof staminaCost>[0],
+  id: ActionId,
   target: AttrKey | null | undefined,
   out: LogEntry[],
 ): void {
@@ -114,7 +114,7 @@ function endWeek(state: GameState, out: LogEntry[]): void {
   for (let i = 0; i < 3; i++) {
     const id = state.actionGrid[i];
     if (!id) continue;
-    state.stamina = Math.max(0, state.stamina - staminaCost(id));
+    state.stamina = Math.max(0, state.stamina - staminaCost(state, id, state.actionTargets[i]));
     const lines = applyAction(state, id, state.actionTargets[i]);
     out.push(...lines.map((text) => ({ text, tone: 'plain' as const })));
   }

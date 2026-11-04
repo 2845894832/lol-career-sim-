@@ -44,16 +44,11 @@ export const CONFIG = {
   attrs: {
     cap: 100,
     /**
-     * 练一次涨几点：按「这一维现在多少」分段，越练越慢，全部必成。
-     * 60 以下 +3、60–79 +2、80 以上 +1。
+     * 练一次的收益固定 1 点（专训 2 点）。
+     * 「越练越慢」不放在收益侧，放在体力成本侧（见 actions.cost），
+     * 所以对外看到的永远是整数。
      */
-    trainBands: [
-      { under: 60, gain: 3 },
-      { under: 80, gain: 2 },
-      { under: 101, gain: 1 },
-    ],
-    /** 成长阶段每次练习额外多涨的点数。 */
-    growthBonus: 1,
+    trainGain: 1,
     /** 衰退期年初：四项总和降为原来的 80%（损失平均摊到四项）。 */
     declineRatio: 0.8,
     /** 每年自然增长的心态。 */
@@ -73,17 +68,23 @@ export const CONFIG = {
     agent: { price: 3000, businessMultiplier: 1.5 },
   },
 
-  /** 每个行动的体力消耗与收益。 */
+  /**
+   * 每个行动的体力消耗与收益。
+   * 四项训练的实际体力 = 基础价 + step × ⌊max(0, 属性 − from) ÷ 10⌋：
+   * 属性越高越贵，这是「越练越慢」的唯一来源。
+   */
   actions: {
-    rank: { stamina: 12, gain: { laning: 1, operation: 1 } },
+    cost: { from: 40, step: 3 },
+    rank: { stamina: 14, gain: { laning: 1, operation: 1 } },
     /** 数字 = 指定一维涨几点。 */
-    train: { stamina: 14, gain: 2 },
-    review: { stamina: 6, gain: { awareness: 1 } },
-    scrim: { stamina: 14, gain: { teamfight: 1, awareness: 1 }, coachTrust: 2 },
+    train: { stamina: 12, gain: 2 },
+    review: { stamina: 8, gain: { awareness: 1 } },
+    scrim: { stamina: 16, gain: { teamfight: 1, awareness: 1 }, coachTrust: 2 },
     fitness: { stamina: 8, maxStamina: 4, maxStaminaCap: 999 },
     stream: { stamina: 10, money: 400, popularity: 2 },
     business: { stamina: 25, money: 800, popularity: 5 },
-    rest: { stamina: 0, restore: 30 },
+    /** 休息按体力上限的比例恢复，所以健身从「纯亏」变成投资。 */
+    rest: { stamina: 0, restoreRatio: 0.2 },
   },
 
   /**

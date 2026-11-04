@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CONFIG } from '../src/config';
 import { isStarting, startRequirement } from '../src/core/league';
 import { reduce } from '../src/core/reduce';
+import { staminaCost } from '../src/core/actions';
 import { applyAction, canAfford } from '../src/core/actions';
 import { advanceYear, gainExp, gainPoints, trainGain } from '../src/core/growth';
 import { autoMatch, applyMatchOutcome } from '../src/core/match';
@@ -145,17 +146,37 @@ describe('行动', () => {
 });
 
 describe('成长', () => {
-  it('成长阶段练一次多涨 1 点，巅峰期只有本色收益', () => {
+  it('练一次的收益固定：基础 1 点，成长阶段不再额外加成', () => {
     const young = newGame(1);
     const old = newGame(1);
     young.year = 1;
     old.year = 3;
     young.attrs.operation = 50;
     old.attrs.operation = 50;
-    gainPoints(young, 'operation', 2);
-    gainPoints(old, 'operation', 2);
-    expect(young.attrs.operation).toBe(53);
-    expect(old.attrs.operation).toBe(52);
+    gainPoints(young, 'operation', 1);
+    gainPoints(old, 'operation', 1);
+    expect(young.attrs.operation).toBe(51);
+    expect(old.attrs.operation).toBe(51);
+  });
+
+  it('属性越高，这一格越贵（每 10 点 +3 体力）', () => {
+    const s = newGame(1);
+    s.attrs.awareness = 45;
+    expect(staminaCost(s, 'review')).toBe(8);
+    s.attrs.awareness = 65;
+    expect(staminaCost(s, 'review')).toBe(14);
+    s.attrs.awareness = 95;
+    expect(staminaCost(s, 'review')).toBe(23);
+  });
+
+  it('休息按体力上限的 20% 恢复', () => {
+    const s = newGame(1);
+    s.stamina = 10;
+    s.maxStamina = 100;
+    s.actionGrid = ['rest', 'rest', 'rest'];
+    s.actionTargets = [null, null, null];
+    const state = reduce(s, { kind: 'endWeek' }).state;
+    expect(state.stamina).toBeGreaterThan(10 + 20 - 1);
   });
 
   it('衰退期四项下降，心态与人气不降', () => {

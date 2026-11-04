@@ -186,7 +186,7 @@ function renderSlots(): string {
     .map((id, slot) => {
       const label = id ? ACTION_INFO[id].label : '空';
       const target = state.actionTargets[slot];
-      const extra = id === 'train' && target ? ATTR_LABEL[target] : id ? `${staminaCost(id)} 体力` : '点一下安排';
+      const extra = id === 'train' && target ? ATTR_LABEL[target] : id ? `${staminaCost(state, id, target)} 体力` : '点一下安排';
       return `<button class="slot ${id ? 'filled' : ''}" data-act="slot" data-slot="${slot}">
         <span class="k">${slotLabel(slot)}</span>
         <span class="v">${label}</span>
@@ -241,8 +241,12 @@ function renderSheet(): string {
       const afford = canAfford(state, sheet!.slot, id);
       const disabled = !unlocked || !afford;
       // 体力一律放右边、右对齐、等宽数字；描述降一行说「换来什么」
-      const pts = staminaCost(id);
-      const cost = unlocked && pts > 0 ? `<b class="opt-num">${pts}</b><span class="opt-unit">体力</span>` : '';
+      const pts = staminaCost(state, id, null);
+      const at = id === 'train' ? ' 起' : '';
+      const cost =
+        unlocked && pts > 0
+          ? `<b class="opt-num">${pts}</b><span class="opt-unit">体力${at}</span>`
+          : '';
       const sub = !unlocked
         ? '签约后解锁'
         : !afford
@@ -259,16 +263,19 @@ function renderSheet(): string {
       : '';
     return `<div class="overlay" data-act="close-sheet"><div class="sheet" data-kind="pick" data-stop="1">
       <h2>${slotLabel(sheet.slot)}排什么</h2>
-      ${phaseOfYear(state.year) === 'growth' ? '<div class="cap">成长阶段：每次练习多涨 1 点。</div>' : ''}
       <div class="options">${rows}${clearRow}</div>
     </div></div>`;
   }
 
   const rows = ATTR_KEYS.filter((key) => key !== 'popularity')
-    .map(
-      (key) =>
-        `<button class="btn" data-act="pick-target" data-key="${key}"><span>${ATTR_LABEL[key]}</span><span class="hint">集中提升</span></button>`,
-    )
+    .map((key) => {
+      const price = staminaCost(state, 'train', key);
+      const afford = canAfford(state, sheet!.slot, 'train');
+      return `<button class="btn" data-act="pick-target" data-key="${key}" ${afford ? '' : 'disabled'}>
+        <span>${ATTR_LABEL[key]}</span>
+        <span class="hint">现在 ${state.attrs[key]} · ${price} 体力</span>
+      </button>`;
+    })
     .join('');
   return `<div class="overlay" data-act="close-sheet"><div class="sheet" data-kind="pick" data-stop="1">
     <h2>专项训练练哪一项</h2>

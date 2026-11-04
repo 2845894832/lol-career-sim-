@@ -9,14 +9,12 @@ export interface GainResult {
   capped: number;
 }
 
-/** 训练一次，这一维该涨几点：分段收益 + 成长阶段的额外 1 点。 */
+/** 训练一次，这一维该涨几点：固定基础收益 + 外设加成。 */
 import { trainBonus } from './shop';
 
 export function trainGain(state: GameState, key: AttrKey): number {
-  const value = state.attrs[key];
-  const band = CONFIG.attrs.trainBands.find((b) => value < b.under) ?? { gain: 1 };
-  const bonus = phaseOfYear(state.year) === 'growth' ? CONFIG.attrs.growthBonus : 0;
-  return band.gain + bonus + trainBonus(state);
+  void key;
+  return CONFIG.attrs.trainGain + trainBonus(state);
 }
 
 /** 直接加整数点：练到 100 就停。 */
@@ -26,8 +24,7 @@ export function gainPoints(state: GameState, key: AttrKey, amount: number): Gain
 
   if (state.attrs[key] >= cap || amount <= 0) return { points, capped: 0 };
 
-  const bonus = phaseOfYear(state.year) === 'growth' ? CONFIG.attrs.growthBonus : 0;
-  const want = amount + bonus;
+  const want = amount;
   const before = state.attrs[key];
   state.attrs[key] = clamp(before + want, 0, cap);
   points = state.attrs[key] - before;

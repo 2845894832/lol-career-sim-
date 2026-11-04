@@ -23,26 +23,47 @@ export interface ActionInfo {
 }
 
 export const ACTION_INFO: Record<ActionId, ActionInfo> = {
-  rank: { label: '上分', hint: '对线、操作各涨 3/2/1；段位分数 ↑', needsContract: false },
-  train: { label: '专项训练', hint: '选一维涨 3/2/1（越低越快）', needsContract: false },
-  review: { label: '复盘录像', hint: '意识涨 3/2/1', needsContract: false },
-  scrim: { label: '训练赛', hint: '团战、意识各涨 3/2/1；信任 +2', needsContract: true },
+  rank: { label: '上分', hint: '对线、操作各 +1；段位分数 ↑', needsContract: false },
+  train: { label: '专项训练', hint: '选一维 +2', needsContract: false },
+  review: { label: '复盘录像', hint: '意识 +1', needsContract: false },
+  scrim: { label: '训练赛', hint: '团战、意识各 +1；信任 +2', needsContract: true },
   fitness: { label: '健身', hint: '体力上限 +4', needsContract: false },
-  stream: { label: '直播', hint: '钱 +1000、人气 +2', needsContract: false },
-  business: { label: '商业活动', hint: '钱 +2000、人气 +5', needsContract: true },
-  rest: { label: '休息', hint: '体力 +30', needsContract: false },
+  stream: { label: '直播', hint: '钱 +400、人气 +2', needsContract: false },
+  business: { label: '商业活动', hint: '钱 +800、人气 +5', needsContract: true },
+  rest: { label: '休息', hint: '按上限的 20% 回体力', needsContract: false },
 };
 
-export function staminaCost(action: ActionId): number {
+/** 递增成本：属性越高，这一格越贵。 */
+function escalate(base: number, value: number): number {
+  const { from, step } = CONFIG.actions.cost;
+  return base + step * Math.max(0, Math.floor((value - from) / 10));
+}
+
+/**
+ * 这一格要花多少体力。
+ * 四项训练按「这次练的那一维现在多少」算价，所以必须传 state；
+ * target 只对专训有意义（练哪一维就按哪一维收费）。
+ */
+export function staminaCost(
+  state: GameState,
+  action: ActionId,
+  target?: AttrKey | null,
+): number {
+  const a = state.attrs;
   switch (action) {
     case 'rank':
-      return CONFIG.actions.rank.stamina;
-    case 'train':
-      return CONFIG.actions.train.stamina;
+      return escalate(CONFIG.actions.rank.stamina, Math.min(a.laning, a.operation));
+    case 'train': {
+      // 不指定这一维时（选项页还没选），报最便宜那一维的价，界面标「起」。
+      const v = target
+        ? a[target]
+        : Math.min(a.operation, a.laning, a.teamfight, a.awareness, a.mentality);
+      return escalate(CONFIG.actions.train.stamina, v);
+    }
     case 'review':
-      return CONFIG.actions.review.stamina;
+      return escalate(CONFIG.actions.review.stamina, a.awareness);
     case 'scrim':
-      return CONFIG.actions.scrim.stamina;
+      return escalate(CONFIG.actions.scrim.stamina, Math.min(a.teamfight, a.awareness));
     case 'fitness':
       return CONFIG.actions.fitness.stamina;
     case 'stream':
@@ -65,7 +86,7 @@ export function remainingStamina(state: GameState, ignoreSlot = -1): number {
   for (let i = 0; i < state.actionGrid.length; i++) {
     if (i === ignoreSlot) continue;
     const action = state.actionGrid[i];
-    if (action) spent += staminaCost(action);
+    if (action) spent += staminaCost(state, action, state.actionTargets[i]);
   }
   return state.stamina - spent;
 }
@@ -76,7 +97,7 @@ export function remainingStamina(state: GameState, ignoreSlot = -1): number {
  */
 export function canAfford(state: GameState, slot: number, action: ActionId): boolean {
   if (action === 'rest') return true;
-  return remainingStamina(state, slot) >= staminaCost(action);
+  return remainingStamina(state, slot) >= staminaCost(state, action);
 }
 
 /** 人气增长有递减：越高越难涨，避免一直直播就把人气顶满。 */
@@ -160,7 +181,9 @@ export function applyAction(
       break;
     case 'rest':
       state.stamina = clamp(
-        state.stamina + CONFIG.actions.rest.restore + restBonus(state),
+        state.stamina +
+          Math.round(state.maxStamina * CONFIG.actions.rest.restoreRatio) +
+          restBonus(state),
         0,
         state.maxStamina,
       );
