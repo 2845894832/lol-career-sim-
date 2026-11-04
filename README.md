@@ -7,8 +7,16 @@
 
 ## 直接玩
 
-- 打开 `dist/index.html`（单个 HTML，零外链、零后端，双击即可）
-- 或起个本地服务：`npx http-server dist -p 8123`
+仓库里放的是 **P3 切片版**：`dist-slice/index.html`（单个 HTML，零外链、零后端，双击即可，也可手机浏览器打开）。
+
+切片版 = 完整代码 + 一个编译期常量 `__SLICE_AT__ = 8`：打到第 8 周、春决打完就收尾，出一页「切片到此为止」。
+
+想要八年完整版，自己构建：
+
+```bash
+npm run build        # 完整版 → dist/index.html
+npm run build:slice  # 切片版 → dist-slice/index.html
+```
 
 ## 四个页面
 

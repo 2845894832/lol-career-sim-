@@ -1,6 +1,7 @@
 node_modules/
 dist/*
-!dist/index.html
+dist-slice/*
+!dist-slice/index.html
 *.local
 .DS_Store
 .shots/
