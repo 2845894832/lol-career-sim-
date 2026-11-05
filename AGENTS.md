@@ -8,3 +8,9 @@
 ## 语言
 
 - 中文。
+
+## 更新日志（硬规矩）
+
+- **每次更新版本（改 `package.json` 的 version、投稿或打 tag），同时更新日志。** 日志没写，不算发完。
+- 摘要写 `CHANGELOG.md`：平时挂 `[Unreleased]`，发版当天改成 `## [x.y.z] - 日期`，顶部再开一个空的 `[Unreleased]`。
+- 详细说明（影响谁 / 重跑什么 / 已知未修）写 `docs/6.4-更新日志.docx`；规则全文见 `docs/CHANGELOG-维护规则.md` 与 `docs/更新日志维护规则.docx`。
