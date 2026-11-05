@@ -1,5 +1,5 @@
 import { CONFIG } from '../config';
-import { fixtureThisWeek, matchLogLine, myTeamStrength, recordResult, rivalStrength, winChance } from './league';
+import { fixtureThisWeek, matchLogLine, myTeamStrength, opponentStrength, recordResult, rivalStrength, winChance } from './league';
 import { createRng } from '../rng';
 import { hasOnce } from './shop';
 import type { Action, ActionId, AttrKey, GameState, LogEntry, ReduceResult } from '../types';
@@ -8,13 +8,8 @@ import { advanceYear } from './growth';
 import { applyMatchOutcome, autoMatch, benchReason, canPlay } from './match';
 import { drawEvent, getEvent, resolveOption } from './events';
 import { normalEnding, sliceEnding, specialEnding } from './endings';
-import { addHonor, attrTotal, cloneState, isMatchWeek, isSigningWindow } from './state';
+import { addHonor, attrTotal, cloneState, isFinalWeek, isMatchWeek, isSigningWindow } from './state';
 import { placementOf, rankOf, weeksPlayed } from './ladder';
-
-/** 那场决赛：第 3 年 S 赛。 */
-export function isFinalWeek(state: GameState): boolean {
-  return state.year === CONFIG.career.finalYear && state.week === CONFIG.career.finalWeek;
-}
 
 /**
  * 规则核心。纯计算：给一个状态和一个动作，返回新状态和日志。
@@ -173,8 +168,8 @@ function settleMatch(state: GameState, out: LogEntry[]): void {
     if (reason) out.push({ text: reason, tone: 'plain' });
     return;
   }
-  const opponent = isFinalWeek(state) ? CONFIG.match.opponentFinal : CONFIG.match.opponentDefault;
-  const { win } = autoMatch(state, opponent);
+  // 对手强度来自当季名单：赛程周是那支队，其余周是当季平均，决赛是当季最强。
+  const { win } = autoMatch(state, opponentStrength(state));
   out.push(...applyMatchOutcome(state, win, isFinalWeek(state)));
 }
 

@@ -121,6 +121,11 @@ export interface GameEvent {
   kind: EventKind;
   /** 比赛事件：对手强度。有它就走统一胜负公式。 */
   opponent?: number;
+  /**
+   * 比赛事件：对手按决赛规则取（当季最强队）。
+   * 给了它，opponent 只是 opponentSource='fixed' 时的老常量兜底，见 core/events.ts。
+   */
+  opponentRole?: 'final';
   phase: Phase | 'any';
   /** 写死年份的必触发事件，如第 3 年决赛。 */
   year?: number;

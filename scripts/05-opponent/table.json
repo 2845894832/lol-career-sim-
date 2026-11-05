@@ -1,0 +1,864 @@
+{
+  "generatedAt": "2026-11-05T14:44:16.872Z",
+  "note": "strength = 该队 5 名选手 ovr 的算术平均，来源 src/data/rosters.ts",
+  "seasons": [
+    {
+      "year": 1,
+      "season": "S8",
+      "count": 14,
+      "average": 76.27142857142859,
+      "median": 75,
+      "teams": [
+        {
+          "rank": 1,
+          "id": "RNG",
+          "name": "RNG",
+          "strength": 87.4
+        },
+        {
+          "rank": 2,
+          "id": "IG",
+          "name": "IG",
+          "strength": 84.2
+        },
+        {
+          "rank": 3,
+          "id": "JDG",
+          "name": "JDG",
+          "strength": 80
+        },
+        {
+          "rank": 4,
+          "id": "EDG",
+          "name": "EDG",
+          "strength": 79.6
+        },
+        {
+          "rank": 5,
+          "id": "RW",
+          "name": "RW",
+          "strength": 78.2
+        },
+        {
+          "rank": 6,
+          "id": "WE",
+          "name": "WE",
+          "strength": 77.4
+        },
+        {
+          "rank": 7,
+          "id": "SS",
+          "name": "SS",
+          "strength": 75.6
+        },
+        {
+          "rank": 8,
+          "id": "SNG",
+          "name": "SNG",
+          "strength": 74.4
+        },
+        {
+          "rank": 9,
+          "id": "BLG",
+          "name": "BLG",
+          "strength": 73
+        },
+        {
+          "rank": 10,
+          "id": "FPX",
+          "name": "FPX",
+          "strength": 73
+        },
+        {
+          "rank": 11,
+          "id": "LGD",
+          "name": "LGD",
+          "strength": 72.6
+        },
+        {
+          "rank": 12,
+          "id": "OMG",
+          "name": "OMG",
+          "strength": 72.4
+        },
+        {
+          "rank": 13,
+          "id": "TOP",
+          "name": "TOP",
+          "strength": 70.6
+        },
+        {
+          "rank": 14,
+          "id": "VG",
+          "name": "VG",
+          "strength": 69.4
+        }
+      ]
+    },
+    {
+      "year": 2,
+      "season": "S9",
+      "count": 16,
+      "average": 76.4,
+      "median": 75.7,
+      "teams": [
+        {
+          "rank": 1,
+          "id": "IG",
+          "name": "IG",
+          "strength": 85.2
+        },
+        {
+          "rank": 2,
+          "id": "RNG",
+          "name": "RNG",
+          "strength": 85
+        },
+        {
+          "rank": 3,
+          "id": "EDG",
+          "name": "EDG",
+          "strength": 81.6
+        },
+        {
+          "rank": 4,
+          "id": "FPX",
+          "name": "FPX",
+          "strength": 80.6
+        },
+        {
+          "rank": 5,
+          "id": "JDG",
+          "name": "JDG",
+          "strength": 78.8
+        },
+        {
+          "rank": 6,
+          "id": "SN",
+          "name": "SN",
+          "strength": 77.6
+        },
+        {
+          "rank": 7,
+          "id": "WE",
+          "name": "WE",
+          "strength": 77.6
+        },
+        {
+          "rank": 8,
+          "id": "TOP",
+          "name": "TOP",
+          "strength": 76.4
+        },
+        {
+          "rank": 9,
+          "id": "SS",
+          "name": "SS",
+          "strength": 75
+        },
+        {
+          "rank": 10,
+          "id": "LGD",
+          "name": "LGD",
+          "strength": 74
+        },
+        {
+          "rank": 11,
+          "id": "OMG",
+          "name": "OMG",
+          "strength": 72.8
+        },
+        {
+          "rank": 12,
+          "id": "BLG",
+          "name": "BLG",
+          "strength": 72.6
+        },
+        {
+          "rank": 13,
+          "id": "V5",
+          "name": "V5",
+          "strength": 72
+        },
+        {
+          "rank": 14,
+          "id": "VG",
+          "name": "VG",
+          "strength": 71.8
+        },
+        {
+          "rank": 15,
+          "id": "SDG",
+          "name": "SDG",
+          "strength": 71.4
+        },
+        {
+          "rank": 16,
+          "id": "RW",
+          "name": "RW",
+          "strength": 70
+        }
+      ]
+    },
+    {
+      "year": 3,
+      "season": "S10",
+      "count": 17,
+      "average": 76.84705882352942,
+      "median": 76,
+      "teams": [
+        {
+          "rank": 1,
+          "id": "JDG",
+          "name": "JDG",
+          "strength": 83
+        },
+        {
+          "rank": 2,
+          "id": "IG",
+          "name": "IG",
+          "strength": 82.8
+        },
+        {
+          "rank": 3,
+          "id": "FPX",
+          "name": "FPX",
+          "strength": 81.4
+        },
+        {
+          "rank": 4,
+          "id": "RNG",
+          "name": "RNG",
+          "strength": 80.2
+        },
+        {
+          "rank": 5,
+          "id": "SN",
+          "name": "SN",
+          "strength": 80
+        },
+        {
+          "rank": 6,
+          "id": "TES",
+          "name": "TES",
+          "strength": 79.4
+        },
+        {
+          "rank": 7,
+          "id": "EDG",
+          "name": "EDG",
+          "strength": 79
+        },
+        {
+          "rank": 8,
+          "id": "WE",
+          "name": "WE",
+          "strength": 76.2
+        },
+        {
+          "rank": 9,
+          "id": "OMG",
+          "name": "OMG",
+          "strength": 76
+        },
+        {
+          "rank": 10,
+          "id": "LNG",
+          "name": "LNG",
+          "strength": 75.6
+        },
+        {
+          "rank": 11,
+          "id": "BLG",
+          "name": "BLG",
+          "strength": 75.2
+        },
+        {
+          "rank": 12,
+          "id": "LGD",
+          "name": "LGD",
+          "strength": 74.4
+        },
+        {
+          "rank": 13,
+          "id": "eStar",
+          "name": "eStar",
+          "strength": 74.4
+        },
+        {
+          "rank": 14,
+          "id": "DMO",
+          "name": "DMO",
+          "strength": 74
+        },
+        {
+          "rank": 15,
+          "id": "VG",
+          "name": "VG",
+          "strength": 74
+        },
+        {
+          "rank": 16,
+          "id": "RW",
+          "name": "RW",
+          "strength": 71.2
+        },
+        {
+          "rank": 17,
+          "id": "V5",
+          "name": "V5",
+          "strength": 69.6
+        }
+      ]
+    },
+    {
+      "year": 4,
+      "season": "S11",
+      "count": 17,
+      "average": 77.27058823529413,
+      "median": 77.4,
+      "teams": [
+        {
+          "rank": 1,
+          "id": "EDG",
+          "name": "EDG",
+          "strength": 83.4
+        },
+        {
+          "rank": 2,
+          "id": "RNG",
+          "name": "RNG",
+          "strength": 83.2
+        },
+        {
+          "rank": 3,
+          "id": "IG",
+          "name": "IG",
+          "strength": 82
+        },
+        {
+          "rank": 4,
+          "id": "TES",
+          "name": "TES",
+          "strength": 81.6
+        },
+        {
+          "rank": 5,
+          "id": "JDG",
+          "name": "JDG",
+          "strength": 81
+        },
+        {
+          "rank": 6,
+          "id": "SN",
+          "name": "SN",
+          "strength": 79.8
+        },
+        {
+          "rank": 7,
+          "id": "FPX",
+          "name": "FPX",
+          "strength": 79.6
+        },
+        {
+          "rank": 8,
+          "id": "WE",
+          "name": "WE",
+          "strength": 78.4
+        },
+        {
+          "rank": 9,
+          "id": "LNG",
+          "name": "LNG",
+          "strength": 77.4
+        },
+        {
+          "rank": 10,
+          "id": "RA",
+          "name": "RA",
+          "strength": 76.6
+        },
+        {
+          "rank": 11,
+          "id": "BLG",
+          "name": "BLG",
+          "strength": 76.2
+        },
+        {
+          "rank": 12,
+          "id": "V5",
+          "name": "V5",
+          "strength": 75.2
+        },
+        {
+          "rank": 13,
+          "id": "RW",
+          "name": "RW",
+          "strength": 73.4
+        },
+        {
+          "rank": 14,
+          "id": "OMG",
+          "name": "OMG",
+          "strength": 72.6
+        },
+        {
+          "rank": 15,
+          "id": "LGD",
+          "name": "LGD",
+          "strength": 72.2
+        },
+        {
+          "rank": 16,
+          "id": "ES",
+          "name": "ES",
+          "strength": 71
+        },
+        {
+          "rank": 17,
+          "id": "TT",
+          "name": "TT",
+          "strength": 70
+        }
+      ]
+    },
+    {
+      "year": 5,
+      "season": "S12",
+      "count": 17,
+      "average": 77.18823529411765,
+      "median": 76.4,
+      "teams": [
+        {
+          "rank": 1,
+          "id": "EDG",
+          "name": "EDG",
+          "strength": 83.4
+        },
+        {
+          "rank": 2,
+          "id": "JDG",
+          "name": "JDG",
+          "strength": 81.8
+        },
+        {
+          "rank": 3,
+          "id": "LNG",
+          "name": "LNG",
+          "strength": 81.6
+        },
+        {
+          "rank": 4,
+          "id": "RNG",
+          "name": "RNG",
+          "strength": 81
+        },
+        {
+          "rank": 5,
+          "id": "V5",
+          "name": "V5",
+          "strength": 80.6
+        },
+        {
+          "rank": 6,
+          "id": "WBG",
+          "name": "WBG",
+          "strength": 80
+        },
+        {
+          "rank": 7,
+          "id": "BLG",
+          "name": "BLG",
+          "strength": 78.2
+        },
+        {
+          "rank": 8,
+          "id": "TES",
+          "name": "TES",
+          "strength": 78.2
+        },
+        {
+          "rank": 9,
+          "id": "FPX",
+          "name": "FPX",
+          "strength": 76.4
+        },
+        {
+          "rank": 10,
+          "id": "OMG",
+          "name": "OMG",
+          "strength": 75.4
+        },
+        {
+          "rank": 11,
+          "id": "UP",
+          "name": "UP",
+          "strength": 75.2
+        },
+        {
+          "rank": 12,
+          "id": "AL",
+          "name": "AL",
+          "strength": 74.6
+        },
+        {
+          "rank": 13,
+          "id": "IG",
+          "name": "IG",
+          "strength": 74.2
+        },
+        {
+          "rank": 14,
+          "id": "RA",
+          "name": "RA",
+          "strength": 74
+        },
+        {
+          "rank": 15,
+          "id": "WE",
+          "name": "WE",
+          "strength": 74
+        },
+        {
+          "rank": 16,
+          "id": "LGD",
+          "name": "LGD",
+          "strength": 72
+        },
+        {
+          "rank": 17,
+          "id": "TT",
+          "name": "TT",
+          "strength": 71.6
+        }
+      ]
+    },
+    {
+      "year": 6,
+      "season": "S13",
+      "count": 17,
+      "average": 78.16470588235293,
+      "median": 77.2,
+      "teams": [
+        {
+          "rank": 1,
+          "id": "JDG",
+          "name": "JDG",
+          "strength": 85.2
+        },
+        {
+          "rank": 2,
+          "id": "TES",
+          "name": "TES",
+          "strength": 83
+        },
+        {
+          "rank": 3,
+          "id": "WBG",
+          "name": "WBG",
+          "strength": 82.8
+        },
+        {
+          "rank": 4,
+          "id": "RNG",
+          "name": "RNG",
+          "strength": 81.8
+        },
+        {
+          "rank": 5,
+          "id": "BLG",
+          "name": "BLG",
+          "strength": 81.6
+        },
+        {
+          "rank": 6,
+          "id": "LNG",
+          "name": "LNG",
+          "strength": 80.6
+        },
+        {
+          "rank": 7,
+          "id": "EDG",
+          "name": "EDG",
+          "strength": 80.2
+        },
+        {
+          "rank": 8,
+          "id": "UP",
+          "name": "UP",
+          "strength": 77.4
+        },
+        {
+          "rank": 9,
+          "id": "OMG",
+          "name": "OMG",
+          "strength": 77.2
+        },
+        {
+          "rank": 10,
+          "id": "WE",
+          "name": "WE",
+          "strength": 76.8
+        },
+        {
+          "rank": 11,
+          "id": "NIP",
+          "name": "NIP",
+          "strength": 76
+        },
+        {
+          "rank": 12,
+          "id": "AL",
+          "name": "AL",
+          "strength": 75.2
+        },
+        {
+          "rank": 13,
+          "id": "TT",
+          "name": "TT",
+          "strength": 75.2
+        },
+        {
+          "rank": 14,
+          "id": "FPX",
+          "name": "FPX",
+          "strength": 75
+        },
+        {
+          "rank": 15,
+          "id": "RA",
+          "name": "RA",
+          "strength": 74.8
+        },
+        {
+          "rank": 16,
+          "id": "IG",
+          "name": "IG",
+          "strength": 73.8
+        },
+        {
+          "rank": 17,
+          "id": "LGD",
+          "name": "LGD",
+          "strength": 72.2
+        }
+      ]
+    },
+    {
+      "year": 7,
+      "season": "S14",
+      "count": 17,
+      "average": 77.82352941176471,
+      "median": 78,
+      "teams": [
+        {
+          "rank": 1,
+          "id": "TES",
+          "name": "TES",
+          "strength": 84.2
+        },
+        {
+          "rank": 2,
+          "id": "BLG",
+          "name": "BLG",
+          "strength": 84
+        },
+        {
+          "rank": 3,
+          "id": "JDG",
+          "name": "JDG",
+          "strength": 83.6
+        },
+        {
+          "rank": 4,
+          "id": "LNG",
+          "name": "LNG",
+          "strength": 81.2
+        },
+        {
+          "rank": 5,
+          "id": "WBG",
+          "name": "WBG",
+          "strength": 80.4
+        },
+        {
+          "rank": 6,
+          "id": "RNG",
+          "name": "RNG",
+          "strength": 79.6
+        },
+        {
+          "rank": 7,
+          "id": "AL",
+          "name": "AL",
+          "strength": 78.6
+        },
+        {
+          "rank": 8,
+          "id": "FPX",
+          "name": "FPX",
+          "strength": 78
+        },
+        {
+          "rank": 9,
+          "id": "NIP",
+          "name": "NIP",
+          "strength": 78
+        },
+        {
+          "rank": 10,
+          "id": "WE",
+          "name": "WE",
+          "strength": 77
+        },
+        {
+          "rank": 11,
+          "id": "OMG",
+          "name": "OMG",
+          "strength": 76.6
+        },
+        {
+          "rank": 12,
+          "id": "RA",
+          "name": "RA",
+          "strength": 75.2
+        },
+        {
+          "rank": 13,
+          "id": "IG",
+          "name": "IG",
+          "strength": 74
+        },
+        {
+          "rank": 14,
+          "id": "UP",
+          "name": "UP",
+          "strength": 73.6
+        },
+        {
+          "rank": 15,
+          "id": "LGD",
+          "name": "LGD",
+          "strength": 73.4
+        },
+        {
+          "rank": 16,
+          "id": "EDG",
+          "name": "EDG",
+          "strength": 72.8
+        },
+        {
+          "rank": 17,
+          "id": "TT",
+          "name": "TT",
+          "strength": 72.8
+        }
+      ]
+    },
+    {
+      "year": 8,
+      "season": "S15",
+      "count": 16,
+      "average": 77.7875,
+      "median": 76.6,
+      "teams": [
+        {
+          "rank": 1,
+          "id": "IG",
+          "name": "IG",
+          "strength": 84.6
+        },
+        {
+          "rank": 2,
+          "id": "BLG",
+          "name": "BLG",
+          "strength": 84.4
+        },
+        {
+          "rank": 3,
+          "id": "TES",
+          "name": "TES",
+          "strength": 84.2
+        },
+        {
+          "rank": 4,
+          "id": "JDG",
+          "name": "JDG",
+          "strength": 82.4
+        },
+        {
+          "rank": 5,
+          "id": "AL",
+          "name": "AL",
+          "strength": 81.8
+        },
+        {
+          "rank": 6,
+          "id": "WBG",
+          "name": "WBG",
+          "strength": 81.6
+        },
+        {
+          "rank": 7,
+          "id": "NIP",
+          "name": "NIP",
+          "strength": 79.4
+        },
+        {
+          "rank": 8,
+          "id": "LNG",
+          "name": "LNG",
+          "strength": 77.4
+        },
+        {
+          "rank": 9,
+          "id": "EDG",
+          "name": "EDG",
+          "strength": 75.8
+        },
+        {
+          "rank": 10,
+          "id": "OMG",
+          "name": "OMG",
+          "strength": 75.2
+        },
+        {
+          "rank": 11,
+          "id": "FPX",
+          "name": "FPX",
+          "strength": 74.8
+        },
+        {
+          "rank": 12,
+          "id": "WE",
+          "name": "WE",
+          "strength": 74.6
+        },
+        {
+          "rank": 13,
+          "id": "RNG",
+          "name": "RNG",
+          "strength": 74
+        },
+        {
+          "rank": 14,
+          "id": "TT",
+          "name": "TT",
+          "strength": 74
+        },
+        {
+          "rank": 15,
+          "id": "LGD",
+          "name": "LGD",
+          "strength": 70.4
+        },
+        {
+          "rank": 16,
+          "id": "UP",
+          "name": "UP",
+          "strength": 70
+        }
+      ]
+    }
+  ]
+}

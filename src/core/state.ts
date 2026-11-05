@@ -37,6 +37,11 @@ export function isMatchWeek(week: number): boolean {
   return week <= CONFIG.career.matchWeeksPerYear;
 }
 
+/** 那场决赛：第 3 年 S 赛（第 26 周）。 */
+export function isFinalWeek(state: GameState): boolean {
+  return state.year === CONFIG.career.finalYear && state.week === CONFIG.career.finalWeek;
+}
+
 export function isSigningWindow(week: number): boolean {
   return week === CONFIG.career.signingWindowWeek;
 }

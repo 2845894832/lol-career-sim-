@@ -148,10 +148,15 @@ export const CONFIG = {
     maxWinRate: 0.95,
     /** 统一胜负公式：胜率 = 0.5 + (六维均值 − 对手) / K + 选项加成。 */
     formulaK: 50,
-    /** 常规比赛与决赛的默认对手强度。 */
-    // 占位：真实强度应由对手自身能力算出，对手能力表还没做
+    /**
+     * 对手强度的来源。
+     * - 'roster'（正式）：按当季名单的 ovr 真算，见 core/league.ts 的 opponentStrength()。
+     * - 'fixed'（仅对比模拟）：回到下面两个手写常量，用来复跑 05 号的新旧对照。
+     */
+    opponentSource: 'roster' as OpponentSource,
+    /** 兜底对手强度：名单缺失，或 opponentSource='fixed' 时用。 */
     opponentDefault: 60,
-    // 占位，同上
+    /** 兜底的决赛对手强度：同上，只在 opponentSource='fixed' 时生效。 */
     opponentFinal: 78,
     winCoachTrust: 2,
     lossCoachTrust: 4,
@@ -190,3 +195,6 @@ export const CONFIG = {
 } as const;
 
 export type PhaseConfigKey = 'growth' | 'peak' | 'decline';
+
+/** 对手强度来源，见 CONFIG.match.opponentSource。 */
+export type OpponentSource = 'roster' | 'fixed';

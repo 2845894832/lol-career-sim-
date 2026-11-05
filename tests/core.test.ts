@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { CONFIG } from '../src/config';
-import { isStarting, startRequirement } from '../src/core/league';
+import { isStarting, startRequirement, fixtureThisWeek, finalOpponentStrength, opponentStrength, rivalStrength, seasonAverageStrength, seasonStrengths, seasonTopStrength } from '../src/core/league';
 import { reduce } from '../src/core/reduce';
 import { staminaCost } from '../src/core/actions';
 import { applyAction, canAfford } from '../src/core/actions';
 import { advanceYear, gainExp, gainPoints, trainGain } from '../src/core/growth';
-import { autoMatch, applyMatchOutcome } from '../src/core/match';
+import { autoMatch, applyMatchOutcome, matchRate } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
 import { drawEvent, resolveOption, successRateOf } from '../src/core/events';
 import { canPlay, benchReason } from '../src/core/match';
@@ -16,6 +16,7 @@ import { newGame, rankTier } from '../src/core/state';
 import { placementOf, rankOf, weeklyGain } from '../src/core/ladder';
 import { ATTR_KEYS, MATCH_ATTRS, type Action, type GameEvent, type GameState } from '../src/types';
 import { SHOP, buy, buyBlocker, hasOnce, restBonus, streamIncome, subActive, subUntil, weekIncome, weekSpend } from '../src/core/shop';
+import { springFinal } from '../src/data/finals';
 
 /** 一周：排三格 → 结周 → 处理事件。 */
 function step(state: GameState): GameState {
@@ -261,6 +262,87 @@ describe('比赛', () => {
     }
     expect(normal).toBeGreaterThan(60);
     expect(debuffed).toBeLessThan(normal);
+  });
+});
+
+describe('对手强度表', () => {
+  it('赛程周的对手 = 赛程里那支队的名单强度', () => {
+    const s = newGame(3);
+    s.signed = true;
+    s.teamId = 'RNG';
+    s.year = 1;
+    let found = 0;
+    for (let w = 1; w <= CONFIG.career.matchWeeksPerYear; w++) {
+      s.week = w;
+      const fixture = fixtureThisWeek(s);
+      if (!fixture) continue;
+      found += 1;
+      expect(opponentStrength(s)).toBeCloseTo(rivalStrength(1, fixture.rivalId), 6);
+    }
+    expect(found).toBeGreaterThan(0);
+  });
+
+  it('非赛程周用当季平均，决赛周用当季最强', () => {
+    const s = newGame(3);
+    s.signed = true;
+    s.teamId = 'RNG';
+    s.year = 1;
+    s.week = 1; // 第 1 周没有赛程
+    expect(opponentStrength(s)).toBeCloseTo(seasonAverageStrength(1), 6);
+
+    s.year = CONFIG.career.finalYear;
+    s.week = CONFIG.career.finalWeek;
+    expect(opponentStrength(s)).toBeCloseTo(seasonTopStrength(CONFIG.career.finalYear), 6);
+  });
+
+  it('强度表只来自名单：按赛季降序，队数与 rosters 一致', () => {
+    for (let year = 1; year <= CONFIG.career.years; year++) {
+      const rows = seasonStrengths(year);
+      expect(rows.length).toBeGreaterThanOrEqual(14);
+      for (let i = 1; i < rows.length; i++) {
+        expect(rows[i - 1]!.strength).toBeGreaterThanOrEqual(rows[i]!.strength);
+      }
+      const avg = rows.reduce((sum, r) => sum + r.strength, 0) / rows.length;
+      expect(seasonAverageStrength(year)).toBeCloseTo(avg, 6);
+    }
+    // 第 1 季（S8）最强是 RNG 87.4，最弱是 VG 69.4，均为五人 ovr 均值。
+    expect(seasonStrengths(1)[0]!.name).toBe('RNG');
+    expect(seasonStrengths(1)[0]!.strength).toBeCloseTo(87.4, 6);
+    const first = seasonStrengths(1);
+    expect(first[first.length - 1]!.strength).toBeCloseTo(69.4, 6);
+  });
+
+  it('决赛事件按当季最强队算，不再用写死的 65', () => {
+    const s = newGame(4);
+    s.signed = true;
+    s.year = 1;
+    const event = springFinal(1);
+    const option = event.options[0]!;
+    expect(successRateOf(s, event, option)).toBeCloseTo(
+      matchRate(s, seasonTopStrength(1), option.bonus ?? 0),
+      6,
+    );
+    expect(finalOpponentStrength(1, 65)).toBeCloseTo(seasonTopStrength(1), 6);
+  });
+
+  it('opponentSource=fixed 时回到 60/78 兜底', () => {
+    const s = newGame(5);
+    s.signed = true;
+    s.teamId = 'RNG';
+    s.year = 1;
+    s.week = 4;
+    const saved = CONFIG.match.opponentSource;
+    const cfg = CONFIG.match as { opponentSource: 'fixed' | 'roster' };
+    try {
+      cfg.opponentSource = 'fixed';
+      expect(opponentStrength(s)).toBe(CONFIG.match.opponentDefault);
+      s.year = CONFIG.career.finalYear;
+      s.week = CONFIG.career.finalWeek;
+      expect(opponentStrength(s)).toBe(CONFIG.match.opponentFinal);
+      expect(finalOpponentStrength(1, 65)).toBe(65);
+    } finally {
+      cfg.opponentSource = saved;
+    }
   });
 });
 

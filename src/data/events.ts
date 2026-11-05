@@ -110,6 +110,7 @@ export const EVENTS: readonly GameEvent[] = [
     year: CONFIG.career.finalYear,
     week: CONFIG.career.finalWeek,
     opponent: CONFIG.match.opponentFinal,
+    opponentRole: 'final',
     tags: ['#S赛', '#决赛', '#特殊', '#请神'],
     text: '第 3 年，决赛。这一场决定你以后的历史地位。',
     once: true,

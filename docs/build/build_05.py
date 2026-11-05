@@ -1,0 +1,489 @@
+# -*- coding: utf-8 -*-
+"""docs/05-对手强度表-材料.docx —— 05 号 ticket（对手强度表）的材料。
+
+数据全部现读，不手填：
+- scripts/05-opponent/table.json  ← `npx vite-node scripts/05-opponent/table.ts`
+  （每队强度 = 5 名选手 ovr 的算术平均，来源 src/data/rosters.ts）
+- scripts/05-opponent/out.json    ← `npx vite-node scripts/05-opponent/sim.ts`
+  （8 种子 × 3 策略 × 新旧两种强度 = 48 局）
+顺带生成 docs/05-对手强度表-全量.md（131 队全表）。
+"""
+import json
+import os
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, ROOT)
+
+import docx_kit as k
+from docx.shared import Pt, Cm, RGBColor
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
+OUT = os.path.join(ROOT, "docs", "05-对手强度表-材料.docx")
+OUT_MD = os.path.join(ROOT, "docs", "05-对手强度表-全量.md")
+
+
+def _mono(r):
+    r.font.name = "Consolas"
+    rpr = r._element.get_or_add_rPr()
+    rf = rpr.find(qn("w:rFonts"))
+    if rf is None:
+        rf = OxmlElement("w:rFonts")
+        rpr.append(rf)
+    for a in ("w:ascii", "w:hAnsi"):
+        rf.set(qn(a), "Consolas")
+    rf.set(qn("w:eastAsia"), k.CN)
+    r.font.color.rgb = RGBColor(0x2F, 0x51, 0x7A)
+
+
+def rich(p, s, size=10.5, color=k.K):
+    """docx_kit.rich 的加强版：认 **加粗** 和 `行内代码`。"""
+    for i, part in enumerate(s.split("**")):
+        bold = i % 2 == 1
+        for j, seg in enumerate(part.split("`")):
+            if not seg:
+                continue
+            r = p.add_run(seg)
+            k.set_run(r, size, bold, color)
+            if j % 2 == 1:
+                _mono(r)
+
+
+k.rich = rich
+
+
+def cmd(doc, text):
+    p = doc.add_paragraph()
+    pf = p.paragraph_format
+    pf.left_indent = Cm(0.6)
+    pf.space_before = Pt(3)
+    pf.space_after = Pt(3)
+    pf.line_spacing = 1.25
+    pPr = p._p.get_or_add_pPr()
+    shd = OxmlElement("w:shd")
+    shd.set(qn("w:val"), "clear")
+    shd.set(qn("w:color"), "auto")
+    shd.set(qn("w:fill"), "F1F3F6")
+    pPr.append(shd)
+    r = p.add_run(text)
+    r.font.size = Pt(9.5)
+    r.font.name = "Consolas"
+    rpr = r._element.get_or_add_rPr()
+    rf = rpr.find(qn("w:rFonts"))
+    if rf is None:
+        rf = OxmlElement("w:rFonts")
+        rpr.append(rf)
+    for a in ("w:ascii", "w:hAnsi"):
+        rf.set(qn(a), "Consolas")
+    rf.set(qn("w:eastAsia"), k.CN)
+
+
+def f1(x):
+    return f"{x:.1f}"
+
+
+def pct(x):
+    return f"{x * 100:.1f}%"
+
+
+def load(name):
+    with open(os.path.join(ROOT, "scripts", "05-opponent", name), encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+TABLE = load("table.json")
+SIM = load("out.json")
+SEASONS = TABLE["seasons"]
+S = SIM["summary"]
+FIX = S["fixed"]
+NEW = S["roster"]
+DELTA = (NEW["winRate"] - FIX["winRate"]) * 100
+
+ALL_TEAMS = [dict(t, season=s["season"]) for s in SEASONS for t in s["teams"]]
+ALL_AVG = sum(t["strength"] for t in ALL_TEAMS) / len(ALL_TEAMS)
+ALL_MIN = min(t["strength"] for t in ALL_TEAMS)
+ALL_MAX = max(t["strength"] for t in ALL_TEAMS)
+
+
+def pick(kind, n=5):
+    rows = sorted(ALL_TEAMS, key=lambda x: -x["strength"])
+    if kind == "top":
+        out = rows[:n]
+    elif kind == "mid":
+        mid = len(rows) // 2
+        out = rows[mid - n // 2: mid + n // 2 + 1]
+    else:
+        out = rows[-n:]
+    return out, rows
+
+
+def main():
+    doc = k.new_doc("05 · 对手强度表 · 材料")
+
+    k.title(
+        doc,
+        "对手强度：从占位常量换成名单真值",
+        "05 号 ticket · 2026-11-05 · 事实来自本机 master；模拟 48 局可复跑",
+    )
+
+    k.note(
+        doc,
+        "**这份材料还没有你的拍板记录。** 代码已经默认切到「按名单算」（`opponentSource='roster'`），"
+        "但第 7 节那个 **胜率 −25.6 个百分点** 的变化是否需要保留，得你定；"
+        "文中所有「建议」「倾向」都只是我的视角，标了**未经用户确认**。",
+    )
+
+    # ---------------- 一 ----------------
+    k.h1(doc, "一", "三句话")
+    k.para(
+        doc,
+        f"**第一句：旧的 60 不是「略低」，是整体低了 17 分。** 名单里 {len(ALL_TEAMS)} 支队的五人 ovr 均值是 "
+        f"**{f1(ALL_AVG)}**（最低 {f1(ALL_MIN)}，最高 {f1(ALL_MAX)}）。按现在的公式分母 K=50，"
+        f"差 17 分就是每场多 **34 个百分点** 的胜率。",
+    )
+    k.para(
+        doc,
+        "**第二句：真实强度其实早就算好了，只是没接到信任那条线上。** 积分榜和赛程表的胜率一直用名单真值"
+        "（`league.ts` 的 `winChance` / `standings`）；真正决定教练信任、伤病、荣誉的那一场，"
+        "用的是 `opponentDefault=60`。于是同一周里，赛程表显示五五开，实际结算却是八成赢。",
+    )
+    k.para(
+        doc,
+        f"**第三句：接上真值后，模拟胜率从 {pct(FIX['winRate'])} 掉到 {pct(NEW['winRate'])}"
+        f"（**{DELTA:+.1f} 个百分点**）。** 同一套决策、同一批种子，只是对手换了算法。"
+        "这超过了「10 个百分点」的警戒线，所以我停在这里，没有替你决定要不要保留。",
+    )
+
+    # ---------------- 二 ----------------
+    k.h1(doc, "二", "现在强度是怎么来的：两条并行的比赛线")
+    k.table(
+        doc,
+        ["比赛线", "什么时候跑", "对手强度", "结果写到哪"],
+        [
+            [
+                "信任主线（手感）",
+                "每个比赛周（1–26）",
+                "改之前：`isFinalWeek ? 78 : 60`（常量）",
+                "`coachTrust` / 人气 / 伤病 / S 赛荣誉",
+            ],
+            [
+                "赛程表（战绩）",
+                "13 个常规赛周（2,4,…,26）",
+                "`rivalStrength(year, rivalId)`，名单真值",
+                "`seasonResults` → 积分榜、名次",
+            ],
+        ],
+        [3.1, 3.4, 5.2, 4.3],
+        size=8.2,
+        caption="表 2-1　两条线各算各的；只有第一条影响信任",
+    )
+    k.para(
+        doc,
+        "**出处（改之前）**：`src/core/reduce.ts:169-179` 的 `settleMatch()` 里写死 "
+        "`const opponent = isFinalWeek(state) ? CONFIG.match.opponentFinal : CONFIG.match.opponentDefault;`；"
+        "`src/core/reduce.ts:230-248` 的赛程块用 `winChance(state, fixture.rivalId)`。"
+        "两条线互不知道对方算了什么。",
+    )
+    k.para(
+        doc,
+        "**常量散在四个地方**，改之前谁也不知道该信哪个：`src/config.ts:158`（60）、"
+        "`src/config.ts:160`（78）、`src/data/finals.ts:26`（春决 65）、`src/data/finals.ts:72`（夏决 70）；"
+        "另外 `src/data/events.ts:112` 的 S 赛事件也直接读 78，`src/data/events.ts:13` 的 E01 写死 60。",
+        size=9.5,
+        color=k.G,
+    )
+
+    # ---------------- 三 ----------------
+    k.h1(doc, "三", "强度公式：两边其实是同一个式子")
+    k.para(doc, "**我方强度**（`src/core/league.ts:164`）：签约后 = 场上五人 ovr 的算术平均（首发替下名单里最弱的那位，见 `mySquad`）；未签约 = 六维均值。")
+    k.para(doc, "**胜负**（`src/core/match.ts:34-42`）：")
+    cmd(doc, "p = 0.5 + (我方强度 − 对手强度) / 50 + 临场加成 + (信任 − 40) × 0.001")
+    k.para(doc, "结果夹在 5%–95%。`winChance`（`src/core/league.ts:224`）是同一个式子的另一份拷贝，也夹 5–95%。")
+    k.para(
+        doc,
+        "**这条式子说明「对手强度」和「我方强度」是同一把尺子**：换掉对手，等于给每场比赛平移一个固定差值。"
+        "所以 60 → 77 不是「微调」，是 17 分的平移。",
+    )
+
+    # ---------------- 四 ----------------
+    k.h1(doc, "四", "从名单算出来的强度表")
+    k.para(
+        doc,
+        "口径：每队强度 = 该队 5 名选手 `ovr` 的算术平均，**和代码里的 `teamStrength()` 完全一致**"
+        "（`src/data/rosters.ts:165-167`）。没有手工调整、没有平滑、没有赛季权重。",
+    )
+    rows = []
+    for s in SEASONS:
+        top = s["teams"][0]
+        bot = s["teams"][-1]
+        rows.append([
+            s["season"],
+            str(s["count"]),
+            f1(s["average"]),
+            f1(s["median"]),
+            f"{top['name']} {f1(top['strength'])}",
+            f"{bot['name']} {f1(bot['strength'])}",
+        ])
+    k.table(
+        doc,
+        ["赛季", "队数", "均值", "中位", "最强", "最弱"],
+        rows,
+        [1.7, 1.4, 2.2, 2.2, 4.2, 4.2],
+        size=8.2,
+        caption=f"表 4-1　按赛季汇总；{len(ALL_TEAMS)} 队总均值 {f1(ALL_AVG)}，范围 {f1(ALL_MIN)}–{f1(ALL_MAX)}",
+    )
+
+    k.h2(doc, "冠军档 / 中位档 / 垫底档（各 5 队）")
+    picks = pick("top")[0] + pick("mid")[0] + pick("bottom")[0]
+    rows = []
+    for i, t in enumerate(picks):
+        tier = "冠军档" if i < 5 else ("中位档" if i < 10 else "垫底档")
+        rows.append([tier, t.get("season", ""), t["name"], f1(t["strength"]), str(t["rank"])])
+    k.table(
+        doc,
+        ["档位", "赛季", "队伍", "强度", "赛季内排名"],
+        rows,
+        [2.4, 2.0, 4.6, 2.4, 3.4],
+        size=8.4,
+        caption="表 4-2　完整 131 队见 docs/05-对手强度表-全量.md",
+    )
+    k.para(
+        doc,
+        f"**看这张表只要记一件事**：真实对手从 {f1(ALL_MIN)} 到 {f1(ALL_MAX)}，旧的 60 比最弱的队还低 9 分。"
+        "也就是说旧代码里，玩家打谁都是「打一支不存在的鱼腩」。",
+        size=9.5,
+        color=k.G,
+    )
+
+    # ---------------- 五 ----------------
+    k.h1(doc, "五", "代码改了什么")
+    k.table(
+        doc,
+        ["文件", "位置", "改动"],
+        [
+            ["`src/config.ts`", "156–160", "新增 `opponentSource`（默认 `'roster'`）；60/78 注释改成「兜底」，只在 `'fixed'` 时用"],
+            ["`src/core/state.ts`", "40–43", "`isFinalWeek()` 从 reduce.ts 挪到这里，供 league/events 共用"],
+            ["`src/core/league.ts`", "176–221", "新增 `seasonStrengths` / `seasonAverageStrength` / `seasonTopStrength` / `opponentStrength` / `finalOpponentStrength`"],
+            ["`src/core/reduce.ts`", "172", "`settleMatch()` 的对手改调 `opponentStrength(state)`"],
+            ["`src/core/events.ts`", "82–91", "`successRateOf()` 认 `opponentRole: 'final'`；没写死对手的比赛事件回落到当周对手"],
+            ["`src/data/finals.ts`", "26–27、72–73", "春决 / 夏决加 `opponentRole: 'final'`，65/70 降为兜底"],
+            ["`src/data/events.ts`", "112–113", "S 赛 E03 加 `opponentRole: 'final'`"],
+            ["`src/types.ts`", "128", "`GameEvent.opponentRole?: 'final'`"],
+            ["`tests/core.test.ts`", "266–346", "新增 5 个测试：赛程周 / 非赛程周 / 决赛周 / 决赛事件 / fixed 兜底"],
+        ],
+        [3.3, 2.5, 10.2],
+        size=7.9,
+        caption="表 5-1　改动的文件与行号（本机 master，改后会漂）",
+    )
+    k.para(
+        doc,
+        "**决赛规则**：春决文案写的是「对面是常规赛第一」，所以决赛取**当季最强队**，而不是「参赛两队里较强的一侧」——"
+        "这一代没有给四强/半决赛建模，进决赛的两支队没有单独存。第 3 年 S 赛的对手因此是 S10 的 JDG，强度 83.0（旧的 78）。",
+    )
+    k.para(
+        doc,
+        "**保留 `fixed` 模式不是给玩家用的**：它只为把新旧两套数放在同一套种子下复跑。正式流程读 `'roster'`。",
+        size=9.5,
+        color=k.G,
+    )
+
+    # ---------------- 六 ----------------
+    k.h1(doc, "六", "新旧对比：48 局，同一套决策")
+    k.para(
+        doc,
+        "8 个种子 × 3 种策略（balanced / grind / noScrim）× 2 种强度。每局跑到第 8 年结束。"
+        "胜负按日志里的「赢了。」/「输了」，也就是**信任主线**那 26 场/年；名次取每年第 30 周的联赛排名。",
+    )
+
+    rows = [
+        ["信任主线比赛场数", str(FIX["matches"]), str(NEW["matches"]), f"{NEW['matches'] - FIX['matches']:+d}"],
+        ["胜率", pct(FIX["winRate"]), pct(NEW["winRate"]), f"{DELTA:+.1f} pp"],
+        ["平均每局胜场（8 年）", f1(FIX["winsAvg"]), f1(NEW["winsAvg"]), f"{NEW['winsAvg'] - FIX['winsAvg']:+.1f}"],
+        ["跑完 8 年的局数", f"{FIX['finished8']}/24", f"{NEW['finished8']}/24", "—"],
+        ["进决赛（局数 / 平均次数）", f"{FIX['finalsRuns']}/24 · {f1(FIX['finalsAvg'])}", f"{NEW['finalsRuns']}/24 · {f1(NEW['finalsAvg'])}", "0"],
+        ["全胜赛季", f"{FIX['allWin']}/{FIX['seasonCount']}", f"{NEW['allWin']}/{NEW['seasonCount']}", f"{NEW['allWin'] - FIX['allWin']:+d}"],
+        ["全败赛季", f"{FIX['allLoss']}/{FIX['seasonCount']}", f"{NEW['allLoss']}/{NEW['seasonCount']}", "0"],
+        ["最终段位", " / ".join(f"{a} {b}" for a, b in FIX["tiers"].items()), " / ".join(f"{a} {b}" for a, b in NEW["tiers"].items()), "同"],
+        ["信任终值（均值）", f1(FIX["trustAvg"]), f1(NEW["trustAvg"]), f"{NEW['trustAvg'] - FIX['trustAvg']:+.1f}"],
+        [
+            "信任 <25 的局数",
+            f"{FIX['trustLow']}/24",
+            f"{NEW['trustLow']}/24",
+            f"{NEW['trustLow'] - FIX['trustLow']:+d}",
+        ],
+    ]
+    k.table(
+        doc,
+        ["指标", f"旧：60 / 78", f"新：名单真值", "差"],
+        rows,
+        [5.6, 4.0, 4.0, 2.6],
+        size=8.4,
+        caption="表 6-1　48 局汇总；胜率、胜场、全胜赛季是主要差异",
+    )
+
+    k.h2(doc, "每年胜场 / 每年名次")
+    rows = []
+    for i in range(8):
+        rows.append([
+            f"第 {i + 1} 年",
+            f1(FIX["winsByYear"][i]),
+            f1(NEW["winsByYear"][i]),
+            f1(FIX["placeByYear"][i]),
+            f1(NEW["placeByYear"][i]),
+        ])
+    k.table(
+        doc,
+        ["年份", "旧胜场", "新胜场", "旧名次", "新名次"],
+        rows,
+        [3.0, 3.2, 3.2, 3.2, 3.2],
+        size=8.4,
+        caption="表 6-2　名次 1 最好；名次几乎没动，因为积分榜那条线本来就用真值",
+    )
+
+    k.h2(doc, "按策略拆（确认不是某个策略带偏）")
+    rows = []
+    for a, b in zip(FIX["byStrategy"], NEW["byStrategy"]):
+        rows.append([
+            a["strategy"],
+            pct(a["winRate"]),
+            pct(b["winRate"]),
+            f"{(b['winRate'] - a['winRate']) * 100:+.1f} pp",
+            f1(a["winsAvg"]),
+            f1(b["winsAvg"]),
+        ])
+    k.table(
+        doc,
+        ["策略", "旧胜率", "新胜率", "差", "旧胜场", "新胜场"],
+        rows,
+        [3.0, 2.8, 2.8, 2.8, 2.6, 2.6],
+        size=8.4,
+        caption="表 6-3　三种策略都掉 20 个百分点左右，方向一致",
+    )
+
+    # ---------------- 七 ----------------
+    k.h1(doc, "七", "这条要你拍板：胜率 −25.6 个百分点")
+    p = k.para(
+        doc,
+        f"**{pct(FIX['winRate'])} → {pct(NEW['winRate'])}，差了 {abs(DELTA):.1f} 个百分点**，超过 10 个百分点警戒线。"
+        "这不是 bug 修掉之后的「小回正」，是玩家每场从「八成赢」变成「六成不到」。"
+        "信任终值也从 " + f1(FIX["trustAvg"]) + " 降到 " + f1(NEW["trustAvg"]) + "，全胜赛季从 "
+        f"{FIX['allWin']} 个掉到 {NEW['allWin']} 个。",
+        size=10,
+    )
+    for r in p.runs:
+        r.font.color.rgb = RGBColor(0xA6, 0x3D, 0x2E)
+
+    k.para(
+        doc,
+        "**我没有替你选。** 下面三条路的代价都摆出来，你点一个；我不给推荐结论。"
+        "（若你问我的视角：这属于**未经用户确认**的个人判断，我会把理由和数据一起给，但不替你拍。）",
+        size=9.5,
+        color=k.G,
+    )
+    k.table(
+        doc,
+        ["选项", "做法", "代价 / 副作用"],
+        [
+            [
+                "A 照现在这样应用",
+                "`opponentSource='roster'` 保持不变，接受 57% 胜率",
+                "手感整体变难；终局信任 <25 的局从 6/24 变 8/24；「一路全胜」从 15/187 赛季掉到 5/184。玩家是否会觉得「练了也没用」需要实测",
+            ],
+            [
+                "B 保留一段难度偏移",
+                "名单强度照算，但整体减一个固定值（例如 −10），或用 `opponentSource='fixed'` 回到 60",
+                "胜率大约回到 70%（估算：整体 −10 分约等于 +20 个百分点）；但「对手强度是真实的」这句话就不成立，等于把占位常量换个写法",
+            ],
+            [
+                "C 改公式而不是改对手",
+                "对手用真值，同时调 `formulaK`、信任系数或我方成长曲线",
+                "能同时保住「真值」和「手感」，但要重跑 02（阈值）、03（奖惩）两份材料的结论，范围比 05 大",
+            ],
+        ],
+        [3.2, 6.4, 6.4],
+        size=8.2,
+        caption="表 7-1　三条路，未经用户确认",
+    )
+
+    # ---------------- 八 ----------------
+    k.h1(doc, "八", "风险 / 还没做的")
+    k.para(
+        doc,
+        "**1. 模拟不是玩家实测。** 48 局只能说明方向和量级；57% 这个数会随策略、种子、事件选择变化，不要当成承诺。",
+        bullet=True,
+    )
+    k.para(
+        doc,
+        "**2. 两条线还是两条线。** 这次只把「信任主线」的对手换成了真值，赛程表的 13 场仍独立结算。"
+        "同一周可能打两场不同的比赛（一场算信任、一场算战绩），这个结构本身没动。",
+        bullet=True,
+    )
+    k.para(
+        doc,
+        "**3. 决赛取「当季第一」是权宜。** 真实赛制里决赛对手是另一半区杀出来的队，不一定是常规赛第一；"
+        "这代没有四强建模，所以先用第一。以后加季后赛，这里要改。",
+        bullet=True,
+    )
+    k.para(
+        doc,
+        "**4. 别的写死对手没动。** E01（`src/data/events.ts:13`，强度 60）是作者手写的剧情难度，不是占位，保留。"
+        "如果它其实也是占位，那是另一个 ticket。",
+        bullet=True,
+    )
+    k.para(
+        doc,
+        "**5. `winChance` 和 `matchRate` 仍是两份拷贝。** 公式一样，但改一处忘另一处的风险还在；这次没合并。",
+        bullet=True,
+    )
+
+    # ---------------- 九 ----------------
+    k.h1(doc, "九", "怎么复跑")
+    k.para(doc, "在仓库根目录（`vibe-game-producer/`）执行：")
+    cmd(doc, "npx vite-node scripts/05-opponent/table.ts   # 生成强度表 table.json")
+    cmd(doc, "npx vite-node scripts/05-opponent/sim.ts     # 48 局新旧对比 out.json")
+    cmd(doc, "python docs/build/build_05.py                # 重新生成本文档 + 全量表")
+    cmd(doc, "npx tsc --noEmit && npx vitest run           # 类型 + 67 个测试")
+    k.para(
+        doc,
+        "`table.ts` 只读 `src/data/rosters.ts`；`sim.ts` 只读 `src/`，新旧差别只在进程内改 "
+        "`CONFIG.match.opponentSource`，不改文件。",
+        size=9.5,
+        color=k.G,
+    )
+
+    # ---------------- 十 ----------------
+    k.h1(doc, "十", "留给你的位置")
+    k.para(doc, "下面这几件事我没有替你决定：")
+    k.para(doc, "**① 第 7 节选 A / B / C 哪条。** 选完把结论写进 `.scratch/22点决策地图/issues/05-对手强度表.md` 的 `## Answer`，我再把 Status 改成 resolved。", bullet=True)
+    k.para(doc, "**② 决赛对手用「当季第一」是否可接受。** 如果你想要「另一支进决赛的队」，得先决定季后赛怎么建模。", bullet=True)
+    k.para(doc, "**③ 要不要顺便统一 `winChance` 与 `matchRate`。** 这是重构，不改变数值，但会动 02/03 的测试基线。", bullet=True)
+
+    doc.save(OUT)
+
+    # ---------- 全量 md ----------
+    lines = [
+        "# 05 · 对手强度全量表（S8–S15，131 队）",
+        "",
+        "由 `npx vite-node scripts/05-opponent/table.ts` 生成，再经 `docs/build/build_05.py` 落盘。",
+        "口径：队伍强度 = 该队 5 名选手 `ovr` 的算术平均，与 `src/data/rosters.ts` 的 `teamStrength()` 一致。",
+        f"总均值 {ALL_AVG:.2f}，中位见各表，范围 {ALL_MIN:.2f}–{ALL_MAX:.2f}。",
+        "",
+    ]
+    for s in SEASONS:
+        lines.append(f"## {s['season']}（{s['count']} 队，均值 {s['average']:.2f}，中位 {s['median']:.2f}）")
+        lines.append("")
+        lines.append("| 排名 | 队伍 | 强度 |")
+        lines.append("|---|---|---|")
+        for t in s["teams"]:
+            lines.append(f"| {t['rank']} | {t['name']} | {t['strength']:.2f} |")
+        lines.append("")
+    with open(OUT_MD, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lines))
+
+    print("已写出", OUT)
+    print("已写出", OUT_MD)
+
+
+if __name__ == "__main__":
+    main()

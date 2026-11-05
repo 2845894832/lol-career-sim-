@@ -1,6 +1,7 @@
 import { CONFIG } from '../config';
 import { createRng } from '../rng';
 import { matchRate } from './match';
+import { finalOpponentStrength, opponentStrength } from './league';
 import { EVENTS, FILLER_EVENTS, findEvent } from '../data/events';
 import { finalFor, finalById, inviteEvent, inviteById } from '../data/finals';
 import {
@@ -80,11 +81,13 @@ export function successRateOf(state: GameState, event: GameEvent, option: EventO
   if (option.risk === 'success') return 1;
   if (option.risk === 'fail') return 0;
   if (event.kind === 'match' || event.opponent !== undefined) {
-    return matchRate(
-      state,
-      event.opponent ?? CONFIG.match.opponentDefault,
-      option.bonus ?? 0,
-    );
+    // 决赛：当季最强队。其它比赛事件：这一周的对手（赛程对手 / 当季平均）。
+    // opponentRole 缺省时，event.opponent 是写死的难度，照旧用它。
+    const opponent =
+      event.opponentRole === 'final'
+        ? finalOpponentStrength(state.year, event.opponent ?? CONFIG.match.opponentFinal)
+        : event.opponent ?? opponentStrength(state);
+    return matchRate(state, opponent, option.bonus ?? 0);
   }
   const attrs = option.attrs ?? ['teamfight'];
   const total = attrs.reduce((sum, key) => sum + effectiveAttr(state, key), 0);

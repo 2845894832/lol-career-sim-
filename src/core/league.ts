@@ -9,6 +9,7 @@
  */
 import { CONFIG } from '../config';
 import { ROSTERS, rosterOf, seasonOf, teamStrength, weakestTeams, type RosterTeam } from '../data/rosters';
+import { isFinalWeek } from './state';
 import type { GameState } from '../types';
 
 export interface Fixture {
@@ -169,6 +170,54 @@ export function myTeamStrength(state: GameState): number {
 export function rivalStrength(year: number, rivalId: string): number {
   const t = rosterOf(year).find((x) => x.id === rivalId);
   return t ? teamStrength(t) : 77;
+}
+
+/** 当季每支队的名单强度，按强弱降序（全部来自 rosters.ts 的 ovr 均值）。 */
+export function seasonStrengths(year: number): { id: string; name: string; strength: number }[] {
+  return rosterOf(year)
+    .map((t) => ({ id: t.id, name: t.name, strength: teamStrength(t) }))
+    .sort((a, b) => b.strength - a.strength);
+}
+
+/** 当季平均强度：没有排到具体对手的比赛周用它。 */
+export function seasonAverageStrength(year: number): number {
+  const rows = seasonStrengths(year);
+  if (rows.length === 0) return CONFIG.match.opponentDefault;
+  return rows.reduce((sum, r) => sum + r.strength, 0) / rows.length;
+}
+
+/** 当季最强队的强度。 */
+export function seasonTopStrength(year: number): number {
+  return seasonStrengths(year)[0]?.strength ?? CONFIG.match.opponentFinal;
+}
+
+/**
+ * 这一场的对手强度（信任主线那一场）。
+ * - S 赛决赛：当季最强队（这一周还有最后一场常规赛，优先级低于决赛）。
+ * - 常规赛：赛程里那支队的名单强度（和积分榜用同一条线）。
+ * - 其余比赛周：当季平均强度。
+ * 名单缺失或 opponentSource='fixed' 时回落到 CONFIG 的两个兜底常量。
+ */
+export function opponentStrength(state: GameState): number {
+  if (CONFIG.match.opponentSource === 'fixed') {
+    return isFinalWeek(state) ? CONFIG.match.opponentFinal : CONFIG.match.opponentDefault;
+  }
+  // 决赛周也有最后一场常规赛，但信任主线打的是决赛，所以决赛优先。
+  if (isFinalWeek(state)) return seasonTopStrength(state.year);
+  const fixture = fixtureThisWeek(state);
+  if (fixture) return rivalStrength(state.year, fixture.rivalId);
+  return seasonAverageStrength(state.year);
+}
+
+/**
+ * 决赛对手：当季最强队。
+ * 春决文案写的是「对面是常规赛第一」，所以这里也用第一，而不是两队里较强的一侧
+ * （这一代没有四强/半决赛，进决赛的两支队没有单独建模）。
+ * fallback 是改之前手写的老常量，只在 opponentSource='fixed' 时生效。
+ */
+export function finalOpponentStrength(year: number, fallback: number): number {
+  if (CONFIG.match.opponentSource === 'fixed') return fallback;
+  return seasonStrengths(year)[0]?.strength ?? fallback;
 }
 
 /** 我这一side的胜率：全队口径。 */
