@@ -187,6 +187,41 @@ export const EVENTS: readonly GameEvent[] = [
       },
     ],
   },
+  {
+    id: 'E05',
+    kind: 'special',
+    phase: 'any',
+    tags: ['#伤病', '#手腕', '#特殊'],
+    text: '上周那下没缓过来。队医按了按你的手腕：「能打，但会疼。」',
+    once: false,
+    weight: 1,
+    auto: true,
+    requires: (s) => s.flags.includes('#手腕不适'),
+    options: [
+      {
+        label: '打封闭，继续上',
+        risk: 'success',
+        success: {
+          injury: 1,
+          coachTrust: 2,
+          stamina: -5,
+          clearFlag: '#手腕不适',
+        },
+        successText: '你把手腕缠紧，回到了训练室。',
+      },
+      {
+        label: '听队医的，休一周',
+        risk: 'success',
+        success: {
+          injury: 1,
+          coachTrust: -2,
+          stamina: 8,
+          clearFlag: '#手腕不适',
+        },
+        successText: '你坐在场边看了一周，手腕总算消了肿。',
+      },
+    ],
+  },
 ];
 
 /** 无条件填充池：连常规事件都抽不到时兜底，各用一次。 */

@@ -2,7 +2,7 @@ import { CONFIG } from '../config';
 import { createRng } from '../rng';
 import { type GameState, type LogEntry, MATCH_ATTRS } from '../types';
 import { myTeamStrength } from './league';
-import { addHonor, clamp, effectiveAttr, isMatchWeek } from './state';
+import { addFlag, addHonor, clamp, effectiveAttr, isMatchWeek } from './state';
 
 /** 能不能上场：签约、伤病、教练信任、是否在比赛周。 */
 export function canPlay(state: GameState): boolean {
@@ -60,8 +60,9 @@ export function applyMatchOutcome(state: GameState, win: boolean, isFinal: boole
     logs.push({ text: '赢了。', tone: 'good' });
   } else {
     state.coachTrust = clamp(state.coachTrust - CONFIG.match.lossCoachTrust, 0, 100);
-    if (ctx.rng.next() < CONFIG.match.injuryChance) {
-      state.injury = clamp(state.injury + 1, 0, CONFIG.match.injuryMax);
+    if (ctx.rng.next() < CONFIG.match.injuryChance && state.injury < CONFIG.match.injuryMax) {
+      // 不直接加伤：先挂标记，下周由事件库里的 E05 结算。
+      addFlag(state, '#手腕不适');
       logs.push({ text: '输了，而且你的手腕又响了。', tone: 'bad' });
     } else {
       logs.push({ text: '输了。', tone: 'bad' });

@@ -32,7 +32,8 @@ export function drawEvent(state: GameState): DrawResult {
   const final = finalFor(state);
   const invite = inviteEvent(state);
   const forced = [...(final ? [final] : []), ...EVENTS, ...(invite ? [invite] : [])].find((e) => {
-    if (state.triggeredEvents.includes(e.id)) return false;
+    // 可重复事件（once: false）不能被 triggeredEvents 永久拉黑。
+    if (e.once && state.triggeredEvents.includes(e.id)) return false;
     if (e.year !== undefined && e.year !== state.year) return false;
     if (e.week !== undefined && e.week !== state.week) return false;
     // 既没写年份也没写周次的，只能靠条件触发（如邀请函）
@@ -146,6 +147,10 @@ export function applyConsequence(state: GameState, c: Consequence): string[] {
   if (c.flag) {
     addFlag(state, c.flag);
     notes.push(`标记「${c.flag}」`);
+  }
+  if (c.clearFlag) {
+    state.flags = state.flags.filter((f) => f !== c.clearFlag);
+    notes.push(`标记「${c.clearFlag.replace(/^#/, '')}」解除`);
   }
   if (c.teamId) {
     state.teamId = c.teamId;

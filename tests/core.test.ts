@@ -7,7 +7,7 @@ import { applyAction, canAfford } from '../src/core/actions';
 import { advanceYear, gainExp, gainPoints, trainGain } from '../src/core/growth';
 import { autoMatch, applyMatchOutcome } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
-import { drawEvent, successRateOf } from '../src/core/events';
+import { drawEvent, resolveOption, successRateOf } from '../src/core/events';
 import { canPlay, benchReason } from '../src/core/match';
 import { createRng } from '../src/rng';
 import { fromSaveJson, toSaveJson } from '../src/core/save';
@@ -227,6 +227,22 @@ describe('比赛', () => {
     const { win } = autoMatch(s, CONFIG.match.opponentDefault);
     applyMatchOutcome(s, win, false);
     expect(s.coachTrust).not.toBe(before);
+  });
+
+  it('伤病标记会触发 E05，并在事件结算后清掉', () => {
+    const s = newGame(1);
+    s.signed = true;
+    s.week = 10;
+    s.injury = 0;
+    s.flags.push('#手腕不适');
+    const drawn = drawEvent(s);
+    expect(drawn.event?.id).toBe('E05');
+    resolveOption(s, drawn.event!, 0);
+    expect(s.injury).toBe(1);
+    expect(s.flags).not.toContain('#手腕不适');
+    // once: false 的事件清掉标记后还能再次被 forced 抽到。
+    s.flags.push('#手腕不适');
+    expect(drawEvent(s).event?.id).toBe('E05');
   });
 
   it('临场加减会改变自动比赛的胜率', () => {

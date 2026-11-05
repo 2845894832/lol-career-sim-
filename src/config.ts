@@ -153,11 +153,11 @@ export const CONFIG = {
     opponentDefault: 60,
     // 占位，同上
     opponentFinal: 78,
-    winCoachTrust: 3,
+    winCoachTrust: 2,
     lossCoachTrust: 4,
     /** 胜场只给人气：属性只来自训练与事件，比赛不给。 */
     winPopularity: 1,
-    /** 输比赛有一定概率受伤。 */
+    /** 输比赛有一定概率挂上「手腕不适」，下周由事件 E05 结算伤病。 */
     injuryChance: 0.12,
     /** 伤病上限，到这个数就是赛季报销。 */
     injuryMax: 3,

@@ -87,6 +87,8 @@ export interface Consequence {
   coachTrust?: number;
   honor?: HonorId;
   flag?: string;
+  /** 解除某个标记，例如伤病事件结算后清掉「手腕不适」。 */
+  clearFlag?: string;
   /** 收到邀请函并接受：直接转成职业选手。 */
   signed?: boolean;
   teamId?: string;
