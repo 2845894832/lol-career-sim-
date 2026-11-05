@@ -2,7 +2,7 @@
 """docs/3.3-构建与发布流程.docx —— 按 game-docs-and-sheets-inventory.md 3.3 写。
 
 清单要求：本地怎么跑、怎么打包、发布步骤、回滚方法、版本号规则。
-事实来源：package.json、vite.config.ts、scripts/build-slice.mjs、scripts/check-pushed.mjs、README.md、git remote。
+事实来源：package.json、vite.config.ts、scripts/build-slice.mjs、scripts/archive-dist.mjs、scripts/check-pushed.mjs、README.md、git remote。
 """
 import os
 import sys
@@ -117,13 +117,19 @@ def main():
         ["情况", "动作", "耗时"],
         [
             ["代码改了但没发", "git revert 或 git checkout -- <file>，重新构建", "5 分钟"],
-            ["发了新版本，发现白屏/报错", "平台上重传上一版的 `index.html`（本地保留 `dist/index.html.bak`）", "10 分钟"],
+            ["发了新版本，发现白屏/报错", "从 `dist/archive/` 取上一版 `index-<时间戳>.html`，平台上重传", "10 分钟"],
             ["数值改坏了但版本已上线", "改回 config.ts → 重建 → 重传；**不要**在平台上打补丁", "20 分钟"],
             ["存档结构与旧版不兼容", "把 `CONFIG.version` +1（旧档自动作废），重新构建", "10 分钟"],
         ],
         [5.6, 9.4, 3.0],
         size=9,
-        caption="表 5-1　回滚的前提是「本地永远留着上一版产物」——每次构建前先复制一份 .bak",
+        caption="表 5-1　回滚的前提是「本地永远留着上一版产物」——每次构建成功后先跑一次 `npm run build:archive`",
+    )
+    k.para(
+        doc,
+        "**归档怎么做**：`npm run build && npm run build:archive`，脚本只读 `dist/index.html`、"
+        "复制成 `dist/archive/index-YYYYMMDD-HHmm.html`，不改原文件。`dist/*` 已被 `.gitignore` 忽略，"
+        "归档不进版本库；换机器或清 `dist/` 会丢，重要版本另打 git tag。",
     )
     k.para(
         doc,
@@ -159,8 +165,8 @@ def main():
             ["2", "没有自动部署", "每次上传都要人工确认文件对不对"],
             ["3", "本机沙箱里 `git push` 失败（不能起 ssh 进程）", "推送只能你自己在终端做，本地已有多个未推提交"],
             ["4", "没有线上监控与埋点", "白屏只能靠用户反馈"],
-            ["5", "没有更新日志文件", "发了几版、改了什么，只有 git log"],
-            ["6", "没有保留上一版产物", "回滚要靠重新构建，而重建结果可能与当时不同"],
+            ["5", "更新日志靠人记（已补 `CHANGELOG.md`）", "发版当天忘了写，就只剩 git log 可查"],
+            ["6", "产物归档只在本地（已加 `npm run build:archive`）", "换机器或清 `dist/` 就没了；重要版本另打 git tag"],
         ],
         [1.0, 8.4, 6.6],
         size=9,
@@ -169,7 +175,7 @@ def main():
     k.note(
         doc,
         "下面三条是流程里唯一需要你动手的：①终端里自己 `git push`；②第一次投稿前把平台规范截图/贴给我，我按规范出素材；"
-        "③每次构建前复制一份 `dist/index.html.bak`。其余都可以做成脚本。",
+        "③每次构建成功后跑 `npm run build:archive`，把产物留一份在 `dist/archive/`。其余都可以做成脚本。",
     )
 
     doc.save(OUT)
