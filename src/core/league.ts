@@ -9,8 +9,9 @@
  */
 import { CONFIG } from '../config';
 import { ROSTERS, rosterOf, seasonOf, teamStrength, weakestTeams, type RosterTeam } from '../data/rosters';
-import { isFinalWeek } from './state';
-import type { GameState } from '../types';
+import { effectiveAttr, isFinalWeek } from './state';
+import { winProbability } from './odds';
+import { MATCH_ATTRS, type GameState } from '../types';
 
 export interface Fixture {
   week: number;
@@ -166,6 +167,16 @@ export function myTeamStrength(state: GameState): number {
   return squad.reduce((s, p) => s + p.ovr, 0) / squad.length;
 }
 
+/**
+ * 我这一侧上场时的强度：签约后 = 场上五人 ovr 均值；路人期 = 六维均值。
+ * 和 matchRate 用的是同一把尺子，赛程表与真正结算才对得上。
+ */
+export function myMatchStrength(state: GameState): number {
+  if (state.signed) return myTeamStrength(state);
+  const total = MATCH_ATTRS.reduce((sum, key) => sum + effectiveAttr(state, key), 0);
+  return total / MATCH_ATTRS.length;
+}
+
 /** 对手全队强度：用名单原值。 */
 export function rivalStrength(year: number, rivalId: string): number {
   const t = rosterOf(year).find((x) => x.id === rivalId);
@@ -220,12 +231,9 @@ export function finalOpponentStrength(year: number, fallback: number): number {
   return seasonStrengths(year)[0]?.strength ?? fallback;
 }
 
-/** 我这一side的胜率：全队口径。 */
+/** 赛程表上这一场的胜率：和 matchRate 同一个公式、同一侧强度。 */
 export function winChance(state: GameState, rivalId: string): number {
-  const mine = myTeamStrength(state);
-  const theirs = rivalStrength(state.year, rivalId);
-  const raw = 0.5 + (mine - theirs) / 50;
-  return Math.min(0.95, Math.max(0.05, raw));
+  return winProbability(myMatchStrength(state), rivalStrength(state.year, rivalId), 0, state.coachTrust);
 }
 
 /**

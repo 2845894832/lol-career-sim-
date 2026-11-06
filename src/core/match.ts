@@ -1,8 +1,9 @@
 import { CONFIG } from '../config';
 import { createRng } from '../rng';
-import { type GameState, type LogEntry, MATCH_ATTRS } from '../types';
-import { myTeamStrength } from './league';
-import { addFlag, addHonor, clamp, effectiveAttr, isMatchWeek } from './state';
+import { type GameState, type LogEntry } from '../types';
+import { myMatchStrength } from './league';
+import { winProbability } from './odds';
+import { addFlag, addHonor, clamp, isMatchWeek } from './state';
 
 /** 能不能上场：签约、伤病、教练信任、是否在比赛周。 */
 export function canPlay(state: GameState): boolean {
@@ -28,17 +29,12 @@ export function benchReason(state: GameState): string | null {
  * 读的是「当前有效值」——事件给的临场加减在这里生效。
  */
 /**
- * 所有比赛共用的胜率公式。
- * 0.5 +（六维均值 − 对手强度）÷ K + 选项加成 + 教练信任微调，夹在 5%～95%。
+ * 信任主线这一场的胜率。
+ * 公式只有一份（src/core/odds.ts 的 winProbability），赛程表的 winChance 也用它。
+ * 签了约就是全队口径：五个人一起算，替补时算的是场上的五个人。
  */
 export function matchRate(state: GameState, opponent: number, bonus = 0): number {
-  const total = MATCH_ATTRS.reduce((sum, key) => sum + effectiveAttr(state, key), 0);
-  const solo = total / MATCH_ATTRS.length;
-  // 签了约就是全队口径：五个人一起算，替补时算的是场上的五个人。
-  const avg = state.signed ? myTeamStrength(state) : solo;
-  const trustBonus = (state.coachTrust - CONFIG.match.trustPivot) * CONFIG.match.coachTrustFactor;
-  const p = 0.5 + (avg - opponent) / CONFIG.match.formulaK + bonus + trustBonus;
-  return clamp(p, CONFIG.match.minWinRate, CONFIG.match.maxWinRate);
+  return winProbability(myMatchStrength(state), opponent, bonus, state.coachTrust);
 }
 
 /** 自动比赛：没有比赛事件时也照常打一场。 */

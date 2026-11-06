@@ -270,7 +270,10 @@ def main():
             ["`src/data/finals.ts`", "26–27、72–73", "春决 / 夏决加 `opponentRole: 'final'`，65/70 降为兜底"],
             ["`src/data/events.ts`", "112–113", "S 赛 E03 加 `opponentRole: 'final'`"],
             ["`src/types.ts`", "128", "`GameEvent.opponentRole?: 'final'`"],
-            ["`tests/core.test.ts`", "266–346", "新增 5 个测试：赛程周 / 非赛程周 / 决赛周 / 决赛事件 / fixed 兜底"],
+            ["`src/core/odds.ts`", "1–24（新文件）", "唯一的胜率公式 `winProbability()`；`formulaK`、5%–95% 上下限、信任系数只在这里读"],
+            ["`src/core/league.ts`", "174–180、235–237", "新增 `myMatchStrength()`（签约=五人均值 / 路人期=六维均值）；`winChance()` 改调同一个公式"],
+            ["`src/core/match.ts`", "36–38", "`matchRate()` 瘦成一行：`winProbability(myMatchStrength(state), …)`"],
+            ["`tests/core.test.ts`", "266–368", "新增 6 个测试：赛程周 / 非赛程周 / 决赛周 / 决赛事件 / fixed 兜底 / winChance≡matchRate"],
         ],
         [3.3, 2.5, 10.2],
         size=7.9,
@@ -362,48 +365,39 @@ def main():
     )
 
     # ---------------- 七 ----------------
-    k.h1(doc, "七", "这条要你拍板：胜率 −25.6 个百分点")
-    p = k.para(
-        doc,
-        f"**{pct(FIX['winRate'])} → {pct(NEW['winRate'])}，差了 {abs(DELTA):.1f} 个百分点**，超过 10 个百分点警戒线。"
-        "这不是 bug 修掉之后的「小回正」，是玩家每场从「八成赢」变成「六成不到」。"
-        "信任终值也从 " + f1(FIX["trustAvg"]) + " 降到 " + f1(NEW["trustAvg"]) + "，全胜赛季从 "
-        f"{FIX['allWin']} 个掉到 {NEW['allWin']} 个。",
-        size=10,
-    )
-    for r in p.runs:
-        r.font.color.rgb = RGBColor(0xA6, 0x3D, 0x2E)
-
+    k.h1(doc, "七", "拍板结果：A 照用真值（2026-11-06）")
     k.para(
         doc,
-        "**我没有替你选。** 下面三条路的代价都摆出来，你点一个；我不给推荐结论。"
-        "（若你问我的视角：这属于**未经用户确认**的个人判断，我会把理由和数据一起给，但不替你拍。）",
-        size=9.5,
-        color=k.G,
+        "用户 2026-11-06 原话三句：「**A 照现在这样应用**」「**决赛对手用「当季第一」可接受**」「**统一 winChance 与 matchRate**」。"
+        "所以上面那个 −25.6 个百分点是**主动接受**的代价，不是没看见的副作用。",
+        size=10,
     )
     k.table(
         doc,
-        ["选项", "做法", "代价 / 副作用"],
+        ["问题", "结果", "落地"],
         [
-            [
-                "A 照现在这样应用",
-                "`opponentSource='roster'` 保持不变，接受 57% 胜率",
-                "手感整体变难；终局信任 <25 的局从 6/24 变 8/24；「一路全胜」从 15/187 赛季掉到 5/184。玩家是否会觉得「练了也没用」需要实测",
-            ],
-            [
-                "B 保留一段难度偏移",
-                "名单强度照算，但整体减一个固定值（例如 −10），或用 `opponentSource='fixed'` 回到 60",
-                "胜率大约回到 70%（估算：整体 −10 分约等于 +20 个百分点）；但「对手强度是真实的」这句话就不成立，等于把占位常量换个写法",
-            ],
-            [
-                "C 改公式而不是改对手",
-                "对手用真值，同时调 `formulaK`、信任系数或我方成长曲线",
-                "能同时保住「真值」和「手感」，但要重跑 02（阈值）、03（奖惩）两份材料的结论，范围比 05 大",
-            ],
+            ["A / B / C 选哪条", "A：照现在这样应用", "`opponentSource='roster'` 保持默认；B（难度偏移）、C（改公式）不采用"],
+            ["决赛对手", "当季第一，可接受", "决赛分支不变：`seasonTopStrength()`；这一代没有四强/半决赛建模"],
+            ["两条线公式", "统一", "新增 `src/core/odds.ts`；`matchRate` 与 `winChance` 都调 `winProbability()`"],
         ],
-        [3.2, 6.4, 6.4],
-        size=8.2,
-        caption="表 7-1　三条路，未经用户确认",
+        [3.6, 4.4, 7.8],
+        size=8.4,
+        caption="表 7-1　三条已定；出处：用户 2026-11-06 回复",
+    )
+    k.para(
+        doc,
+        "**统一公式带来的数值变化**：信任主线那 26 场的胜率一点没变（公式只是搬了个家）；变的是赛程表那 13 场——"
+        "`winChance` 现在也带（信任 − 40）× 0.001 的微调，信任 64 时约 +2.4 个百分点。"
+        "第 6 节的表已按统一后的代码重跑，名次因此略动（例如第 1 年 7.2 → 7.0），胜率 83.0% / 57.4% 不变。",
+        size=9.5,
+        color=k.G,
+    )
+    k.para(
+        doc,
+        "**还剩一件没做：真机手感实测。** 57% 是模拟出来的，玩家会不会觉得「练了也没用」，要真人打几局才知道；"
+        "如果实测偏难，B / C 两条路仍然在桌上（见上一版材料记录，或直接调 `CONFIG.match.formulaK`）。",
+        size=9.5,
+        color=k.G,
     )
 
     # ---------------- 八 ----------------
@@ -433,7 +427,8 @@ def main():
     )
     k.para(
         doc,
-        "**5. `winChance` 和 `matchRate` 仍是两份拷贝。** 公式一样，但改一处忘另一处的风险还在；这次没合并。",
+        "**5. 公式已合并，赛程表会随信任浮动。** 两处都调 `src/core/odds.ts` 的 `winProbability()`；"
+        "代价是赛程表显示的胜率带上了信任微调（信任 64 时约 +2.4 个百分点）。这是统一的必然结果，不是新 bug。",
         bullet=True,
     )
 
@@ -443,7 +438,7 @@ def main():
     cmd(doc, "npx vite-node scripts/05-opponent/table.ts   # 生成强度表 table.json")
     cmd(doc, "npx vite-node scripts/05-opponent/sim.ts     # 48 局新旧对比 out.json")
     cmd(doc, "python docs/build/build_05.py                # 重新生成本文档 + 全量表")
-    cmd(doc, "npx tsc --noEmit && npx vitest run           # 类型 + 67 个测试")
+    cmd(doc, "npx tsc --noEmit && npx vitest run           # 类型 + 68 个测试")
     k.para(
         doc,
         "`table.ts` 只读 `src/data/rosters.ts`；`sim.ts` 只读 `src/`，新旧差别只在进程内改 "
@@ -453,11 +448,11 @@ def main():
     )
 
     # ---------------- 十 ----------------
-    k.h1(doc, "十", "留给你的位置")
-    k.para(doc, "下面这几件事我没有替你决定：")
-    k.para(doc, "**① 第 7 节选 A / B / C 哪条。** 选完把结论写进 `.scratch/22点决策地图/issues/05-对手强度表.md` 的 `## Answer`，我再把 Status 改成 resolved。", bullet=True)
-    k.para(doc, "**② 决赛对手用「当季第一」是否可接受。** 如果你想要「另一支进决赛的队」，得先决定季后赛怎么建模。", bullet=True)
-    k.para(doc, "**③ 要不要顺便统一 `winChance` 与 `matchRate`。** 这是重构，不改变数值，但会动 02/03 的测试基线。", bullet=True)
+    k.h1(doc, "十", "接下来")
+    k.para(doc, "05 本身已定稿。剩下三件事都不是这张票能自己结的：")
+    k.para(doc, "**① 真机手感实测。** 57.4% 的胜率是否舒服，只能真人打几局；觉得难就回来选 B / C。", bullet=True)
+    k.para(doc, "**② 季后赛建模。** 若你要「另一半区杀出来的决赛对手」，得先定四强/半决赛怎么算；现在的「当季第一」是权宜。", bullet=True)
+    k.para(doc, "**③ E01 的对手 60 是否也是占位。** 现在的判断是「作者手写的剧情难度」，保留未动；若是占位，另开票。", bullet=True)
 
     doc.save(OUT)
 

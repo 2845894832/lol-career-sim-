@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CONFIG } from '../src/config';
-import { isStarting, startRequirement, fixtureThisWeek, finalOpponentStrength, opponentStrength, rivalStrength, seasonAverageStrength, seasonStrengths, seasonTopStrength } from '../src/core/league';
+import { isStarting, startRequirement, fixtureThisWeek, finalOpponentStrength, opponentStrength, rivalStrength, seasonAverageStrength, seasonStrengths, seasonTopStrength, winChance } from '../src/core/league';
 import { reduce } from '../src/core/reduce';
 import { staminaCost } from '../src/core/actions';
 import { applyAction, canAfford } from '../src/core/actions';
@@ -343,6 +343,27 @@ describe('对手强度表', () => {
     } finally {
       cfg.opponentSource = saved;
     }
+  });
+
+  it('赛程表的 winChance 和信任主线的 matchRate 是同一个公式', () => {
+    const s = newGame(6);
+    s.signed = true;
+    s.teamId = 'RNG';
+    s.year = 1;
+    s.week = 2;
+    const fixture = fixtureThisWeek(s);
+    expect(fixture).not.toBeNull();
+    expect(winChance(s, fixture!.rivalId)).toBeCloseTo(
+      matchRate(s, rivalStrength(1, fixture!.rivalId)),
+      9,
+    );
+    // 信任 40 是支点；抬到 90，两条线一起涨同一个系数。
+    s.coachTrust = 90;
+    expect(winChance(s, fixture!.rivalId)).toBeCloseTo(
+      matchRate(s, rivalStrength(1, fixture!.rivalId)),
+      9,
+    );
+    expect(winChance(s, fixture!.rivalId)).toBeGreaterThan(0.5);
   });
 });
 
