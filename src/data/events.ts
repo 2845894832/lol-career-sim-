@@ -28,6 +28,7 @@ export const EVENTS: GameEvent[] = [
           attrs: { mentality: -3 },
           coachTrust: -5,
         },
+        failText: '你闪现的位置晚了一拍，五个人的技能全砸在你身上。',
       },
       {
         label: '拉扯等超级兵回推',
@@ -40,6 +41,7 @@ export const EVENTS: GameEvent[] = [
         fail: {
           attrs: { popularity: -2 },
         },
+        failText: '兵线没回来，弹幕先开始刷「这波在干嘛」。',
       },
       {
         label: '回守高地',
@@ -53,6 +55,7 @@ export const EVENTS: GameEvent[] = [
           attrs: { popularity: -3 },
           coachTrust: -3,
         },
+        failText: '高地还在，门牙没了，解说的声音也低了下去。',
       },
     ],
   },
@@ -79,6 +82,7 @@ export const EVENTS: GameEvent[] = [
         fail: {
           attrs: { mentality: -4 },
         },
+        failText: '对面中单比你快半步，试训室里安静得能听见空调声。',
       },
       {
         label: '回怼弹幕',
@@ -87,6 +91,7 @@ export const EVENTS: GameEvent[] = [
           attrs: { laning: -2, teamfight: -2 },
           flag: '嘴碎',
         },
+        failText: '你把话讲得很顺，直播间的人却越走越少。',
       },
       {
         label: '继续播',
@@ -125,6 +130,7 @@ export const EVENTS: GameEvent[] = [
         fail: {
           attrs: { mentality: -4 },
         },
+        failText: '手感没有来，手倒是先抖了。',
       },
       {
         label: '不想这些，专注游戏',
@@ -144,6 +150,7 @@ export const EVENTS: GameEvent[] = [
         fail: {
           attrs: { mentality: -2 },
         },
+        failText: '你想把大家拧成一股绳，绳先断了。',
         successText: '你说「打完这把去吃火锅」，语音里有人笑出了声。',
       },
     ],
@@ -175,6 +182,7 @@ export const EVENTS: GameEvent[] = [
           coachTrust: -8,
           attrs: { mentality: -2 },
         },
+        failText: '他把椅子推回去，训练室这周没人再跟你说话。',
       },
       {
         label: '不说话',
