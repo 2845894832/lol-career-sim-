@@ -10,7 +10,6 @@ export const EVENTS: readonly GameEvent[] = [
     id: 'E01',
     kind: 'match',
     phase: 'growth',
-    opponent: 60,
     tags: ['#比赛', '#河道', '#大龙', '#下路'],
     text: '你和队友被卡在河道，超级兵正推我方高地。你是 AD，手里还有闪现和大招。',
     once: false,

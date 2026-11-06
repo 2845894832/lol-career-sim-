@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-06T11:03:50.958Z",
+  "generatedAt": "2026-11-06T11:08:58.739Z",
   "summary": {
     "fixed": {
       "label": "旧：60 / 78 占位",
@@ -65,37 +65,37 @@
     },
     "roster": {
       "label": "新：名单真值",
-      "matches": 3367,
-      "wins": 1931,
-      "losses": 1436,
-      "winRate": 0.5735075735075735,
-      "winsAvg": 80.45833333333333,
+      "matches": 2928,
+      "wins": 1348,
+      "losses": 1580,
+      "winRate": 0.4603825136612022,
+      "winsAvg": 56.166666666666664,
       "finished8": 24,
-      "winsAvgFinished": 80.45833333333333,
+      "winsAvgFinished": 56.166666666666664,
       "winsByYear": [
-        10.666666666666666,
-        15.041666666666666,
-        11.416666666666666,
-        10.666666666666666,
-        9.958333333333334,
-        9.833333333333334,
-        7.708333333333333,
-        7.75
+        4.833333333333333,
+        5.166666666666667,
+        7.916666666666667,
+        8.708333333333334,
+        8.583333333333334,
+        8.875,
+        7.458333333333333,
+        6.9375
       ],
       "placeByYear": [
-        6.958333333333333,
-        10.166666666666666,
-        6.625,
-        2.9583333333333335,
-        2.5416666666666665,
-        3.2083333333333335,
+        7,
+        9.833333333333334,
+        6.5,
+        2.7916666666666665,
+        2.25,
+        2.9166666666666665,
         2.625,
-        2.4375
+        2.375
       ],
       "finalsRuns": 24,
       "finalsAvg": 16.75,
-      "allWin": 5,
-      "allLoss": 0,
+      "allWin": 0,
+      "allLoss": 2,
       "seasonCount": 184,
       "tiers": {
         "宗师": 24
@@ -103,25 +103,25 @@
       "byStrategy": [
         {
           "strategy": "balanced",
-          "winRate": 0.5456403269754768,
-          "winsAvg": 100.125,
+          "winRate": 0.43563636363636365,
+          "winsAvg": 74.875,
           "finalsAvg": 16.75
         },
         {
           "strategy": "grind",
-          "winRate": 0.5848068107400131,
-          "winsAvg": 111.625,
+          "winRate": 0.48601864181091875,
+          "winsAvg": 91.25,
           "finalsAvg": 16.75
         },
         {
           "strategy": "noScrim",
-          "winRate": 0.6370967741935484,
-          "winsAvg": 29.625,
+          "winRate": 0.37254901960784315,
+          "winsAvg": 2.375,
           "finalsAvg": 16.75
         }
       ],
       "placeAvg": 10001,
-      "trustAvg": 64.08333333333333,
+      "trustAvg": 62.333333333333336,
       "trustLow": 8,
       "trustMin": 0
     }
@@ -1637,55 +1637,55 @@
       "mode": "roster",
       "seed": 1,
       "strategy": "balanced",
-      "wins": 100,
-      "losses": 88,
+      "wins": 75,
+      "losses": 122,
       "seasons": [
         {
           "year": 1,
-          "wins": 16,
-          "losses": 6,
-          "place": 9
+          "wins": 11,
+          "losses": 11,
+          "place": 7
         },
         {
           "year": 2,
-          "wins": 24,
-          "losses": 2,
-          "place": 12
+          "wins": 11,
+          "losses": 15,
+          "place": 8
         },
         {
           "year": 3,
-          "wins": 15,
-          "losses": 11,
+          "wins": 13,
+          "losses": 13,
           "place": 0
         },
         {
           "year": 4,
-          "wins": 14,
-          "losses": 12,
+          "wins": 11,
+          "losses": 15,
           "place": 0
         },
         {
           "year": 5,
-          "wins": 11,
-          "losses": 6,
+          "wins": 6,
+          "losses": 16,
           "place": 0
         },
         {
           "year": 6,
-          "wins": 8,
-          "losses": 11,
+          "wins": 12,
+          "losses": 14,
           "place": 0
         },
         {
           "year": 7,
-          "wins": 9,
-          "losses": 17,
+          "wins": 8,
+          "losses": 18,
           "place": 0
         },
         {
           "year": 8,
           "wins": 3,
-          "losses": 23,
+          "losses": 20,
           "place": 0
         }
       ],
@@ -1695,62 +1695,62 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 4830,
-      "trust": 46
+      "trust": 70
     },
     {
       "mode": "roster",
       "seed": 2,
       "strategy": "balanced",
-      "wins": 86,
-      "losses": 98,
+      "wins": 72,
+      "losses": 102,
       "seasons": [
         {
           "year": 1,
-          "wins": 7,
-          "losses": 8,
-          "place": 14
+          "wins": 8,
+          "losses": 11,
+          "place": 6
         },
         {
           "year": 2,
-          "wins": 11,
-          "losses": 4,
-          "place": 16
+          "wins": 0,
+          "losses": 3,
+          "place": 5
         },
         {
           "year": 3,
-          "wins": 10,
-          "losses": 16,
-          "place": 15
+          "wins": 11,
+          "losses": 13,
+          "place": 4
         },
         {
           "year": 4,
-          "wins": 12,
-          "losses": 14,
-          "place": 14
+          "wins": 7,
+          "losses": 19,
+          "place": 6
         },
         {
           "year": 5,
-          "wins": 10,
-          "losses": 16,
-          "place": 11
+          "wins": 9,
+          "losses": 17,
+          "place": 5
         },
         {
           "year": 6,
-          "wins": 13,
-          "losses": 13,
-          "place": 15
+          "wins": 12,
+          "losses": 14,
+          "place": 6
         },
         {
           "year": 7,
-          "wins": 13,
-          "losses": 12,
-          "place": 12
+          "wins": 14,
+          "losses": 11,
+          "place": 7
         },
         {
           "year": 8,
-          "wins": 10,
-          "losses": 15,
-          "place": 11
+          "wins": 11,
+          "losses": 14,
+          "place": 9
         }
       ],
       "finals": 17,
@@ -1765,8 +1765,8 @@
       "mode": "roster",
       "seed": 3,
       "strategy": "balanced",
-      "wins": 120,
-      "losses": 43,
+      "wins": 43,
+      "losses": 76,
       "seasons": [
         {
           "year": 1,
@@ -1776,44 +1776,44 @@
         },
         {
           "year": 2,
-          "wins": 7,
+          "wins": 0,
           "losses": 0,
           "place": 0
         },
         {
           "year": 3,
-          "wins": 19,
-          "losses": 7,
+          "wins": 10,
+          "losses": 4,
           "place": 0
         },
         {
           "year": 4,
-          "wins": 21,
-          "losses": 5,
+          "wins": 11,
+          "losses": 15,
           "place": 0
         },
         {
           "year": 5,
-          "wins": 24,
-          "losses": 2,
+          "wins": 12,
+          "losses": 14,
           "place": 0
         },
         {
           "year": 6,
-          "wins": 20,
-          "losses": 6,
+          "wins": 3,
+          "losses": 5,
           "place": 0
         },
         {
           "year": 7,
-          "wins": 17,
-          "losses": 9,
+          "wins": 6,
+          "losses": 18,
           "place": 0
         },
         {
           "year": 8,
-          "wins": 12,
-          "losses": 14,
+          "wins": 1,
+          "losses": 20,
           "place": 0
         }
       ],
@@ -1823,37 +1823,37 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 12390,
-      "trust": 100
+      "trust": 52
     },
     {
       "mode": "roster",
       "seed": 4,
       "strategy": "balanced",
-      "wins": 96,
-      "losses": 107,
+      "wins": 84,
+      "losses": 119,
       "seasons": [
         {
           "year": 1,
-          "wins": 16,
-          "losses": 6,
-          "place": 9
+          "wins": 9,
+          "losses": 13,
+          "place": 12
         },
         {
           "year": 2,
-          "wins": 21,
-          "losses": 5,
+          "wins": 12,
+          "losses": 14,
           "place": 16
         },
         {
           "year": 3,
-          "wins": 10,
-          "losses": 16,
+          "wins": 9,
+          "losses": 17,
           "place": 17
         },
         {
           "year": 4,
-          "wins": 13,
-          "losses": 13,
+          "wins": 18,
+          "losses": 8,
           "place": 0
         },
         {
@@ -1887,37 +1887,37 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 4830,
-      "trust": 70
+      "trust": 68
     },
     {
       "mode": "roster",
       "seed": 5,
       "strategy": "balanced",
-      "wins": 94,
+      "wins": 81,
       "losses": 81,
       "seasons": [
         {
           "year": 1,
-          "wins": 12,
-          "losses": 7,
-          "place": 10
+          "wins": 5,
+          "losses": 8,
+          "place": 7
         },
         {
           "year": 2,
-          "wins": 13,
-          "losses": 3,
-          "place": 13
+          "wins": 2,
+          "losses": 2,
+          "place": 8
         },
         {
           "year": 3,
-          "wins": 16,
-          "losses": 10,
+          "wins": 14,
+          "losses": 9,
           "place": 0
         },
         {
           "year": 4,
-          "wins": 11,
-          "losses": 8,
+          "wins": 14,
+          "losses": 12,
           "place": 0
         },
         {
@@ -1928,19 +1928,19 @@
         },
         {
           "year": 6,
-          "wins": 11,
-          "losses": 15,
+          "wins": 15,
+          "losses": 11,
           "place": 0
         },
         {
           "year": 7,
-          "wins": 14,
-          "losses": 12,
+          "wins": 13,
+          "losses": 13,
           "place": 0
         },
         {
           "year": 8,
-          "wins": 2,
+          "wins": 3,
           "losses": 15,
           "place": 0
         }
@@ -1951,37 +1951,37 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 4830,
-      "trust": 90
+      "trust": 92
     },
     {
       "mode": "roster",
       "seed": 6,
       "strategy": "balanced",
-      "wins": 110,
-      "losses": 80,
+      "wins": 91,
+      "losses": 98,
       "seasons": [
         {
           "year": 1,
-          "wins": 20,
-          "losses": 2,
+          "wins": 12,
+          "losses": 10,
           "place": 13
         },
         {
           "year": 2,
-          "wins": 21,
-          "losses": 4,
-          "place": 15
+          "wins": 12,
+          "losses": 8,
+          "place": 16
         },
         {
           "year": 3,
-          "wins": 10,
+          "wins": 14,
           "losses": 12,
           "place": 15
         },
         {
           "year": 4,
-          "wins": 11,
-          "losses": 15,
+          "wins": 10,
+          "losses": 16,
           "place": 14
         },
         {
@@ -1992,8 +1992,8 @@
         },
         {
           "year": 6,
-          "wins": 16,
-          "losses": 10,
+          "wins": 12,
+          "losses": 14,
           "place": 16
         },
         {
@@ -2004,8 +2004,8 @@
         },
         {
           "year": 8,
-          "wins": 14,
-          "losses": 12,
+          "wins": 13,
+          "losses": 13,
           "place": 12
         }
       ],
@@ -2021,8 +2021,8 @@
       "mode": "roster",
       "seed": 7,
       "strategy": "balanced",
-      "wins": 97,
-      "losses": 69,
+      "wins": 85,
+      "losses": 91,
       "seasons": [
         {
           "year": 1,
@@ -2032,44 +2032,44 @@
         },
         {
           "year": 2,
-          "wins": 23,
-          "losses": 3,
+          "wins": 15,
+          "losses": 11,
           "place": 0
         },
         {
           "year": 3,
-          "wins": 16,
+          "wins": 10,
           "losses": 10,
           "place": 0
         },
         {
           "year": 4,
+          "wins": 13,
+          "losses": 13,
+          "place": 0
+        },
+        {
+          "year": 5,
           "wins": 14,
           "losses": 12,
           "place": 0
         },
         {
-          "year": 5,
-          "wins": 7,
-          "losses": 5,
-          "place": 0
-        },
-        {
           "year": 6,
           "wins": 17,
-          "losses": 8,
+          "losses": 9,
           "place": 0
         },
         {
           "year": 7,
-          "wins": 11,
-          "losses": 14,
+          "wins": 10,
+          "losses": 16,
           "place": 0
         },
         {
           "year": 8,
-          "wins": 9,
-          "losses": 17,
+          "wins": 6,
+          "losses": 20,
           "place": 0
         }
       ],
@@ -2079,61 +2079,61 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 12390,
-      "trust": 98
+      "trust": 80
     },
     {
       "mode": "roster",
       "seed": 8,
       "strategy": "balanced",
-      "wins": 98,
-      "losses": 101,
+      "wins": 68,
+      "losses": 87,
       "seasons": [
         {
           "year": 1,
-          "wins": 15,
-          "losses": 7,
-          "place": 6
+          "wins": 1,
+          "losses": 6,
+          "place": 9
         },
         {
           "year": 2,
-          "wins": 12,
-          "losses": 10,
-          "place": 14
+          "wins": 0,
+          "losses": 0,
+          "place": 16
         },
         {
           "year": 3,
-          "wins": 16,
-          "losses": 10,
-          "place": 10
+          "wins": 9,
+          "losses": 9,
+          "place": 15
         },
         {
           "year": 4,
-          "wins": 13,
-          "losses": 13,
+          "wins": 12,
+          "losses": 14,
           "place": 0
         },
         {
           "year": 5,
+          "wins": 11,
+          "losses": 15,
+          "place": 0
+        },
+        {
+          "year": 6,
           "wins": 17,
           "losses": 9,
           "place": 0
         },
         {
-          "year": 6,
-          "wins": 14,
-          "losses": 12,
-          "place": 0
-        },
-        {
           "year": 7,
-          "wins": 8,
-          "losses": 18,
+          "wins": 12,
+          "losses": 14,
           "place": 0
         },
         {
           "year": 8,
-          "wins": 3,
-          "losses": 22,
+          "wins": 6,
+          "losses": 20,
           "place": 0
         }
       ],
@@ -2143,49 +2143,49 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 4830,
-      "trust": 66
+      "trust": 78
     },
     {
       "mode": "roster",
       "seed": 1,
       "strategy": "grind",
-      "wins": 106,
-      "losses": 85,
+      "wins": 91,
+      "losses": 115,
       "seasons": [
         {
           "year": 1,
-          "wins": 20,
-          "losses": 5,
-          "place": 7
+          "wins": 13,
+          "losses": 12,
+          "place": 12
         },
         {
           "year": 2,
-          "wins": 24,
-          "losses": 2,
-          "place": 9
+          "wins": 9,
+          "losses": 17,
+          "place": 16
         },
         {
           "year": 3,
-          "wins": 15,
-          "losses": 11,
-          "place": 0
-        },
-        {
-          "year": 4,
           "wins": 14,
           "losses": 12,
           "place": 0
         },
         {
+          "year": 4,
+          "wins": 13,
+          "losses": 13,
+          "place": 0
+        },
+        {
           "year": 5,
-          "wins": 11,
-          "losses": 6,
+          "wins": 15,
+          "losses": 10,
           "place": 0
         },
         {
           "year": 6,
-          "wins": 8,
-          "losses": 11,
+          "wins": 11,
+          "losses": 15,
           "place": 0
         },
         {
@@ -2196,8 +2196,8 @@
         },
         {
           "year": 8,
-          "wins": 3,
-          "losses": 23,
+          "wins": 5,
+          "losses": 21,
           "place": 0
         }
       ],
@@ -2207,62 +2207,62 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 4515,
-      "trust": 86
+      "trust": 98
     },
     {
       "mode": "roster",
       "seed": 2,
       "strategy": "grind",
-      "wins": 95,
-      "losses": 96,
+      "wins": 79,
+      "losses": 113,
       "seasons": [
         {
           "year": 1,
-          "wins": 8,
-          "losses": 9,
-          "place": 7
+          "wins": 5,
+          "losses": 12,
+          "place": 10
         },
         {
           "year": 2,
-          "wins": 16,
-          "losses": 4,
-          "place": 6
+          "wins": 11,
+          "losses": 14,
+          "place": 11
         },
         {
           "year": 3,
-          "wins": 14,
-          "losses": 12,
-          "place": 3
+          "wins": 5,
+          "losses": 17,
+          "place": 11
         },
         {
           "year": 4,
-          "wins": 11,
-          "losses": 15,
-          "place": 4
+          "wins": 12,
+          "losses": 14,
+          "place": 12
         },
         {
           "year": 5,
           "wins": 10,
           "losses": 16,
-          "place": 5
+          "place": 6
         },
         {
           "year": 6,
           "wins": 13,
           "losses": 13,
-          "place": 3
+          "place": 12
         },
         {
           "year": 7,
           "wins": 13,
           "losses": 12,
-          "place": 3
+          "place": 9
         },
         {
           "year": 8,
           "wins": 10,
           "losses": 15,
-          "place": 5
+          "place": 11
         }
       ],
       "finals": 17,
@@ -2277,8 +2277,8 @@
       "mode": "roster",
       "seed": 3,
       "strategy": "grind",
-      "wins": 153,
-      "losses": 19,
+      "wins": 83,
+      "losses": 65,
       "seasons": [
         {
           "year": 1,
@@ -2288,44 +2288,44 @@
         },
         {
           "year": 2,
-          "wins": 16,
+          "wins": 0,
           "losses": 0,
           "place": 0
         },
         {
           "year": 3,
-          "wins": 26,
-          "losses": 0,
+          "wins": 11,
+          "losses": 12,
           "place": 0
         },
         {
           "year": 4,
-          "wins": 26,
-          "losses": 0,
+          "wins": 17,
+          "losses": 9,
           "place": 0
         },
         {
           "year": 5,
-          "wins": 25,
-          "losses": 1,
+          "wins": 15,
+          "losses": 6,
           "place": 0
         },
         {
           "year": 6,
-          "wins": 23,
-          "losses": 3,
+          "wins": 17,
+          "losses": 9,
           "place": 0
         },
         {
           "year": 7,
-          "wins": 22,
-          "losses": 4,
+          "wins": 16,
+          "losses": 10,
           "place": 0
         },
         {
           "year": 8,
-          "wins": 15,
-          "losses": 11,
+          "wins": 7,
+          "losses": 19,
           "place": 0
         }
       ],
@@ -2341,25 +2341,25 @@
       "mode": "roster",
       "seed": 4,
       "strategy": "grind",
-      "wins": 93,
-      "losses": 106,
+      "wins": 88,
+      "losses": 118,
       "seasons": [
         {
           "year": 1,
-          "wins": 9,
-          "losses": 9,
+          "wins": 10,
+          "losses": 15,
           "place": 12
         },
         {
           "year": 2,
-          "wins": 20,
-          "losses": 6,
+          "wins": 12,
+          "losses": 14,
           "place": 16
         },
         {
           "year": 3,
-          "wins": 9,
-          "losses": 17,
+          "wins": 11,
+          "losses": 15,
           "place": 17
         },
         {
@@ -2399,26 +2399,26 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 4515,
-      "trust": 98
+      "trust": 94
     },
     {
       "mode": "roster",
       "seed": 5,
       "strategy": "grind",
-      "wins": 89,
-      "losses": 101,
+      "wins": 82,
+      "losses": 98,
       "seasons": [
         {
           "year": 1,
-          "wins": 13,
-          "losses": 12,
-          "place": 9
+          "wins": 5,
+          "losses": 11,
+          "place": 7
         },
         {
           "year": 2,
-          "wins": 16,
-          "losses": 10,
-          "place": 14
+          "wins": 11,
+          "losses": 14,
+          "place": 13
         },
         {
           "year": 3,
@@ -2428,14 +2428,14 @@
         },
         {
           "year": 4,
-          "wins": 10,
-          "losses": 16,
+          "wins": 15,
+          "losses": 11,
           "place": 0
         },
         {
           "year": 5,
-          "wins": 14,
-          "losses": 12,
+          "wins": 15,
+          "losses": 11,
           "place": 0
         },
         {
@@ -2469,56 +2469,56 @@
       "mode": "roster",
       "seed": 6,
       "strategy": "grind",
-      "wins": 119,
-      "losses": 76,
+      "wins": 94,
+      "losses": 91,
       "seasons": [
         {
           "year": 1,
-          "wins": 21,
-          "losses": 4,
-          "place": 6
+          "wins": 8,
+          "losses": 15,
+          "place": 1
         },
         {
           "year": 2,
-          "wins": 23,
-          "losses": 3,
-          "place": 13
+          "wins": 5,
+          "losses": 7,
+          "place": 7
         },
         {
           "year": 3,
-          "wins": 12,
-          "losses": 14,
-          "place": 10
+          "wins": 13,
+          "losses": 13,
+          "place": 5
         },
         {
           "year": 4,
-          "wins": 12,
-          "losses": 14,
-          "place": 11
+          "wins": 8,
+          "losses": 18,
+          "place": 6
         },
         {
           "year": 5,
-          "wins": 12,
-          "losses": 12,
-          "place": 8
+          "wins": 18,
+          "losses": 8,
+          "place": 4
         },
         {
           "year": 6,
-          "wins": 17,
-          "losses": 9,
-          "place": 12
+          "wins": 16,
+          "losses": 10,
+          "place": 5
         },
         {
           "year": 7,
-          "wins": 8,
-          "losses": 8,
-          "place": 10
+          "wins": 13,
+          "losses": 7,
+          "place": 5
         },
         {
           "year": 8,
-          "wins": 14,
-          "losses": 12,
-          "place": 11
+          "wins": 13,
+          "losses": 13,
+          "place": 6
         }
       ],
       "finals": 17,
@@ -2533,8 +2533,8 @@
       "mode": "roster",
       "seed": 7,
       "strategy": "grind",
-      "wins": 134,
-      "losses": 48,
+      "wins": 131,
+      "losses": 51,
       "seasons": [
         {
           "year": 1,
@@ -2544,44 +2544,44 @@
         },
         {
           "year": 2,
-          "wins": 26,
-          "losses": 0,
-          "place": 0
-        },
-        {
-          "year": 3,
-          "wins": 23,
-          "losses": 3,
-          "place": 0
-        },
-        {
-          "year": 4,
-          "wins": 17,
-          "losses": 9,
-          "place": 0
-        },
-        {
-          "year": 5,
-          "wins": 21,
-          "losses": 5,
-          "place": 0
-        },
-        {
-          "year": 6,
           "wins": 18,
           "losses": 8,
           "place": 0
         },
         {
+          "year": 3,
+          "wins": 24,
+          "losses": 2,
+          "place": 0
+        },
+        {
+          "year": 4,
+          "wins": 16,
+          "losses": 10,
+          "place": 0
+        },
+        {
+          "year": 5,
+          "wins": 20,
+          "losses": 6,
+          "place": 0
+        },
+        {
+          "year": 6,
+          "wins": 19,
+          "losses": 7,
+          "place": 0
+        },
+        {
           "year": 7,
-          "wins": 15,
-          "losses": 11,
+          "wins": 19,
+          "losses": 7,
           "place": 0
         },
         {
           "year": 8,
-          "wins": 14,
-          "losses": 12,
+          "wins": 15,
+          "losses": 11,
           "place": 0
         }
       ],
@@ -2597,43 +2597,43 @@
       "mode": "roster",
       "seed": 8,
       "strategy": "grind",
-      "wins": 104,
-      "losses": 103,
+      "wins": 82,
+      "losses": 121,
       "seasons": [
         {
           "year": 1,
-          "wins": 20,
-          "losses": 5,
-          "place": 5
+          "wins": 10,
+          "losses": 15,
+          "place": 9
         },
         {
           "year": 2,
-          "wins": 18,
-          "losses": 8,
-          "place": 14
+          "wins": 6,
+          "losses": 16,
+          "place": 16
         },
         {
           "year": 3,
-          "wins": 12,
-          "losses": 14,
-          "place": 10
+          "wins": 11,
+          "losses": 15,
+          "place": 15
         },
         {
           "year": 4,
-          "wins": 16,
-          "losses": 10,
+          "wins": 14,
+          "losses": 12,
           "place": 0
         },
         {
           "year": 5,
-          "wins": 11,
-          "losses": 15,
+          "wins": 13,
+          "losses": 13,
           "place": 0
         },
         {
           "year": 6,
-          "wins": 15,
-          "losses": 11,
+          "wins": 13,
+          "losses": 13,
           "place": 0
         },
         {
@@ -2644,8 +2644,8 @@
         },
         {
           "year": 8,
-          "wins": 4,
-          "losses": 22,
+          "wins": 7,
+          "losses": 19,
           "place": 0
         }
       ],
@@ -2655,49 +2655,49 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 4515,
-      "trust": 94
+      "trust": 100
     },
     {
       "mode": "roster",
       "seed": 1,
       "strategy": "noScrim",
-      "wins": 91,
-      "losses": 46,
+      "wins": 5,
+      "losses": 7,
       "seasons": [
         {
           "year": 1,
-          "wins": 16,
-          "losses": 6,
-          "place": 9
+          "wins": 5,
+          "losses": 7,
+          "place": 12
         },
         {
           "year": 2,
-          "wins": 24,
-          "losses": 2,
+          "wins": 0,
+          "losses": 0,
           "place": 12
         },
         {
           "year": 3,
-          "wins": 13,
-          "losses": 13,
+          "wins": 0,
+          "losses": 0,
           "place": 0
         },
         {
           "year": 4,
-          "wins": 14,
-          "losses": 11,
+          "wins": 0,
+          "losses": 0,
           "place": 0
         },
         {
           "year": 5,
-          "wins": 17,
-          "losses": 9,
+          "wins": 0,
+          "losses": 0,
           "place": 0
         },
         {
           "year": 6,
-          "wins": 7,
-          "losses": 5,
+          "wins": 0,
+          "losses": 0,
           "place": 0
         },
         {
@@ -2713,56 +2713,56 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 4830,
-      "trust": 23
+      "trust": 21
     },
     {
       "mode": "roster",
       "seed": 2,
       "strategy": "noScrim",
-      "wins": 5,
+      "wins": 4,
       "losses": 4,
       "seasons": [
         {
           "year": 1,
-          "wins": 5,
+          "wins": 4,
           "losses": 4,
-          "place": 9
+          "place": 12
         },
         {
           "year": 2,
           "wins": 0,
           "losses": 0,
-          "place": 13
+          "place": 16
         },
         {
           "year": 3,
           "wins": 0,
           "losses": 0,
-          "place": 15
+          "place": 17
         },
         {
           "year": 4,
           "wins": 0,
           "losses": 0,
-          "place": 14
+          "place": 16
         },
         {
           "year": 5,
           "wins": 0,
           "losses": 0,
-          "place": 11
+          "place": 14
         },
         {
           "year": 6,
           "wins": 0,
           "losses": 0,
-          "place": 15
+          "place": 17
         },
         {
           "year": 7,
           "wins": 0,
           "losses": 0,
-          "place": 12
+          "place": 16
         }
       ],
       "finals": 17,
@@ -2835,31 +2835,31 @@
       "mode": "roster",
       "seed": 4,
       "strategy": "noScrim",
-      "wins": 47,
-      "losses": 30,
+      "wins": 7,
+      "losses": 9,
       "seasons": [
         {
           "year": 1,
-          "wins": 16,
-          "losses": 6,
-          "place": 9
+          "wins": 7,
+          "losses": 9,
+          "place": 12
         },
         {
           "year": 2,
-          "wins": 19,
-          "losses": 7,
+          "wins": 0,
+          "losses": 0,
           "place": 16
         },
         {
           "year": 3,
-          "wins": 11,
-          "losses": 15,
+          "wins": 0,
+          "losses": 0,
           "place": 17
         },
         {
           "year": 4,
-          "wins": 1,
-          "losses": 2,
+          "wins": 0,
+          "losses": 0,
           "place": 0
         },
         {
@@ -2893,20 +2893,20 @@
       "mode": "roster",
       "seed": 5,
       "strategy": "noScrim",
-      "wins": 12,
-      "losses": 7,
+      "wins": 1,
+      "losses": 4,
       "seasons": [
         {
           "year": 1,
-          "wins": 12,
-          "losses": 7,
-          "place": 10
+          "wins": 1,
+          "losses": 4,
+          "place": 12
         },
         {
           "year": 2,
           "wins": 0,
           "losses": 0,
-          "place": 14
+          "place": 16
         },
         {
           "year": 3,
@@ -2951,44 +2951,44 @@
       "mode": "roster",
       "seed": 6,
       "strategy": "noScrim",
-      "wins": 66,
-      "losses": 35,
+      "wins": 2,
+      "losses": 3,
       "seasons": [
         {
           "year": 1,
-          "wins": 20,
-          "losses": 2,
-          "place": 13
+          "wins": 2,
+          "losses": 3,
+          "place": 9
         },
         {
           "year": 2,
-          "wins": 21,
-          "losses": 5,
-          "place": 15
-        },
-        {
-          "year": 3,
-          "wins": 16,
-          "losses": 10,
-          "place": 15
-        },
-        {
-          "year": 4,
-          "wins": 8,
-          "losses": 16,
+          "wins": 0,
+          "losses": 0,
           "place": 14
         },
         {
-          "year": 5,
-          "wins": 1,
-          "losses": 2,
+          "year": 3,
+          "wins": 0,
+          "losses": 0,
           "place": 13
+        },
+        {
+          "year": 4,
+          "wins": 0,
+          "losses": 0,
+          "place": 13
+        },
+        {
+          "year": 5,
+          "wins": 0,
+          "losses": 0,
+          "place": 12
         },
         {
           "year": 6,
           "wins": 0,
           "losses": 0,
-          "place": 16
+          "place": 14
         },
         {
           "year": 7,
@@ -3003,14 +3003,14 @@
       "tier": "宗师",
       "place": 10001,
       "rankPoints": 4830,
-      "trust": 24
+      "trust": 0
     },
     {
       "mode": "roster",
       "seed": 7,
       "strategy": "noScrim",
-      "wins": 6,
-      "losses": 5,
+      "wins": 0,
+      "losses": 2,
       "seasons": [
         {
           "year": 1,
@@ -3020,8 +3020,8 @@
         },
         {
           "year": 2,
-          "wins": 6,
-          "losses": 5,
+          "wins": 0,
+          "losses": 2,
           "place": 0
         },
         {
@@ -3067,26 +3067,26 @@
       "mode": "roster",
       "seed": 8,
       "strategy": "noScrim",
-      "wins": 10,
-      "losses": 8,
+      "wins": 0,
+      "losses": 3,
       "seasons": [
         {
           "year": 1,
-          "wins": 10,
-          "losses": 8,
-          "place": 10
+          "wins": 0,
+          "losses": 3,
+          "place": 6
         },
         {
           "year": 2,
           "wins": 0,
           "losses": 0,
-          "place": 16
+          "place": 14
         },
         {
           "year": 3,
           "wins": 0,
           "losses": 0,
-          "place": 15
+          "place": 10
         },
         {
           "year": 4,

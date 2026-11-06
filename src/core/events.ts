@@ -82,7 +82,7 @@ export function successRateOf(state: GameState, event: GameEvent, option: EventO
   if (option.risk === 'fail') return 0;
   if (event.kind === 'match' || event.opponent !== undefined) {
     // 决赛：当季最强队。其它比赛事件：这一周的对手（赛程对手 / 当季平均）。
-    // opponentRole 缺省时，event.opponent 是写死的难度，照旧用它。
+    // event.opponent 只剩「还没接名单的事件」和 fixed 模式的决赛兜底；E01 已改成按当周对手算。
     const opponent =
       event.opponentRole === 'final'
         ? finalOpponentStrength(state.year, event.opponent ?? CONFIG.match.opponentFinal)

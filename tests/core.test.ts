@@ -8,6 +8,7 @@ import { advanceYear, gainExp, gainPoints, trainGain } from '../src/core/growth'
 import { autoMatch, applyMatchOutcome, matchRate } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
 import { drawEvent, resolveOption, successRateOf } from '../src/core/events';
+import { EVENTS } from '../src/data/events';
 import { canPlay, benchReason } from '../src/core/match';
 import { createRng } from '../src/rng';
 import { fromSaveJson, toSaveJson } from '../src/core/save';
@@ -364,6 +365,22 @@ describe('对手强度表', () => {
       9,
     );
     expect(winChance(s, fixture!.rivalId)).toBeGreaterThan(0.5);
+  });
+
+  it('E01 的对手不再写死 60，按当周对手算', () => {
+    const s = newGame(7);
+    s.signed = true;
+    s.teamId = 'RNG';
+    s.year = 1;
+    s.week = 4;
+    const e01 = EVENTS.find((e) => e.id === 'E01')!;
+    expect(e01.opponent).toBeUndefined();
+    const option = e01.options[0]!;
+    expect(successRateOf(s, e01, option)).toBeCloseTo(
+      matchRate(s, opponentStrength(s), option.bonus ?? 0),
+      9,
+    );
+    expect(opponentStrength(s)).toBeCloseTo(rivalStrength(1, fixtureThisWeek(s)!.rivalId), 9);
   });
 });
 
