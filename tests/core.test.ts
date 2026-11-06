@@ -515,20 +515,15 @@ describe('事件抽取', () => {
       const r = drawEvent(t);
       if (r.event?.id === 'E04') hit++;
     }
-    const ratio = hit / total;
-    expect(Math.abs(ratio - share)).toBeLessThan(share * 0.35);
+    const expected = total * share;
+    const sigma = Math.sqrt(total * share * (1 - share));
+    expect(Math.abs(hit - expected)).toBeLessThan(4 * sigma + 2);
   });
 
-  it('34 条表内事件都在库里', () => {
-    const ids = [
-      'M01', 'M02', 'M03', 'M04', 'M05', 'M06', 'M07', 'M08', 'M09',
-      'L01', 'L02', 'L03', 'L04', 'L05', 'L06', 'L07', 'L08', 'L09', 'L10',
-      'S01', 'S02', 'S03',
-      'P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10', 'P11', 'P12',
-    ];
-    const have = new Set(EVENTS.map((e) => e.id));
-    expect(ids.filter((id) => !have.has(id))).toEqual([]);
-    expect(EVENTS.filter((e) => ids.includes(e.id))).toHaveLength(34);
+  it('表内事件条数与 ID 规则', () => {
+    const ids = EVENTS.filter((e) => /^[MLSP]\d\d$/.test(e.id)).map((e) => e.id);
+    expect(ids).toHaveLength(80);
+    expect(new Set(ids).size).toBe(80);
   });
 
   it('表内事件：正文 ≤50 字、2~3 个选项、后果字段合法', () => {
@@ -550,6 +545,7 @@ describe('事件抽取', () => {
           for (const key of Object.keys(c.attrs ?? {})) expect(ATTR_KEYS).toContain(key);
           for (const key of Object.keys(c.temp ?? {})) expect(ATTR_KEYS).toContain(key);
         }
+        if (o.fail) expect(o.failText?.length ?? 0, `${e.id} ${o.label}`).toBeGreaterThan(0);
       }
     }
   });
@@ -557,7 +553,18 @@ describe('事件抽取', () => {
   it('每条表内事件都存在能抽到它的状态（随机池或必触发）', () => {
     const reachable = new Set<string>();
     const weeks = [1, 5, 10, 20, 26, 30];
-    const flagSets: string[][] = [[], ['#五十块'], ['#坐过替补'], ['#手腕不适']];
+    const flagSets: string[][] = [
+      [],
+      ['#五十块'],
+      ['#坐过替补'],
+      ['#手腕不适'],
+      ['#偷家'],
+      ['#让二追三'],
+      ['#丢龙'],
+      ['#金句'],
+      ['#自嘲'],
+      ['#转教练'],
+    ];
     for (let year = 1; year <= 8; year++) {
       for (const week of weeks) {
         for (const signed of [false, true]) {
