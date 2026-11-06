@@ -231,20 +231,19 @@ describe('比赛', () => {
     expect(s.coachTrust).not.toBe(before);
   });
 
-  it('伤病标记会触发 E05，并在事件结算后清掉', () => {
+  it('伤停 ≥1 会触发 E05，结算后伤停 +1 并清掉手腕标记', () => {
     const s = newGame(1);
     s.signed = true;
     s.week = 10;
-    s.injury = 0;
+    s.injury = 1;
     s.flags.push('#手腕不适');
     const drawn = drawEvent(s);
     expect(drawn.event?.id).toBe('E05');
     resolveOption(s, drawn.event!, 0);
-    expect(s.injury).toBe(1);
+    expect(s.injury).toBe(2);
     expect(s.flags).not.toContain('#手腕不适');
-    // once: false 的事件清掉标记后还能再次被 forced 抽到。
-    s.flags.push('#手腕不适');
-    expect(drawEvent(s).event?.id).toBe('E05');
+    // once：整局只结算一次，避免伤停期间每周复发。
+    expect(drawEvent(s).event?.id).not.toBe('E05');
   });
 
   it('临场加减会改变自动比赛的胜率', () => {
@@ -384,6 +383,46 @@ describe('对手强度表', () => {
   });
 });
 
+describe('四维加成与必成选项', () => {
+  it('E02 试训成功率 =（四维平均 + 人气）÷ 2 ÷ 100', () => {
+    const s = newGame(9);
+    s.signed = false;
+    s.attrs.operation = 80;
+    s.attrs.laning = 60;
+    s.attrs.teamfight = 70;
+    s.attrs.awareness = 50;
+    s.attrs.popularity = 40;
+    const e02 = EVENTS.find((e) => e.id === 'E02')!;
+    const trial = e02.options.find((o) => o.label === '去试训')!;
+    expect(trial.mix).toBe('fourAndPopularity');
+    expect(successRateOf(s, e02, trial)).toBeCloseTo(((65 + 40) / 2) / 100, 6);
+  });
+
+  it('E03 三个选项在 matchRate 之上加四维加成', () => {
+    const s = newGame(10);
+    s.signed = true;
+    s.year = CONFIG.career.finalYear;
+    s.week = CONFIG.career.finalWeek;
+    for (const key of ['operation', 'laning', 'teamfight', 'awareness'] as const) s.attrs[key] = 90;
+    const e03 = EVENTS.find((e) => e.id === 'E03')!;
+    for (const option of e03.options) {
+      expect(option.skillBonus).toBe(true);
+      const withBonus = successRateOf(s, e03, option);
+      const without = successRateOf(s, e03, { ...option, skillBonus: false });
+      expect(withBonus - without).toBeCloseTo(0.16, 6);
+    }
+  });
+
+  it('必成/必败选项不带掷骰属性', () => {
+    for (const event of EVENTS) {
+      for (const option of event.options) {
+        if (option.risk === 'roll') continue;
+        expect(option.attrs, `${event.id} ${option.label}`).toBeUndefined();
+      }
+    }
+  });
+});
+
 describe('存档', () => {
   it('序列化再反序列化后状态等价', () => {
     const s = newGame(42);
@@ -499,6 +538,7 @@ describe('事件抽取', () => {
     const s = newGame(1);
     s.year = 1;
     s.week = 10;
+    s.signed = true;
     const pool = randomPool(s);
     const special = pool.find((e) => e.id === 'E04');
     expect(special).toBeDefined();
@@ -511,6 +551,7 @@ describe('事件抽取', () => {
       const t = newGame(i + 1);
       t.year = 1;
       t.week = 10;
+      t.signed = true;
       t.rngState = (i * 2654435761) >>> 0;
       const r = drawEvent(t);
       if (r.event?.id === 'E04') hit++;
@@ -522,8 +563,8 @@ describe('事件抽取', () => {
 
   it('表内事件条数与 ID 规则', () => {
     const ids = EVENTS.filter((e) => /^[MLSP]\d\d$/.test(e.id)).map((e) => e.id);
-    expect(ids).toHaveLength(34);
-    expect(new Set(ids).size).toBe(34);
+    expect(ids).toHaveLength(79);
+    expect(new Set(ids).size).toBe(79);
   });
 
   it('表内事件：正文 ≤50 字、2~3 个选项、后果字段合法', () => {
@@ -568,20 +609,23 @@ describe('事件抽取', () => {
     for (let year = 1; year <= 8; year++) {
       for (const week of weeks) {
         for (const signed of [false, true]) {
-          for (const trust of [0, 50, 100]) {
-            for (const pop of [0, 60]) {
-              for (const flags of flagSets) {
-                const s = newGame(1);
-                s.year = year;
-                s.week = week;
-                s.signed = signed;
-                s.coachTrust = trust;
-                s.attrs.popularity = pop;
-                s.flags = flags;
-                s.actionGrid = ['stream', null, null] as GameState['actionGrid'];
-                for (const e of randomPool(s)) reachable.add(e.id);
-                const f = forcedEvent(s);
-                if (f) reachable.add(f.id);
+          for (const injury of [0, 1]) {
+            for (const trust of [0, 50, 100]) {
+              for (const pop of [0, 60]) {
+                for (const flags of flagSets) {
+                  const s = newGame(1);
+                  s.year = year;
+                  s.week = week;
+                  s.signed = signed;
+                  s.injury = injury;
+                  s.coachTrust = trust;
+                  s.attrs.popularity = pop;
+                  s.flags = flags;
+                  s.actionGrid = ['stream', null, null] as GameState['actionGrid'];
+                  for (const e of randomPool(s)) reachable.add(e.id);
+                  const f = forcedEvent(s);
+                  if (f) reachable.add(f.id);
+                }
               }
             }
           }

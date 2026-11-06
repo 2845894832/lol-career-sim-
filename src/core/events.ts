@@ -88,6 +88,23 @@ export function drawEvent(state: GameState): DrawResult {
   return { event: null, rngState: ctx.state() };
 }
 
+/** 四维：操作 / 对线 / 团战 / 意识（不含心态）。 */
+const FOUR_ATTRS = ['operation', 'laning', 'teamfight', 'awareness'] as const;
+
+function fourAvg(state: GameState): number {
+  const total = FOUR_ATTRS.reduce((sum, key) => sum + effectiveAttr(state, key), 0);
+  return total / FOUR_ATTRS.length;
+}
+
+/**
+ * 比赛事件里「四维」能加多少胜率。
+ * 50 为基准，每高 50 点 +0.2、每低 50 点 −0.2（夹在 ±0.2）。
+ * 数值未经用户确认；改这里就改全部 skillBonus 选项。
+ */
+function skillBonusOf(state: GameState): number {
+  return clamp((fourAvg(state) - CONFIG.attrs.cap / 2) / 250, -0.2, 0.2);
+}
+
 /** 掷骰选项的可见成功率。必成为 1，必败为 0；比赛事件走统一胜负公式。 */
 export function successRateOf(state: GameState, event: GameEvent, option: EventOption): number {
   if (option.risk === 'success') return 1;
@@ -99,11 +116,17 @@ export function successRateOf(state: GameState, event: GameEvent, option: EventO
       event.opponentRole === 'final'
         ? finalOpponentStrength(state.year, event.opponent ?? CONFIG.match.opponentFinal)
         : event.opponent ?? opponentStrength(state);
-    return matchRate(state, opponent, option.bonus ?? 0);
+    const bonus = (option.bonus ?? 0) + (option.skillBonus ? skillBonusOf(state) : 0);
+    return matchRate(state, opponent, bonus);
   }
-  const attrs = option.attrs ?? ['teamfight'];
-  const total = attrs.reduce((sum, key) => sum + effectiveAttr(state, key), 0);
-  const avg = total / attrs.length;
+  let avg: number;
+  if (option.mix === 'fourAndPopularity') {
+    avg = (fourAvg(state) + effectiveAttr(state, 'popularity')) / 2;
+  } else {
+    const attrs = option.attrs ?? ['teamfight'];
+    const total = attrs.reduce((sum, key) => sum + effectiveAttr(state, key), 0);
+    avg = total / attrs.length;
+  }
   return clamp(avg / CONFIG.attrs.cap, CONFIG.match.minWinRate, CONFIG.match.maxWinRate);
 }
 

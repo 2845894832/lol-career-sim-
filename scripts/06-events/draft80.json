@@ -1,0 +1,6503 @@
+[
+ {
+  "id": "E01",
+  "kind": "match",
+  "phase": "growth",
+  "tags": [
+   "#比赛",
+   "#河道",
+   "#大龙",
+   "#下路"
+  ],
+  "text": "你和队友被卡在河道，超级兵正推我方高地。你是 AD，手里还有闪现和大招。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "闪现进场开大",
+    "risk": "roll",
+    "attrs": null,
+    "mix": null,
+    "bonus": 0.15,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 3
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -3
+     },
+     "coachTrust": -5
+    },
+    "successText": "五个人的位置，正好是你想要的。",
+    "failText": null
+   },
+   {
+    "label": "拉扯等超级兵回推",
+    "risk": "roll",
+    "attrs": null,
+    "mix": null,
+    "bonus": 0.05,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     }
+    },
+    "successText": "你们把时间拖回了自己这边。",
+    "failText": null
+   },
+   {
+    "label": "回守高地",
+    "risk": "roll",
+    "attrs": null,
+    "mix": null,
+    "bonus": -0.15,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": -1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -3
+     },
+     "coachTrust": -3
+    },
+    "successText": "高地守住了，但这局已经没了。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "E02",
+  "kind": "life",
+  "phase": "growth",
+  "tags": [
+   "#直播",
+   "#弹幕",
+   "#路人期"
+  ],
+  "text": "正在服务器大杀四方的你，看见弹幕飘过一句「不去打职业扬名立万，窝在这里当个小主播」。",
+  "once": true,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "去试训",
+    "risk": "roll",
+    "attrs": [
+     "operation",
+     "laning",
+     "teamfight",
+     "awareness"
+    ],
+    "mix": "fourAndPopularity",
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 3
+     },
+     "flag": "试训通过"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -4
+     }
+    },
+    "successText": "第三局你 3-0，对方教练合上本子，「什么时候能来？」",
+    "failText": null
+   },
+   {
+    "label": "回怼弹幕",
+    "risk": "fail",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": null,
+    "fail": {
+     "attrs": {
+      "laning": -2,
+      "teamfight": -2
+     },
+     "flag": "嘴碎"
+    },
+    "successText": null,
+    "failText": null
+   },
+   {
+    "label": "继续播",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 2
+     },
+     "flag": "想得开"
+    },
+    "fail": null,
+    "successText": "你把心态放得很好：水到渠成，急不得。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "E03",
+  "kind": "special",
+  "phase": "peak",
+  "tags": [
+   "#S赛",
+   "#决赛",
+   "#特殊",
+   "#请神"
+  ],
+  "text": "第 3 年，决赛。这一场决定你以后的历史地位。",
+  "once": true,
+  "weight": 1,
+  "opponent": 78,
+  "opponentRole": "final",
+  "year": 3,
+  "week": 26,
+  "options": [
+   {
+    "label": "闭上双眼请神",
+    "risk": "roll",
+    "attrs": null,
+    "mix": null,
+    "bonus": 0.25,
+    "skillBonus": true,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 3
+     },
+     "flag": "请神"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -4
+     }
+    },
+    "successText": "请神成功，你化身神秘瓜皮头男。",
+    "failText": null
+   },
+   {
+    "label": "不想这些，专注游戏",
+    "risk": "roll",
+    "attrs": null,
+    "mix": null,
+    "bonus": 0,
+    "skillBonus": true,
+    "matchResult": null,
+    "success": null,
+    "fail": null,
+    "successText": "你把耳机音量调大了一格，世界安静了。",
+    "failText": null
+   },
+   {
+    "label": "向队友说些话",
+    "risk": "roll",
+    "attrs": null,
+    "mix": null,
+    "bonus": 0.05,
+    "skillBonus": true,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     }
+    },
+    "successText": "你说「打完这把去吃火锅」，语音里有人笑出了声。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "E04",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#队内",
+   "#矛盾",
+   "#特殊"
+  ],
+  "text": "训练室里，中单把耳机摔了。他说你昨天那句「下路自己打」，全队都听见了。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "道歉",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 4,
+     "attrs": {
+      "mentality": 2
+     },
+     "flag": "道过歉"
+    },
+    "fail": null,
+    "successText": "你把话收回去，训练室安静下来。",
+    "failText": null
+   },
+   {
+    "label": "怼回去",
+    "risk": "fail",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": null,
+    "fail": {
+     "coachTrust": -8,
+     "attrs": {
+      "mentality": -2
+     }
+    },
+    "successText": null,
+    "failText": null
+   },
+   {
+    "label": "不说话",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "fail": null,
+    "successText": "你没说话，他也没再说。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "E05",
+  "kind": "special",
+  "phase": "any",
+  "tags": [
+   "#伤病",
+   "#手腕",
+   "#特殊"
+  ],
+  "text": "上周那下没缓过来。队医按了按你的手腕：「能打，但会疼。」",
+  "once": false,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "打封闭，继续上",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "injury": 1,
+     "coachTrust": 2,
+     "stamina": -5,
+     "clearFlag": "#手腕不适"
+    },
+    "fail": null,
+    "successText": "你把手腕缠紧，回到了训练室。",
+    "failText": null
+   },
+   {
+    "label": "听队医的，休一周",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "injury": 1,
+     "coachTrust": -2,
+     "stamina": 8,
+     "clearFlag": "#手腕不适"
+    },
+    "fail": null,
+    "successText": "你坐在场边看了一周，手腕总算消了肿。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "M01",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#河道",
+   "#大龙"
+  ],
+  "text": "你按下传送，光标停在提伯斯身上。语音里有人笑出了声。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "硬着头皮打下去",
+    "risk": "roll",
+    "attrs": [
+     "teamfight",
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "popularity": 1,
+      "operation": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -3
+    },
+    "successText": "你落地就要了三个人的位置，队友跟上来的时候对面已经乱了。",
+    "failText": "你落地的时候，对面四个人的技能都还在。"
+   },
+   {
+    "label": "取消传送，回塔下",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你把传送取消了，兵线慢慢回推到自己塔前。",
+    "failText": null
+   },
+   {
+    "label": "假装绕后，逼对面后撤",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": 0.05,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1,
+      "popularity": -1
+     }
+    },
+    "successText": "你在河道露了一下头，对面两个人同时往后撤了两步。",
+    "failText": "你露头的位置太假，对面连技能都没交。"
+   }
+  ]
+ },
+ {
+  "id": "M02",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#进场",
+   "#下路"
+  ],
+  "text": "你想 TP 支援，锤石的灯笼正好在光标下。你按了。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "就落这个灯笼",
+    "risk": "roll",
+    "attrs": [
+     "awareness",
+     "laning"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "operation": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你落在灯笼上，对面两个人的技能全部交了空气。",
+    "failText": "灯笼被对面点掉，你落在空地上。"
+   },
+   {
+    "label": "取消，走回去",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你把施法取消了，一步一步从河道走回线上。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "M03",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#暂停",
+   "#节奏"
+  ],
+  "text": "比赛暂停了四十分钟。回来时，对面换了一套节奏。",
+  "once": false,
+  "weight": 2,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "按原计划打",
+    "risk": "roll",
+    "attrs": [
+     "awareness",
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "operation": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1,
+      "popularity": -1
+     }
+    },
+    "successText": "对面换了节奏，你还是那套东西，结果你比他们熟。",
+    "failText": "对面把你们的节奏背了下来，每一步都快半拍。"
+   },
+   {
+    "label": "先把视野翻出去",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": 0.1,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "暂停回来的第一分钟，你们三个人一起走进了对面的野区。",
+    "failText": "你们走进野区，迎面撞上了他们三个人。"
+   }
+  ]
+ },
+ {
+  "id": "M04",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#替补",
+   "#救主"
+  ],
+  "text": "你在替补席坐了三个月。今天教练说：你上。",
+  "once": true,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "选你最熟的那个英雄",
+    "risk": "roll",
+    "attrs": [
+     "operation",
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": 0.1,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "operation": 2
+     },
+     "coachTrust": 5
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你选完英雄抬头，教练冲你点了一下头。",
+    "failText": "你三个月没碰它，第一波补刀就漏了两个。"
+   },
+   {
+    "label": "听教练的阵容",
+    "risk": "roll",
+    "attrs": [
+     "teamfight",
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 8
+    },
+    "fail": {
+     "coachTrust": -2
+    },
+    "successText": "你选了教练要的那个，虽然你三个月没碰过它。",
+    "failText": "那个英雄你只打过三把，连招都记不全。"
+   }
+  ]
+ },
+ {
+  "id": "M05",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#BP",
+   "#泄密"
+  ],
+  "text": "直播时你随口说了训练赛的 BP。二十分钟后，对面教练看完了。",
+  "once": true,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "立刻删回放",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -8
+    },
+    "successText": "你把回放删了。第二天，还是有人在群里发了截图。",
+    "failText": "回放删了，截图还在，对面教练已经保存了。"
+   },
+   {
+    "label": "主动跟队里认错",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "operation": 2
+     },
+     "coachTrust": -3,
+     "flag": "#道过歉"
+    },
+    "fail": null,
+    "successText": "你在训练室里站起来，把话说完，没人接。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "M06",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#失误",
+   "#下路"
+  ],
+  "text": "你的韦鲁斯压到塔前，Q 朝着自家方向飞了出去。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "硬说这是压位置",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "laning"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "operation": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -3
+    },
+    "successText": "你说这是试探，语音里没人接话。",
+    "failText": "语音里有人笑了一声，教练没说话。"
+   },
+   {
+    "label": "笑着说手滑",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "popularity": 1,
+      "operation": 2
+     },
+     "flag": "#认过失误"
+    },
+    "fail": null,
+    "successText": "你说手滑了，弹幕开始刷同一句话。",
+    "failText": null
+   },
+   {
+    "label": "骂自己一句，接着打",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1,
+      "operation": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": null,
+    "successText": "你骂了一句自己，下一波兵线还是你的。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "M07",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#BP",
+   "#选择"
+  ],
+  "text": "对面那个英雄连赢五把。教练问你要不要 ban，你说不用。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "不 ban，我来打",
+    "risk": "roll",
+    "attrs": [
+     "laning",
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": 0.1,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "operation": 2
+     },
+     "coachTrust": 5,
+     "flag": "#赌过BP"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1,
+      "popularity": -1
+     },
+     "flag": "#赌过BP"
+    },
+    "successText": "你点下那个英雄的时候，教练把本子合上了。",
+    "failText": "他第六把还是赢了，你的 ID 出现在集锦里。"
+   },
+   {
+    "label": "听教练的，ban 掉",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 2
+    },
+    "fail": null,
+    "successText": "你说随你，教练点头，那个英雄从列表里消失。",
+    "failText": null
+   },
+   {
+    "label": "先问一句队友",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": 0.05,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你问了一句，五个人第一次在同一秒说话。",
+    "failText": "没人回答，BP 时间到了。"
+   }
+  ]
+ },
+ {
+  "id": "M08",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#情绪",
+   "#观众"
+  ],
+  "text": "你推掉对面高地，站在泉水门口亮了队标。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "亮完就走",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "mentality": 1,
+      "operation": 2
+     },
+     "flag": "#亮过队标"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -3
+    },
+    "successText": "你亮完就往回走，对面五个人的走位全乱了。",
+    "failText": "你回头的时候，对面辅助已经贴上来了。"
+   },
+   {
+    "label": "不亮，直接推",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你走过去，把回城按在了塔后面。",
+    "failText": null
+   },
+   {
+    "label": "亮完再打字",
+    "risk": "fail",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": null,
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -5,
+     "flag": "#被警告"
+    },
+    "successText": null,
+    "failText": "你打完才发现，裁判已经在看你。"
+   }
+  ]
+ },
+ {
+  "id": "M09",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#团战",
+   "#操作"
+  ],
+  "text": "四包二，你没路可走，在塔边多绕了半圈。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "绕到底，赌他们手抖",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "flag": "#塔下逃生"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你绕到第三圈，对面两个人的技能全空了。",
+    "failText": "绕到第三圈的时候，他们没抖。"
+   },
+   {
+    "label": "直接交闪",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你把闪现按掉，从塔后墙边溜了出去。",
+    "failText": null
+   },
+   {
+    "label": "站桩输出换人",
+    "risk": "roll",
+    "attrs": [
+     "operation",
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": 0.05,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你没跑，把技能全砸在最近的那个人身上。",
+    "failText": "你的伤害全砸在辅助身上，他还有半管血。"
+   }
+  ]
+ },
+ {
+  "id": "L01",
+  "kind": "life",
+  "phase": "growth",
+  "tags": [
+   "#试训",
+   "#生活",
+   "#五十块"
+  ],
+  "text": "试训临时取消。教练转来五十块，备注写着「车费」。",
+  "once": true,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "收下，把 ID 改成五十块",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "flag": "#五十块"
+    },
+    "fail": null,
+    "successText": "你把 ID 改成了「五十块」，第二天论坛上全是这个号。",
+    "failText": null
+   },
+   {
+    "label": "退回去",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你把五十块退回去了，备注写：等我真上了再说。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L02",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#直播",
+   "#弹幕",
+   "#嘴碎"
+  ],
+  "text": "弹幕说你刚才那一下，像在给防御塔做广告。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "笑一下，继续播",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     }
+    },
+    "fail": null,
+    "successText": "你笑了一声，把这句念了出来。",
+    "failText": null
+   },
+   {
+    "label": "回怼",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 3
+     },
+     "coachTrust": -2,
+     "flag": "#嘴碎"
+    },
+    "fail": null,
+    "successText": "你回了一句，弹幕安静了两秒，然后刷得更凶。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L03",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#采访",
+   "#圣经"
+  ],
+  "text": "赛后采访，记者问你能做到这一步是因为什么。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "说点狠话",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 4
+     },
+     "flag": "#圣经"
+    },
+    "fail": null,
+    "successText": "你说完那句话，第二天它被剪成了十五秒的短视频。",
+    "failText": null
+   },
+   {
+    "label": "把功劳给队友",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 4
+    },
+    "fail": null,
+    "successText": "你说这是五个人的事，摄像机关掉之后教练拍了拍你。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L04",
+  "kind": "life",
+  "phase": "growth",
+  "tags": [
+   "#ID",
+   "#论坛",
+   "#人气低"
+  ],
+  "text": "你把 ID 改成了「五十块」。有人截图发到了论坛上。",
+  "once": true,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "就这样挂着",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     }
+    },
+    "fail": null,
+    "successText": "这个 ID 你挂了半年，后来连解说都这么叫你。",
+    "failText": null
+   },
+   {
+    "label": "改回来",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你把 ID 改回去了，论坛上那条帖子三天就沉了。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L05",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#替补",
+   "#更衣室"
+  ],
+  "text": "你被换到替补席，队里没人告诉你为什么。",
+  "once": true,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "训练量翻倍",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 6,
+     "flag": "#坐过替补"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "injury": 1,
+     "flag": "#坐过替补"
+    },
+    "successText": "你把训练室的灯留到了凌晨三点，教练路过没说话。",
+    "failText": "你练到手腕发麻，教练还是没看你。"
+   },
+   {
+    "label": "找教练要个说法",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 4,
+     "flag": "#坐过替补"
+    },
+    "fail": {
+     "coachTrust": -6,
+     "flag": "#坐过替补"
+    },
+    "successText": "教练把本子合上，说：不是你的问题，是版本。",
+    "failText": "他说：这就是轮换。你听懂了。"
+   },
+   {
+    "label": "直播里抱怨",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 3
+     },
+     "coachTrust": -10,
+     "flag": "#嘴碎"
+    },
+    "fail": null,
+    "successText": "你在直播间说了两句，第二天全队都知道了。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L06",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#直播",
+   "#弹幕",
+   "#777"
+  ],
+  "text": "直播间里有人一直刷 777。你不知道该笑还是该生气。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "跟着刷",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "flag": "#想得开"
+    },
+    "fail": null,
+    "successText": "你在弹幕里刷了个 777，直播间笑成一片。",
+    "failText": null
+   },
+   {
+    "label": "装作没看见",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你继续打你的，弹幕刷了一会儿就散了。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L07",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#教练",
+   "#微博",
+   "#挽留"
+  ],
+  "text": "教练递了辞呈。微博上，队里没人说话。",
+  "once": true,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "在微博下回一句「等你回来」",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 10,
+     "flag": "#道过歉"
+    },
+    "fail": null,
+    "successText": "你只发了五个字，第二天他给你发了个笑脸。",
+    "failText": null
+   },
+   {
+    "label": "私信挽留",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 8
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "他回你：带完这一年再说。",
+    "failText": "他回了个「谢谢」，然后再没回。"
+   },
+   {
+    "label": "什么都不做",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": -2
+    },
+    "fail": null,
+    "successText": "你什么都没发。他走的那天，训练室很安静。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L08",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#赛前",
+   "#饮食",
+   "#状态"
+  ],
+  "text": "赛前那碗面很香。第四把，你的手开始抖。",
+  "once": true,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "硬扛",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": -8
+    },
+    "successText": "你把手伸到桌下抖了两下，又放回键盘上。",
+    "failText": "第四把结束，你的手已经握不住鼠标。"
+   },
+   {
+    "label": "叫医疗暂停",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": -2,
+     "flag": "#叫过暂停"
+    },
+    "fail": null,
+    "successText": "你起身的时候，教练的脸色已经变了。",
+    "failText": null
+   },
+   {
+    "label": "换替补上",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "stamina": 8,
+     "coachTrust": -5,
+     "flag": "#让过位置"
+    },
+    "fail": null,
+    "successText": "你举手示意换人，替补席上有人站了起来。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L09",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#生活",
+   "#伤病",
+   "#隐瞒"
+  ],
+  "text": "回基地的路上你跳过三级台阶，落地时脚腕响了一下。",
+  "once": false,
+  "weight": 2,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "忍着不说",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "injury": 1,
+     "flag": "#隐瞒伤病"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "injury": 2,
+     "flag": "#隐瞒伤病"
+    },
+    "successText": "你把鞋带系紧，走完了剩下那段路。",
+    "failText": "第二天脚腕肿了，队医说你不该走那段路。"
+   },
+   {
+    "label": "马上说",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "injury": 1,
+     "coachTrust": 2,
+     "stamina": -8
+    },
+    "fail": null,
+    "successText": "你说了。队医五分钟就到了。",
+    "failText": null
+   },
+   {
+    "label": "装没听见",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1
+     },
+     "injury": 2,
+     "flag": "#隐瞒伤病"
+    },
+    "fail": null,
+    "successText": "你继续走，脚腕每一下都在响。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L10",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#队内",
+   "#复盘",
+   "#氛围"
+  ],
+  "text": "复盘到一半，有人打断：先点菜吧。屋里没人反驳。",
+  "once": true,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "跟着点菜",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": -2
+    },
+    "fail": null,
+    "successText": "菜单传到你手里，你点了一道最贵的。",
+    "failText": null
+   },
+   {
+    "label": "说再讲十分钟",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": 5,
+     "flag": "#顶过会"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -1
+    },
+    "successText": "你把那段录像重新放了一遍，屋子安静了十分钟。",
+    "failText": "没人应你，十分钟后还是点了菜。"
+   },
+   {
+    "label": "什么也不说",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你把笔记本合上，等着散会。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "S02",
+  "kind": "special",
+  "phase": "peak",
+  "tags": [
+   "#S赛",
+   "#决赛",
+   "#特殊"
+  ],
+  "text": "赛前采访，记者问你和对面中单几几开。你说五五开。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "真五五开",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": 0.15,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2,
+      "popularity": -1
+     }
+    },
+    "successText": "你说五五开的时候，记者席上有人笑了一声。",
+    "failText": "你把这句话说出口，记者席安静了一下。"
+   },
+   {
+    "label": "改口说对面更强",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "popularity": -2
+     }
+    },
+    "fail": null,
+    "successText": "你说对面更强。这句话后来被做成了另一种视频。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "S03",
+  "kind": "special",
+  "phase": "growth",
+  "tags": [
+   "#特殊",
+   "#选择",
+   "#输赢"
+  ],
+  "text": "最后一场，赢了要碰强队。队长看着你，没说话。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "输得体面",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": -2
+     },
+     "flag": "#打假赛"
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     },
+     "coachTrust": -5,
+     "flag": "#打假赛"
+    },
+    "successText": "最后一波你没有交技能，观众席有人在笑。",
+    "failText": "观众席的掌声比赢的时候还响。"
+   },
+   {
+    "label": "正常打",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你把技能全交了，输赢交给对面。",
+    "failText": null
+   },
+   {
+    "label": "去问教练",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 5,
+     "flag": "#问过教练"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "教练看了你三秒，说：你想打就打。",
+    "failText": "他说「你自己决定」，然后就走了。"
+   }
+  ]
+ },
+ {
+  "id": "P01",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#数据",
+   "#人气"
+  ],
+  "text": "这一局结算出来，你的伤害条是队友的三倍。",
+  "once": false,
+  "weight": 2,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "截图发出去",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2,
+      "mentality": 1,
+      "operation": 2
+     },
+     "flag": "#晒过数据"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你把结算面板贴在超话里，半小时后上了热榜。",
+    "failText": "评论区第一条：赢了就你一个人？"
+   },
+   {
+    "label": "什么也不说",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你把面板关了，起身去接水。",
+    "failText": null
+   },
+   {
+    "label": "采访里提一嘴",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "operation": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "coachTrust": -2
+    },
+    "successText": "你说这局手很热，教练在旁边笑了一下。",
+    "failText": "教练在旁边咳了一声。"
+   }
+  ]
+ },
+ {
+  "id": "P02",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#失误",
+   "#数据"
+  ],
+  "text": "结算面板上，你的伤害只有两千二。队友先关了面板。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "说自己在做视野",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "你说了半分钟视野，教练把笔放下了。",
+    "failText": "教练把数据投影出来，视野得分也是全队最低。"
+   },
+   {
+    "label": "直接认",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "operation": 2
+     },
+     "flag": "#认过失误"
+    },
+    "fail": null,
+    "successText": "你说这局我打得烂，下一把。",
+    "failText": null
+   },
+   {
+    "label": "下一把还用这个英雄",
+    "risk": "roll",
+    "attrs": [
+     "operation",
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "operation": 2
+     },
+     "flag": "#硬着头皮"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "flag": "#硬着头皮"
+    },
+    "successText": "你点下同一个英雄，语音里没人反对。",
+    "failText": "下一把你还是两千三，队友没关面板。"
+   }
+  ]
+ },
+ {
+  "id": "P03",
+  "kind": "special",
+  "phase": "growth",
+  "tags": [
+   "#特殊",
+   "#直播",
+   "#口嗨"
+  ],
+  "text": "直播里你说这赛季打完就退役。弹幕全在截图。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "认下来",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "popularity": -2
+     },
+     "flag": "#说过退役"
+    },
+    "fail": null,
+    "successText": "你说行，那就这赛季。",
+    "failText": null
+   },
+   {
+    "label": "说直播里不算数",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1,
+      "mentality": -1
+     }
+    },
+    "successText": "你说那是对着镜头说的，作不得数。",
+    "failText": "弹幕说你「立牌坊」，剪好的视频已经发出去了。"
+   },
+   {
+    "label": "顺势聊下去",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "你聊了四十分钟退役以后干什么，人气一路涨。",
+    "failText": "你聊得太细，第二天俱乐部让你少说两句。"
+   }
+  ]
+ },
+ {
+  "id": "P04",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#采访",
+   "#自信",
+   "#人气"
+  ],
+  "text": "采访里你说：现在最稳的中单，除了他，就是我。",
+  "once": false,
+  "weight": 2,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "就这么说",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2,
+      "mentality": 1
+     },
+     "flag": "#放过话"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "你说完，弹幕开始刷那三个字。",
+    "failText": "那三个字刷了一整晚，第二天你上了热搜。"
+   },
+   {
+    "label": "补一句「他比我稳」",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     },
+     "coachTrust": 2
+    },
+    "fail": null,
+    "successText": "你把话绕回来，给了对面一个台阶。",
+    "failText": null
+   },
+   {
+    "label": "不聊这个",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你说下一个问题。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "P05",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#直播",
+   "#观众",
+   "#脾气"
+  ],
+  "text": "你把一个刷屏的水友禁了言，还给他配了段唢呐。",
+  "once": false,
+  "weight": 2,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "把唢呐发出去",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "flag": "#整过活"
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -3
+    },
+    "successText": "你配完音点了发布，直播间笑成一片。",
+    "failText": "水友把唢呐剪成了循环，追着你播了一个月。"
+   },
+   {
+    "label": "只禁言，不发",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你点掉那个名字，接着打排位。",
+    "failText": null
+   },
+   {
+    "label": "反过来跟他聊",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你把那个人拉进语音，聊了十分钟。",
+    "failText": "他把你说的每句话都截了图。"
+   }
+  ]
+ },
+ {
+  "id": "P06",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#生活",
+   "#金钱",
+   "#心态"
+  ],
+  "text": "外卖少了一份。你对着电话讲了四十分钟。",
+  "once": false,
+  "weight": 2,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "讲到底",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": -8
+    },
+    "successText": "你把电话打到经理那里，终于补了一份。",
+    "failText": "电话打了四十分钟，外卖还是少一份，饭凉了。"
+   },
+   {
+    "label": "挂了，算了",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "fail": null,
+    "successText": "你挂了电话，把剩下的那份分成两半。",
+    "failText": null
+   },
+   {
+    "label": "叫队友一起吃",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "money": -100,
+     "flag": "#请过客"
+    },
+    "fail": null,
+    "successText": "你把盒子推到桌子中间，五个人一起伸筷子。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "P07",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#心态",
+   "#口头禅"
+  ],
+  "text": "输了。麦克风里你说了一句：无所谓的，寄了。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "就这么说出口",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "popularity": 1,
+      "operation": 2
+     },
+     "flag": "#说过寄了"
+    },
+    "fail": {
+     "coachTrust": -3,
+     "flag": "#说过寄了"
+    },
+    "successText": "你说完这句，训练室安静了三秒。",
+    "failText": "这句话被剪进了赛后集锦，标题叫「寄了」。"
+   },
+   {
+    "label": "说下次再来",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 1
+    },
+    "fail": null,
+    "successText": "你说下一把当第一把打。",
+    "failText": null
+   },
+   {
+    "label": "一句话不说",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1,
+      "operation": 2
+     }
+    },
+    "fail": null,
+    "successText": "你把耳机摘下来，盯着桌面看了很久。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "P09",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#采访",
+   "#风格",
+   "#教练"
+  ],
+  "text": "采访里你说：我是队里劝大家先发育的那个人。",
+  "once": false,
+  "weight": 2,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "就是这么想的",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 2,
+     "flag": "#承认发育"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -3
+    },
+    "successText": "你说完，教练把战术板翻到了第一页。",
+    "failText": "教练说：那你以后就别打了。"
+   },
+   {
+    "label": "改口说看局势",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你说看局势，该打就打。",
+    "failText": null
+   },
+   {
+    "label": "补一句「能打我就打」",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你补的那句被单独剪了出来。",
+    "failText": "这句没被剪，前面那句被剪了。"
+   }
+  ]
+ },
+ {
+  "id": "P10",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#单杀",
+   "#采访"
+  ],
+  "text": "你在上路单杀了对面。赛后采访问你当时在想什么。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "原话照说",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2,
+      "mentality": 1,
+      "operation": 2
+     },
+     "flag": "#说过大实话"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你说：他一直打我，我就把他杀了。",
+    "failText": "你也笑了一下，记者没接这个梗。"
+   },
+   {
+    "label": "说队友帮的",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 3
+    },
+    "fail": null,
+    "successText": "你说是打野先到的，我只是收尾。",
+    "failText": null
+   },
+   {
+    "label": "笑一下不回答",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你笑了一下，记者换了下一个问题。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "P11",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#顺手",
+   "#自嘲"
+  ],
+  "text": "你顺手点死了对面打野，然后继续补你的炮车。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "说就像补了个炮车",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2,
+      "operation": 2
+     },
+     "flag": "#说过大实话"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你说顺手，反正也要补炮车。",
+    "failText": "解说把这句话念了一遍，弹幕说你装。"
+   },
+   {
+    "label": "不提这回事",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {},
+    "fail": null,
+    "successText": "你没提，下一波兵线照常。",
+    "failText": null
+   },
+   {
+    "label": "回头去看录像",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 1
+     }
+    },
+    "fail": null,
+    "successText": "你把这两秒截了下来，存进文件夹。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "M10",
+  "kind": "match",
+  "phase": "growth",
+  "tags": [
+   "#比赛",
+   "#草丛",
+   "#开团"
+  ],
+  "text": "中路下河道那片草，对面三个人已经蹲了半分钟。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "闪现先手开团",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": 0.1,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "operation": 3,
+      "teamfight": 2
+     },
+     "coachTrust": 4
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     },
+     "coachTrust": -4
+    },
+    "successText": "你进场的一瞬间，对面五个人全乱了。",
+    "failText": "你进场的一瞬间，队友还在赶来的路上。"
+   },
+   {
+    "label": "等队友先落位",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     }
+    },
+    "successText": "你多等了那两秒，团战变成了四打五。",
+    "failText": "你等的那两秒，对面已经把你家 AD 秒了。"
+   },
+   {
+    "label": "绕后包抄",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "laning": 2,
+      "awareness": 2
+     }
+    },
+    "fail": {
+     "stamina": -6,
+     "coachTrust": -2
+    },
+    "successText": "你从他们家野区绕出来，正面正好打起来。",
+    "failText": "你绕了半张地图，回来的时候团已经打完了。"
+   }
+  ]
+ },
+ {
+  "id": "M11",
+  "kind": "match",
+  "phase": "peak",
+  "tags": [
+   "#比赛",
+   "#大龙",
+   "#惩戒"
+  ],
+  "text": "大龙还剩一格血，你的惩戒和对面打野同时按下。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "拼这一手惩戒",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": 0.05,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 6
+    },
+    "fail": {
+     "coachTrust": -6,
+     "flag": "#丢龙"
+    },
+    "successText": "大龙是你的。语音里有人喊了一声「卧槽」。",
+    "failText": "惩戒落下去，龙坑里安静得只剩对面的笑声。"
+   },
+   {
+    "label": "停手先杀人",
+    "risk": "roll",
+    "attrs": [
+     "teamfight",
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 3
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -4
+    },
+    "successText": "你们放掉大龙，把对面五个人按在龙坑里。",
+    "failText": "人没杀完，龙也没了。"
+   },
+   {
+    "label": "拉脱重来",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": -2,
+      "operation": 2
+     },
+     "stamina": -4
+    },
+    "fail": null,
+    "successText": "你们把龙拉了出来，代价是这波节奏全没了。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "M12",
+  "kind": "match",
+  "phase": "decline",
+  "tags": [
+   "#比赛",
+   "#反应",
+   "#下路"
+  ],
+  "text": "对面中单从侧翼切进来，你的手比脑子慢了半拍。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "交闪拉开",
+    "risk": "roll",
+    "attrs": [
+     "operation"
+    ],
+    "mix": null,
+    "bonus": -0.1,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "operation": 2
+     }
+    },
+    "fail": {
+     "injury": 1,
+     "coachTrust": -3
+    },
+    "successText": "闪现交出去，你才发现自己手心全是汗。",
+    "failText": "闪现按出来的时候，人已经倒了。"
+   },
+   {
+    "label": "硬拼到底",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -5
+    },
+    "successText": "你站着把他换了，解说喊了你的 ID。",
+    "failText": "你倒下的位置，正好是镜头正中央。"
+   },
+   {
+    "label": "交给队友",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "stamina": -4,
+     "coachTrust": -2
+    },
+    "fail": null,
+    "successText": "你往后撤了半步，这波交给年轻人。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "M13",
+  "kind": "match",
+  "phase": "any",
+  "tags": [
+   "#比赛",
+   "#暂停",
+   "#节奏"
+  ],
+  "text": "打到一半对面叫了暂停，回来之后节奏全变了。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "趁暂停调整",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你把对面的习惯在纸上画了三笔，回来就应验了。",
+    "failText": "你想了二十秒，越想越乱。"
+   },
+   {
+    "label": "回来接着压",
+    "risk": "roll",
+    "attrs": [
+     "laning"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "laning": 2
+     }
+    },
+    "fail": {
+     "coachTrust": -3,
+     "stamina": -4
+    },
+    "successText": "你上来就抓了一波，节奏还在你手里。",
+    "failText": "你压得太深，被对面反抓了一波。"
+   },
+   {
+    "label": "找裁判抗议",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "operation": 2
+     },
+     "coachTrust": -2
+    },
+    "fail": null,
+    "successText": "裁判说会记录，但比赛还得接着打。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L11",
+  "kind": "life",
+  "phase": "growth",
+  "tags": [
+   "#网吧赛",
+   "#奖金",
+   "#通宵"
+  ],
+  "text": "网吧赛冠军奖金两万块，队友问你去不去。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "去，通宵打",
+    "risk": "roll",
+    "attrs": [
+     "operation"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "operation": 1
+     },
+     "money": 400,
+     "flag": "#路人王"
+    },
+    "fail": {
+     "stamina": -8,
+     "injury": 1
+    },
+    "successText": "两万块分下来，你那份够吃一个月泡面。",
+    "failText": "打到凌晨四点，你在网吧沙发上睡到了中午。"
+   },
+   {
+    "label": "不去，留下训练",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "operation": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": null,
+    "successText": "空荡荡的训练室里，只有你的键盘在响。",
+    "failText": null
+   },
+   {
+    "label": "拉上二队一起",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 2
+     },
+     "money": 200
+    },
+    "fail": {
+     "money": -200,
+     "coachTrust": -2
+    },
+    "successText": "二队那几个人比你还想赢。",
+    "failText": "报名费你垫的，第一轮就输了。"
+   }
+  ]
+ },
+ {
+  "id": "L12",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#夺冠",
+   "#客场",
+   "#采访"
+  ],
+  "text": "客场夺冠，全场安静得像图书馆。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "举奖杯绕场",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 3
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -3
+    },
+    "successText": "你把奖杯举过头顶，嘘声比掌声还响。",
+    "failText": "你绕到一半，工作人员示意你回台上。"
+   },
+   {
+    "label": "鞠一躬就下台",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     },
+     "coachTrust": 2
+    },
+    "fail": null,
+    "successText": "你鞠完躬就走，后来这段被剪进了纪录片。",
+    "failText": null
+   },
+   {
+    "label": "拿起话筒说话",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": 0.1,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 4
+     },
+     "flag": "#金句"
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     },
+     "coachTrust": -2
+    },
+    "successText": "你说了一句话，第二天上了三个热搜。",
+    "failText": "话筒递到你手里，你脑子一片空白。"
+   }
+  ]
+ },
+ {
+  "id": "L14",
+  "kind": "life",
+  "phase": "decline",
+  "tags": [
+   "#直播",
+   "#弹幕",
+   "#退役"
+  ],
+  "text": "直播间掉到三位数，弹幕问你什么时候退役。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "认真回答",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "popularity": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     }
+    },
+    "successText": "你说还没想好，弹幕忽然安静了一会儿。",
+    "failText": "你说了很多，弹幕只记住了「还没想好」。"
+   },
+   {
+    "label": "装没看见",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": -1,
+      "awareness": 1
+     }
+    },
+    "fail": null,
+    "successText": "你把那条弹幕划了过去，继续打排位。",
+    "failText": null
+   },
+   {
+    "label": "拿梗自嘲",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     }
+    },
+    "successText": "你把「退役」两个字做成了表情包，直播间笑成一片。",
+    "failText": "梗没响，弹幕开始刷「尴尬」。"
+   }
+  ]
+ },
+ {
+  "id": "L15",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#外卖",
+   "#赛前",
+   "#辣"
+  ],
+  "text": "赛前外卖点错，送到的是重辣。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "硬吃",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "operation": -2
+     },
+     "stamina": -8
+    },
+    "successText": "你一边吃一边喝水，队友在旁边笑。",
+    "failText": "比赛打到第二局，你跑了三趟厕所。"
+   },
+   {
+    "label": "不吃，饿着",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "stamina": -4
+    },
+    "fail": null,
+    "successText": "你饿着肚子打完，手倒是一直很稳。",
+    "failText": null
+   },
+   {
+    "label": "分给队友",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "五个人分一盒辣子鸡，辣得都说不出话。",
+    "failText": "第二天有两个人嗓子哑了，教练问是谁点的。"
+   }
+  ]
+ },
+ {
+  "id": "L16",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#粉丝",
+   "#手写信",
+   "#应援"
+  ],
+  "text": "粉丝寄来一箱东西，最上面是一封手写信。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "读完回信",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2,
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你回了半页纸，后来那封信被她裱了起来。",
+    "failText": null
+   },
+   {
+    "label": "拍照发微博",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 3
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     }
+    },
+    "successText": "那条微博的评论里，全是「他真的会看」。",
+    "failText": "有人扒出你连信都没拆。"
+   },
+   {
+    "label": "交给俱乐部",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": 2
+    },
+    "fail": null,
+    "successText": "俱乐部统一登记，箱子被放进了储藏室。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "S04",
+  "kind": "special",
+  "phase": "growth",
+  "tags": [
+   "#青训",
+   "#淘汰",
+   "#加练"
+  ],
+  "text": "青训营开会，教练说这一批只留三个。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "加练到凌晨",
+    "risk": "roll",
+    "attrs": [
+     "operation"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "operation": 3
+     },
+     "coachTrust": 5
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "injury": 1
+    },
+    "successText": "你走的时候，训练室的灯还亮着，教练在门口等你。",
+    "failText": "你在椅子上睡着了，醒来时名单已经贴出来。"
+   },
+   {
+    "label": "找教练问差距",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "教练在白板上写了三行字，你抄了下来。",
+    "failText": "教练说「你自己想」，然后走了。"
+   },
+   {
+    "label": "拉着队友加练",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 2
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "stamina": -6,
+     "coachTrust": -1
+    },
+    "successText": "你们四个人练到保洁来赶人。",
+    "failText": "练到一半有人先走了，剩下的人也没了心思。"
+   }
+  ]
+ },
+ {
+  "id": "S05",
+  "kind": "special",
+  "phase": "peak",
+  "tags": [
+   "#全明星",
+   "#投票",
+   "#人气"
+  ],
+  "text": "全明星投票最后一天，你排在第五。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "发博拉票",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 4
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     }
+    },
+    "successText": "你那条微博被转了两万次，最后一天反超了。",
+    "failText": "评论区有人说「拉票拉到这个份上」。"
+   },
+   {
+    "label": "顺其自然",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你没发任何东西，名单出来的时候你在第五。",
+    "failText": null
+   },
+   {
+    "label": "自嘲一波",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "flag": "#自嘲"
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     }
+    },
+    "successText": "你发了张自己第五的截图，配文「重在参与」。",
+    "failText": "你觉得好笑，别人觉得你在阴阳。"
+   }
+  ]
+ },
+ {
+  "id": "M14",
+  "kind": "match",
+  "phase": "growth",
+  "tags": [
+   "#比赛",
+   "#一级团",
+   "#越塔"
+  ],
+  "text": "一级团三换零，对面打野还在自家野区。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "越塔继续扩大",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "laning": 3,
+      "teamfight": 2
+     },
+     "coachTrust": 4
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     },
+     "coachTrust": -4
+    },
+    "successText": "你们把对面的下路越到二塔，观众站起来了一半。",
+    "failText": "抗塔抗多了，三个人整整齐齐地倒在塔下。"
+   },
+   {
+    "label": "回城整补",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "stamina": 2
+    },
+    "fail": null,
+    "successText": "你们回城换完装备，经济差已经拉开了。",
+    "failText": null
+   },
+   {
+    "label": "抢对面河蟹",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "money": 100
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": -4
+    },
+    "successText": "河蟹被你们吃下，对面打野白跑一趟。",
+    "failText": "河蟹没抢到，还多绕了半张地图。"
+   }
+  ]
+ },
+ {
+  "id": "M15",
+  "kind": "match",
+  "phase": "peak",
+  "tags": [
+   "#比赛",
+   "#BP",
+   "#绝活"
+  ],
+  "text": "BP 最后一手，教练问你想要什么。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "拿自己的绝活",
+    "risk": "roll",
+    "attrs": [
+     "operation"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "operation": 5
+     },
+     "flag": "#绝活"
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     },
+     "coachTrust": -4
+    },
+    "successText": "你锁下那个英雄，场馆里的声音突然大了一截。",
+    "failText": "绝活被对面三手针对，你整局没找到输出位置。"
+   },
+   {
+    "label": "拿版本答案",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 4
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     }
+    },
+    "successText": "版本英雄拿到手，对线期就压了二十刀。",
+    "failText": "版本英雄谁都会玩，你玩得并不比对面好。"
+   },
+   {
+    "label": "让教练定",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "operation": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": null,
+    "successText": "教练指了个英雄，你什么都没问就锁了。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "M16",
+  "kind": "match",
+  "phase": "peak",
+  "tags": [
+   "#比赛",
+   "#偷家",
+   "#大龙"
+  ],
+  "text": "对面五个人在打大龙，你带着兵线摸到了他们家高地。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "一路偷到底",
+    "risk": "roll",
+    "attrs": [
+     "awareness",
+     "operation"
+    ],
+    "mix": null,
+    "bonus": 0.05,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 3,
+      "popularity": 3
+     },
+     "coachTrust": 5,
+     "flag": "#偷家"
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     },
+     "coachTrust": -7
+    },
+    "successText": "水晶炸开的时候，龙坑里的人还没反应过来。",
+    "failText": "差两下平A，你被回防的人按死在水晶前。"
+   },
+   {
+    "label": "回防龙坑",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 2,
+      "awareness": 2
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "coachTrust": -3,
+     "stamina": -6
+    },
+    "successText": "你赶到的时候，龙刚好打完，团刚好打赢。",
+    "failText": "你跑回龙坑，正面已经没人站着了。"
+   },
+   {
+    "label": "让队友拖住",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -4
+    },
+    "successText": "语音里四个人跟你喊「拆」，没人后退。",
+    "failText": "队友没拖住，你也没拆完。"
+   }
+  ]
+ },
+ {
+  "id": "M17",
+  "kind": "match",
+  "phase": "decline",
+  "tags": [
+   "#比赛",
+   "#单杀",
+   "#新人"
+  ],
+  "text": "训练赛里，二队中单连着单杀你三次。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "加练对线",
+    "risk": "roll",
+    "attrs": [
+     "laning"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "laning": 3
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     },
+     "stamina": -6
+    },
+    "successText": "你把他拉进自定义，打了四十把。",
+    "failText": "练到第五把，你发现自己是真的跟不上了。"
+   },
+   {
+    "label": "认了，改打法",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 3
+     },
+     "coachTrust": 2
+    },
+    "fail": null,
+    "successText": "你不再跟他对线，改去带节奏。",
+    "failText": null
+   },
+   {
+    "label": "找教练换线",
+    "risk": "roll",
+    "attrs": [
+     "laning"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2,
+      "laning": 2
+     },
+     "coachTrust": 1
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -3
+    },
+    "successText": "教练把你换去上路，对线压力小了一半。",
+    "failText": "教练说「你躲一次，下次呢」。"
+   }
+  ]
+ },
+ {
+  "id": "L18",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#商务",
+   "#代言",
+   "#广告"
+  ],
+  "text": "有个牌子想找你拍广告，产品你自己没用过。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "接，钱不少",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "money": 800
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     },
+     "coachTrust": -2
+    },
+    "successText": "广告上线那天，评论区全在问链接。",
+    "failText": "产品翻车了，你的脸跟着一起上了热搜。"
+   },
+   {
+    "label": "拒了",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": 2
+    },
+    "fail": null,
+    "successText": "你把合同推回去，经理叹了口气。",
+    "failText": null
+   },
+   {
+    "label": "谈条件",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     },
+     "money": 400
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "你要求先用三个月，品牌方居然同意了。",
+    "failText": "品牌方转头找了别人，还发了条阴阳的微博。"
+   }
+  ]
+ },
+ {
+  "id": "L19",
+  "kind": "life",
+  "phase": "decline",
+  "tags": [
+   "#伤病",
+   "#手腕",
+   "#封闭"
+  ],
+  "text": "手腕的旧伤在阴天又开始疼。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "打封闭上场",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": 4,
+     "flag": "#手腕不适"
+    },
+    "fail": {
+     "attrs": {
+      "operation": -3
+     },
+     "injury": 1,
+     "flag": "#手腕不适"
+    },
+    "successText": "针打完，你活动了一下手腕，还能握鼠标。",
+    "failText": "第三局打到一半，你的手指开始发麻。"
+   },
+   {
+    "label": "休息两周",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": 10
+    },
+    "fail": null,
+    "successText": "你缺席了两场比赛，回来时手腕不疼了。",
+    "failText": null
+   },
+   {
+    "label": "瞒着不说",
+    "risk": "roll",
+    "attrs": [
+     "operation"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "operation": 1
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "injury": 2,
+     "coachTrust": -3
+    },
+    "successText": "你咬着牙打完，没人看出来。",
+    "failText": "你在训练室握不住鼠标，被队医看见了。"
+   }
+  ]
+ },
+ {
+  "id": "L21",
+  "kind": "life",
+  "phase": "decline",
+  "tags": [
+   "#直播",
+   "#合同",
+   "#平台"
+  ],
+  "text": "直播合同到期，平台给的价格砍了一半。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "签了再说",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1
+     },
+     "money": 400
+    },
+    "fail": null,
+    "successText": "你签完字，直播时间从每周三次改成每天。",
+    "failText": null
+   },
+   {
+    "label": "换平台试试",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "money": 800
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     },
+     "money": -200
+    },
+    "successText": "新平台给了首页推荐，人气涨了一截。",
+    "failText": "新平台没人看，你连麦都没人接。"
+   },
+   {
+    "label": "不播了",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": -3,
+      "mentality": 1
+     },
+     "stamina": 8
+    },
+    "fail": null,
+    "successText": "你把直播软件卸了，晚上十点就睡了。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L22",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#超话",
+   "#粉丝",
+   "#失误"
+  ],
+  "text": "超话里有人剪了你这个赛季所有的失误。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "从头看完",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     }
+    },
+    "successText": "你看到最后发现，有一半失误其实是队友没跟上。",
+    "failText": "你看到凌晨三点，越看越觉得自己该退役了。"
+   },
+   {
+    "label": "举报了事",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "视频下架了，转发已经收不回来。",
+    "failText": null
+   },
+   {
+    "label": "转发自嘲",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     }
+    },
+    "successText": "你转了那条视频，配文「剪得比我打得好」。",
+    "failText": "转发之后，评论区开始逐帧分析你的操作。"
+   }
+  ]
+ },
+ {
+  "id": "S06",
+  "kind": "special",
+  "phase": "growth",
+  "tags": [
+   "#城市赛",
+   "#商场",
+   "#决赛"
+  ],
+  "text": "城市赛决赛在商场中庭，台下只站了三十个人。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "当成正赛打",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "operation"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 2
+     },
+     "coachTrust": 4
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -1
+    },
+    "successText": "你把每一波都打得很认真，对面开始急了。",
+    "failText": "你越认真越紧，第一局被打了个零龙塔。"
+   },
+   {
+    "label": "拉人来看",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     }
+    },
+    "successText": "你发了条朋友圈，来了七八个同学。",
+    "failText": "你发了三条，来的人还是只有那几个。"
+   },
+   {
+    "label": "先适应场地",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "stamina": 2
+    },
+    "fail": null,
+    "successText": "你在台上走了两圈，找好了显示器的角度。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "S07",
+  "kind": "special",
+  "phase": "peak",
+  "tags": [
+   "#全家福",
+   "#队内地位",
+   "#合影"
+  ],
+  "text": "俱乐部拍全家福，你被安排站在最边上。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "笑着站过去",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": 3
+    },
+    "fail": null,
+    "successText": "照片发出来，评论区有人问最边上那个是谁。",
+    "failText": null
+   },
+   {
+    "label": "找教练换位置",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -3
+    },
+    "successText": "教练把你拉到中间，说「你站这」。",
+    "failText": "教练说「站哪不一样」，转身走了。"
+   },
+   {
+    "label": "自己拍一张",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -1
+    },
+    "successText": "你发了张自拍，配文「最边上那个」。",
+    "failText": "照片被解读成队内不和，公关找你谈话。"
+   }
+  ]
+ },
+ {
+  "id": "M18",
+  "kind": "match",
+  "phase": "growth",
+  "tags": [
+   "#比赛",
+   "#反蹲",
+   "#野区"
+  ],
+  "text": "对面打野在河道蹲了整整一分钟，什么都没蹲到。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "反蹲他一波",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 4
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": -4
+    },
+    "successText": "你们在草里等了二十秒，等来了他自己。",
+    "failText": "你们蹲了个空，对面趁机把下路越了。"
+   },
+   {
+    "label": "趁机压线",
+    "risk": "roll",
+    "attrs": [
+     "laning"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "laning": 3
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "你把兵线推进塔，他回来时已经少了半管经验。",
+    "failText": "你压得太靠前，被中单和打野一起抓了。"
+   },
+   {
+    "label": "换他的野区",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "money": 100
+    },
+    "fail": {
+     "stamina": -4
+    },
+    "successText": "你们吃了他两组野，他回来只看到空营地。",
+    "failText": "你绕进去的时候，他刚好在红 buff 那里。"
+   }
+  ]
+ },
+ {
+  "id": "M19",
+  "kind": "match",
+  "phase": "peak",
+  "tags": [
+   "#比赛",
+   "#决胜局",
+   "#让二追三"
+  ],
+  "text": "0:2 落后，第三局 BP 前，休息室里没人说话。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "先开口说两句",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 2,
+      "operation": 2
+     },
+     "coachTrust": 5,
+     "flag": "#让二追三"
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     }
+    },
+    "successText": "你说「输两把而已」，然后第一个站起来。",
+    "failText": "你说完，房间里更安静了。"
+   },
+   {
+    "label": "换一套打法",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 3
+     },
+     "coachTrust": 3,
+     "flag": "#让二追三"
+    },
+    "fail": {
+     "coachTrust": -4
+    },
+    "successText": "你们把前两把的东西全推翻，第三局像换了支队。",
+    "failText": "新打法练得太少，第三局十分钟就崩了。"
+   },
+   {
+    "label": "什么都不说",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "operation": 2
+     },
+     "stamina": 4
+    },
+    "fail": null,
+    "successText": "你们就这么走上台，谁也没看谁。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "M20",
+  "kind": "match",
+  "phase": "peak",
+  "tags": [
+   "#比赛",
+   "#公屏",
+   "#嘲讽"
+  ],
+  "text": "对面中单在公屏打字：这把让你们。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "公屏回怼",
+    "risk": "roll",
+    "attrs": [
+     "mentality",
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2,
+      "operation": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     },
+     "coachTrust": -3
+    },
+    "successText": "你回了一句，弹幕刷了一整屏。",
+    "failText": "你回完那句话，手就开始抖了。"
+   },
+   {
+    "label": "当没看见",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 1
+     }
+    },
+    "fail": null,
+    "successText": "你把聊天框关了，专心补刀。",
+    "failText": null
+   },
+   {
+    "label": "截图举报",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "operation": 2
+     },
+     "coachTrust": 1
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     }
+    },
+    "successText": "裁判给了他一个警告，他后面安静了很多。",
+    "failText": "裁判说「比赛内不算违规」，弹幕笑你输不起。"
+   }
+  ]
+ },
+ {
+  "id": "M21",
+  "kind": "match",
+  "phase": "decline",
+  "tags": [
+   "#比赛",
+   "#上路",
+   "#新人"
+  ],
+  "text": "你被换到上路，对面是个十八岁的新人。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "稳住补刀",
+    "risk": "roll",
+    "attrs": [
+     "laning"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "laning": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你一刀没漏，他急了，先交的闪。",
+    "failText": "你被压了三十刀，塔皮也掉了一层。"
+   },
+   {
+    "label": "叫打野来抓",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 2,
+      "awareness": 2
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "coachTrust": -3,
+     "stamina": -4
+    },
+    "successText": "打野来了两次，第二次把他抓死了。",
+    "failText": "打野来了，被反蹲了，两个人都没回去。"
+   },
+   {
+    "label": "跟他换血",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": -0.1,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -5
+    },
+    "successText": "你对拼赢了一波，解说喊了你的 ID。",
+    "failText": "他比你快，也比你敢。"
+   }
+  ]
+ },
+ {
+  "id": "L24",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#庆功宴",
+   "#老板",
+   "#酒"
+  ],
+  "text": "庆功宴上，老板端着酒杯走过来。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "干了这杯",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "operation": -2
+     },
+     "stamina": -8
+    },
+    "successText": "你一口喝完，老板拍着你的肩说了很多。",
+    "failText": "第二天训练赛，你的手还是抖的。"
+   },
+   {
+    "label": "以茶代酒",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -3
+    },
+    "successText": "你端起茶杯，老板愣了一下，笑了。",
+    "failText": "桌上安静了两秒，有人出来打圆场。"
+   },
+   {
+    "label": "先敬教练",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     },
+     "coachTrust": 5
+    },
+    "fail": null,
+    "successText": "你把杯子先递给了教练，他喝得很痛快。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L25",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#家人",
+   "#现场",
+   "#第一次"
+  ],
+  "text": "家里人第一次来现场看你的比赛。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "赛前去见他们",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你妈说「别紧张」，你差点笑出来。",
+    "failText": "你爸问「这能当饭吃吗」，你没接话。"
+   },
+   {
+    "label": "打完再说",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 1
+    },
+    "fail": null,
+    "successText": "你把注意力全放在比赛上，赢了才过去。",
+    "failText": null
+   },
+   {
+    "label": "带他们看训练室",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "你妈在训练室里拍了二十张照片。",
+    "failText": "经理说训练室不能带家属，你只好把他们送走。"
+   }
+  ]
+ },
+ {
+  "id": "L26",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#队友",
+   "#群聊",
+   "#黑历史"
+  ],
+  "text": "队友在群里发了你的黑历史视频。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "跟着一起笑",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": 1
+    },
+    "fail": null,
+    "successText": "你在群里回了个表情包，气氛一下松了。",
+    "failText": null
+   },
+   {
+    "label": "让他删了",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": 1
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "他删了，还私聊跟你道了个歉。",
+    "failText": "他说「至于吗」，群里安静了很久。"
+   },
+   {
+    "label": "发个更黑的",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     }
+    },
+    "successText": "你发了自己更早的视频，群里笑疯了。",
+    "failText": "没人接你的梗，你只好自己撤回。"
+   }
+  ]
+ },
+ {
+  "id": "L28",
+  "kind": "life",
+  "phase": "decline",
+  "tags": [
+   "#退役仪式",
+   "#彩排",
+   "#ID"
+  ],
+  "text": "退役仪式彩排，主持人念错了你的 ID。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "当场纠正",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "coachTrust": 1
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "你笑着纠正了两遍，主持人和你一起笑了。",
+    "failText": "你纠正得太认真，场面有点僵。"
+   },
+   {
+    "label": "算了",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你想了想，反正也就念这一次。",
+    "failText": null
+   },
+   {
+    "label": "自己改稿",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "coachTrust": -2
+    },
+    "successText": "你把稿子重写了一遍，加了两句自己的话。",
+    "failText": "稿子被退了回来，说流程不能改。"
+   }
+  ]
+ },
+ {
+  "id": "S08",
+  "kind": "special",
+  "phase": "growth",
+  "tags": [
+   "#私信",
+   "#青训",
+   "#粉丝"
+  ],
+  "text": "你收到一条私信：我能打职业吗？",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "认真回他",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "popularity": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你打了三百字，最后一句是「先读完高中」。",
+    "failText": "你写完又删了，不知道该怎么劝一个你不认识的人。"
+   },
+   {
+    "label": "发个模板",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     }
+    },
+    "fail": null,
+    "successText": "你把俱乐部青训的报名链接发了过去。",
+    "failText": null
+   },
+   {
+    "label": "不回",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "stamina": 1
+    },
+    "fail": null,
+    "successText": "你划掉了那条私信，未读消息还有九千条。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "S09",
+  "kind": "special",
+  "phase": "peak",
+  "tags": [
+   "#决赛前夜",
+   "#失眠",
+   "#酒店"
+  ],
+  "text": "决赛前夜，你在酒店房间翻来覆去睡不着。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "起来看录像",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 3
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": -8
+    },
+    "successText": "你看到凌晨两点，把对面的眼位记了下来。",
+    "failText": "你看到天亮，第二天眼睛都是红的。"
+   },
+   {
+    "label": "下楼走走",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 2
+     },
+     "stamina": 2
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": -4
+    },
+    "successText": "你在酒店门口吹了半小时风，回来睡着了。",
+    "failText": "你走到便利店，买了瓶水，还是没困意。"
+   },
+   {
+    "label": "找教练聊",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": 4
+    },
+    "fail": null,
+    "successText": "教练说「你明天只管打」，然后替你关了灯。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "M22",
+  "kind": "match",
+  "phase": "peak",
+  "tags": [
+   "#比赛",
+   "#偷家",
+   "#针对"
+  ],
+  "text": "对面赛前采访说，专门研究过你的偷家。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "换个套路",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 3
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -3
+    },
+    "successText": "你整场没往他家走一步，他们白准备了。",
+    "failText": "新套路你们只练了两天，打得像四排路人。"
+   },
+   {
+    "label": "还偷给他看",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": -0.1,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     },
+     "coachTrust": -4
+    },
+    "successText": "你当着五个人的面又偷了一次，解说喊破了音。",
+    "failText": "他们五个人在等你，你连高地都没摸到。"
+   },
+   {
+    "label": "正面打团",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 3
+     }
+    },
+    "fail": {
+     "attrs": {
+      "teamfight": -2
+     },
+     "stamina": -4
+    },
+    "successText": "你第一次在正面团里打出最高伤害。",
+    "failText": "团战一开，你发现自己不知道站哪。"
+   }
+  ]
+ },
+ {
+  "id": "M23",
+  "kind": "match",
+  "phase": "peak",
+  "tags": [
+   "#比赛",
+   "#让二追三",
+   "#解说"
+  ],
+  "text": "解说在赛前又提起了那场让二追三。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "当动力",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 2,
+      "operation": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你把那段音频存进手机，赛前听了一遍。",
+    "failText": "你越想复制那场，手越僵。"
+   },
+   {
+    "label": "别多想",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     }
+    },
+    "fail": null,
+    "successText": "你关掉直播，只看了对面的 BP 习惯。",
+    "failText": null
+   },
+   {
+    "label": "主动聊两句",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2,
+      "operation": 2
+     },
+     "coachTrust": 1
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -2
+    },
+    "successText": "你说「那场是运气」，弹幕说你会说话。",
+    "failText": "你说了太多，教练在场边皱了下眉。"
+   }
+  ]
+ },
+ {
+  "id": "M24",
+  "kind": "match",
+  "phase": "growth",
+  "tags": [
+   "#比赛",
+   "#首发",
+   "#通道"
+  ],
+  "text": "第一次首发，你在选手通道里手心全是汗。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "深呼吸",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "operation": 2
+     },
+     "stamina": 2
+    },
+    "fail": null,
+    "successText": "你数到十，手不抖了。",
+    "failText": null
+   },
+   {
+    "label": "跟队友说话",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "operation": 2
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你拍了下打野的肩，他笑了一声。",
+    "failText": "你说了句什么，没人听清。"
+   },
+   {
+    "label": "戴上耳机",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你把注意力全放在第一波兵线上。",
+    "failText": "耳机里很吵，你一句都没听进去。"
+   }
+  ]
+ },
+ {
+  "id": "M25",
+  "kind": "match",
+  "phase": "decline",
+  "tags": [
+   "#比赛",
+   "#手速",
+   "#镜头"
+  ],
+  "text": "你的操作慢了半拍，导播还是把镜头给了你。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "先稳住",
+    "risk": "roll",
+    "attrs": [
+     "laning"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "laning": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "attrs": {
+      "laning": -2
+     }
+    },
+    "successText": "你把线控住，没再给对方机会。",
+    "failText": "你越想稳，刀越漏。"
+   },
+   {
+    "label": "拼一波",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": -0.15,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -4
+    },
+    "successText": "你按下了那个技能，弹幕刷了一屏。",
+    "failText": "技能空了，镜头在你脸上停了三秒。"
+   },
+   {
+    "label": "换线发育",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2,
+      "laning": 2
+     },
+     "stamina": 2
+    },
+    "fail": null,
+    "successText": "你去了下路，安稳补了十分钟刀。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L29",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#复盘",
+   "#丢龙",
+   "#教练"
+  ],
+  "text": "复盘会上，教练把丢龙那一帧暂停了。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "认下来",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": 4
+    },
+    "fail": null,
+    "successText": "你说「我的问题」，教练把画面点过去了。",
+    "failText": null
+   },
+   {
+    "label": "解释一下",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 3
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -4
+    },
+    "successText": "你把当时的视野和计算讲了一遍，教练听了。",
+    "failText": "你说得越多，越像在找理由。"
+   },
+   {
+    "label": "提出加练",
+    "risk": "roll",
+    "attrs": [
+     "operation"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "operation": 3
+     },
+     "stamina": -4
+    },
+    "fail": {
+     "stamina": -8,
+     "coachTrust": -2
+    },
+    "successText": "你加练了三天惩戒，命中率提了一截。",
+    "failText": "练到手腕发酸，比赛里还是慢了。"
+   }
+  ]
+ },
+ {
+  "id": "L30",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#采访",
+   "#金句",
+   "#短视频"
+  ],
+  "text": "你那句采访被剪成短视频，播放量破了百万。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "趁热接采访",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "money": 400
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "stamina": -8
+    },
+    "successText": "你连轴转了三天，通告费比月薪还高。",
+    "failText": "你说重复了太多遍，观众先腻了。"
+   },
+   {
+    "label": "先不接",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": 3
+    },
+    "fail": null,
+    "successText": "你让俱乐部推了所有采访，回去打训练赛。",
+    "failText": null
+   },
+   {
+    "label": "自己发一条",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "flag": "#自嘲"
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     }
+    },
+    "successText": "你发了条自嘲的，评论区说「本人比视频好笑」。",
+    "failText": "你写得太认真，没人笑。"
+   }
+  ]
+ },
+ {
+  "id": "L31",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#粉丝",
+   "#表情包",
+   "#自嘲"
+  ],
+  "text": "粉丝把你的自嘲做成了表情包，传得到处都是。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "自己用起来",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "coachTrust": 1
+    },
+    "fail": null,
+    "successText": "你在群里发了一张，队友全在刷。",
+    "failText": null
+   },
+   {
+    "label": "让俱乐部管",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     }
+    },
+    "successText": "俱乐部发了个声明，粉丝说「太官方了」。",
+    "failText": "有人开始说你「红了就飘」。"
+   },
+   {
+    "label": "不管",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "stamina": 1
+    },
+    "fail": null,
+    "successText": "你把手机放下，第二天照常训练。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L32",
+  "kind": "life",
+  "phase": "growth",
+  "tags": [
+   "#训练室",
+   "#椅子",
+   "#补贴"
+  ],
+  "text": "你把训练室的椅子坐塌了。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "自己买一把",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "money": -400
+    },
+    "fail": null,
+    "successText": "你买了把贵的，腰舒服了很多。",
+    "failText": null
+   },
+   {
+    "label": "报修",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 1,
+     "stamina": 2
+    },
+    "fail": {
+     "coachTrust": -1,
+     "stamina": -2
+    },
+    "successText": "后勤当天就换了，还多给了你一个靠垫。",
+    "failText": "单子填了三天，你坐在硬板凳上训练。"
+   },
+   {
+    "label": "换个位置",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你搬到了窗边，阳光有点晃眼。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "S10",
+  "kind": "special",
+  "phase": "growth",
+  "tags": [
+   "#青训",
+   "#讲课",
+   "#新人"
+  ],
+  "text": "青训营让你给新来的小孩讲一节课。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "认真备课",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 1
+     },
+     "coachTrust": 5
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": -4
+    },
+    "successText": "你讲了两小时，台下没人走神。",
+    "failText": "你讲得太深，一半人没听懂。"
+   },
+   {
+    "label": "随便讲讲",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "stamina": -1,
+     "coachTrust": 1
+    },
+    "fail": null,
+    "successText": "你讲了二十分钟，放了两段录像。",
+    "failText": null
+   },
+   {
+    "label": "推掉",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "stamina": 2
+    },
+    "fail": {
+     "coachTrust": -3
+    },
+    "successText": "你说要打训练赛，教练替你去了。",
+    "failText": "教练什么也没说，只是下次没再问你。"
+   }
+  ]
+ },
+ {
+  "id": "L33",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#生活",
+   "#舆论",
+   "#集锦"
+  ],
+  "text": "这场比赛被剪成「总嚼赛」集锦，弹幕说两边都在下饭。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "跟着自嘲",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你在评论区回了一句：确实，饭管够。",
+    "failText": null
+   },
+   {
+    "label": "让运营删",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1,
+      "mentality": -1
+     }
+    },
+    "successText": "运营删得很快，截图传得更快。",
+    "failText": "运营回了你一个问号，然后没再理你。"
+   }
+  ]
+ },
+ {
+  "id": "L34",
+  "kind": "life",
+  "phase": "peak",
+  "tags": [
+   "#生活",
+   "#对手",
+   "#习惯"
+  ],
+  "text": "对面中单掏出卷尺，量了量键盘和显示器的距离。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "借他尺子",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "awareness": 1
+     }
+    },
+    "fail": null,
+    "successText": "你把尺子递过去，全场笑出了声。",
+    "failText": null
+   },
+   {
+    "label": "不理会",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你戴上耳机，把注意力放回补刀。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L35",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#直播",
+   "#水友赛",
+   "#翻车"
+  ],
+  "text": "直播水友赛，你被一个钻石水友单杀了。弹幕全是问号。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "认了",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你说：这水友有点东西。弹幕笑成一片。",
+    "failText": null
+   },
+   {
+    "label": "说设备卡",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2,
+      "mentality": -1
+     }
+    },
+    "successText": "你换了台电脑重开，又赢回来了。",
+    "failText": "弹幕开始刷：设备也救不了你。"
+   }
+  ]
+ },
+ {
+  "id": "L36",
+  "kind": "life",
+  "phase": "growth",
+  "tags": [
+   "#生活",
+   "#基地",
+   "#乌龙"
+  ],
+  "text": "保洁阿姨拔了基地网线，训练赛掉线，对面以为你们跑了。",
+  "once": false,
+  "weight": 10,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "重连道歉",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     },
+     "coachTrust": 2
+    },
+    "fail": {
+     "coachTrust": -3
+    },
+    "successText": "你第一个连回去，对面接受了道歉。",
+    "failText": "重连回来，对面已经开了下一把。"
+   },
+   {
+    "label": "怪保洁",
+    "risk": "fail",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": null,
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": null,
+    "failText": "话说出口，训练室里没人接。"
+   }
+  ]
+ },
+ {
+  "id": "S12",
+  "kind": "special",
+  "phase": "peak",
+  "tags": [
+   "#特殊",
+   "#解说",
+   "#泄密"
+  ],
+  "text": "解说在台上念出了你们的秘密选人，对面教练笑了。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "临时换阵",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 3
+     }
+    },
+    "fail": {
+     "coachTrust": -2
+    },
+    "successText": "你们换了套阵容，对面愣了一整局。",
+    "failText": "换阵没练过，十五分钟就崩了。"
+   },
+   {
+    "label": "照原计划打",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 2
+     }
+    },
+    "fail": null,
+    "successText": "你把那套阵容打成了教学局。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "S13",
+  "kind": "special",
+  "phase": "any",
+  "tags": [
+   "#特殊",
+   "#现场",
+   "#音乐"
+  ],
+  "text": "场间响起「丢丢丢」，全场跟着拍手，你的紧张散了一半。",
+  "once": true,
+  "weight": 2,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "跟着哼",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 2
+     }
+    },
+    "fail": null,
+    "successText": "你跟着哼完，走进选手通道时脚步轻了。",
+    "failText": null
+   },
+   {
+    "label": "戴上耳机",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 2
+     }
+    },
+    "fail": null,
+    "successText": "你把噪音隔在外面，把注意力收回屏幕上。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "S14",
+  "kind": "special",
+  "phase": "decline",
+  "tags": [
+   "#特殊",
+   "#舆论",
+   "#垫底"
+  ],
+  "text": "卫冕冠军这赛季垫底，网友把你们叫「一年级五班」。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "认了这个称呼",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "popularity": 1
+     }
+    },
+    "fail": null,
+    "successText": "你在采访里说：对，我们留级了。",
+    "failText": null
+   },
+   {
+    "label": "关掉评论",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1,
+      "popularity": -1
+     }
+    },
+    "fail": null,
+    "successText": "你把评论关了，训练室安静了不少。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "S15",
+  "kind": "special",
+  "phase": "peak",
+  "tags": [
+   "#特殊",
+   "#翻盘",
+   "#偷家"
+  ],
+  "text": "基地只剩 50 血，兵线进了门牙。你还有一次传送。",
+  "once": true,
+  "weight": 1,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "options": [
+   {
+    "label": "传送偷家",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 5
+     }
+    },
+    "fail": {
+     "coachTrust": -2
+    },
+    "successText": "你传到对面基地，一下一下点掉了水晶。",
+    "failText": "你传到一半，屏幕先黑了。"
+   },
+   {
+    "label": "回防守家",
+    "risk": "roll",
+    "attrs": [
+     "teamfight"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "teamfight": 3
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "successText": "你守住这波，反手一波推平。",
+    "failText": "你守到最后一个兵，还是没守住。"
+   }
+  ]
+ }
+]

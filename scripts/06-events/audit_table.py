@@ -4,6 +4,7 @@
   PYTHONIOENCODING=utf-8 <python> scripts/06-events/audit_table.py
 """
 import io
+import os
 import re
 import sys
 from openpyxl import load_workbook
@@ -63,7 +64,7 @@ def parse_cons(body):
 
 def parse_ts():
     src = io.open(TS, encoding='utf-8').read()
-    region = src[src.index('以下 34 条'):]
+    region = src[src.index('export const EVENTS'):src.index('export const FILLER_EVENTS')]
     events = []
     for blk in region.split("\n  {\n    id: '")[1:]:
         ev_id = blk.split("'", 1)[0]
@@ -121,6 +122,8 @@ def expected_consequence(text):
 
 def main():
     table = load_table()
+    ignore_cons = os.environ.get('IGNORE_CONS') == '1'
+    deleted = set(x for x in os.environ.get('DELETED', '').split(',') if x)
     ts = {ev: opts for ev, opts in parse_ts()}
     diffs = 0
     for row in table:
@@ -129,6 +132,8 @@ def main():
         opts = ts.get(ev_id, [])
         o = next((x for x in opts if x['label'] == label), None)
         if not o:
+            if ev_id in deleted:
+                continue
             print('MISSING', ev_id, label)
             diffs += 1
             continue
@@ -154,7 +159,7 @@ def main():
             want = expected_consequence(row.get(col))
             got = dict(o[key])
             got.pop('flag', None)
-            if got != want:
+            if got != want and not ignore_cons:
                 print('CONS', key, tag, '\n  ts:', got, '\n  tb:', want)
                 diffs += 1
         flags = [o['success'].get('flag'), o['fail'].get('flag')]

@@ -101,6 +101,16 @@ export interface EventOption {
   risk: RiskKind;
   /** 非比赛事件：掷骰时读取的属性；成功率 = 这些属性的平均 / 100。 */
   attrs?: readonly AttrKey[];
+  /**
+   * 非比赛事件：掷骰属性的组合方式。
+   * fourAndPopularity =（操作/对线/团战/意识 四项平均 + 人气）÷ 2；省略则取 attrs 平均。
+   */
+  mix?: 'fourAndPopularity';
+  /**
+   * 比赛事件：在 matchRate 之上再加四维（操作/对线/团战/意识）的临场加成。
+   * 四维均值 50 为 0，每高 50 点 +0.2、每低 50 点 −0.2。
+   */
+  skillBonus?: boolean;
   /** 比赛事件：这个选项对胜率的加成（±小数，如 0.3 = +30%）。 */
   bonus?: number;
   /** 命中成功分支的后果；必败选项只写 fail。 */
