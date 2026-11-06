@@ -7,7 +7,7 @@ import { applyAction, canAfford } from '../src/core/actions';
 import { advanceYear, gainExp, gainPoints, trainGain } from '../src/core/growth';
 import { autoMatch, applyMatchOutcome, matchRate } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
-import { drawEvent, resolveOption, successRateOf } from '../src/core/events';
+import { drawEvent, forcedEvent, randomPool, resolveOption, successRateOf } from '../src/core/events';
 import { EVENTS } from '../src/data/events';
 import { canPlay, benchReason } from '../src/core/match';
 import { createRng } from '../src/rng';
@@ -495,20 +495,98 @@ describe('事件抽取', () => {
     expect(normalEnding(s, 'expired').note).toContain('试训');
   });
 
-  it('特殊事件在随机池里按 1:10 抽出', () => {
-    let special = 0;
+  it('特殊事件在池里按权重占比抽出', () => {
+    const s = newGame(1);
+    s.year = 1;
+    s.week = 10;
+    const pool = randomPool(s);
+    const special = pool.find((e) => e.id === 'E04');
+    expect(special).toBeDefined();
+    const totalWeight = pool.reduce((sum, e) => sum + e.weight, 0);
+    const share = (special?.weight ?? 0) / totalWeight;
+
+    let hit = 0;
     const total = 4000;
     for (let i = 0; i < total; i++) {
-      const s = newGame(i + 1);
-      s.year = 1;
-      s.week = 10;
-      s.rngState = (i * 2654435761) >>> 0;
-      const r = drawEvent(s);
-      if (r.event?.id === 'E04') special++;
+      const t = newGame(i + 1);
+      t.year = 1;
+      t.week = 10;
+      t.rngState = (i * 2654435761) >>> 0;
+      const r = drawEvent(t);
+      if (r.event?.id === 'E04') hit++;
     }
-    const ratio = special / total;
-    expect(ratio).toBeGreaterThan(0.02);
-    expect(ratio).toBeLessThan(0.08);
+    const ratio = hit / total;
+    expect(Math.abs(ratio - share)).toBeLessThan(share * 0.35);
+  });
+
+  it('34 条表内事件都在库里', () => {
+    const ids = [
+      'M01', 'M02', 'M03', 'M04', 'M05', 'M06', 'M07', 'M08', 'M09',
+      'L01', 'L02', 'L03', 'L04', 'L05', 'L06', 'L07', 'L08', 'L09', 'L10',
+      'S01', 'S02', 'S03',
+      'P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10', 'P11', 'P12',
+    ];
+    const have = new Set(EVENTS.map((e) => e.id));
+    expect(ids.filter((id) => !have.has(id))).toEqual([]);
+    expect(EVENTS.filter((e) => ids.includes(e.id))).toHaveLength(34);
+  });
+
+  it('表内事件：正文 ≤50 字、2~3 个选项、后果字段合法', () => {
+    const tableEvents = EVENTS.filter((e) => /^[MLSP]\d\d$/.test(e.id));
+    const consKeys = new Set([
+      'attrs', 'temp', 'stamina', 'maxStamina', 'money', 'injury',
+      'coachTrust', 'honor', 'flag', 'clearFlag', 'signed', 'teamId',
+    ]);
+    for (const e of tableEvents) {
+      expect(e.text.length, e.id).toBeLessThanOrEqual(CONFIG.events.textMaxLength);
+      expect(e.options.length, e.id).toBeGreaterThanOrEqual(2);
+      expect(e.options.length, e.id).toBeLessThanOrEqual(3);
+      expect(['match', 'life', 'special'], e.id).toContain(e.kind);
+      for (const o of e.options) {
+        expect(['roll', 'success', 'fail'], e.id).toContain(o.risk);
+        for (const c of [o.success, o.fail]) {
+          if (!c) continue;
+          for (const key of Object.keys(c)) expect(consKeys.has(key), `${e.id} ${key}`).toBe(true);
+          for (const key of Object.keys(c.attrs ?? {})) expect(ATTR_KEYS).toContain(key);
+          for (const key of Object.keys(c.temp ?? {})) expect(ATTR_KEYS).toContain(key);
+        }
+      }
+    }
+  });
+
+  it('每条表内事件都存在能抽到它的状态（随机池或必触发）', () => {
+    const reachable = new Set<string>();
+    const weeks = [1, 5, 10, 20, 26, 30];
+    const flagSets: string[][] = [[], ['#五十块'], ['#坐过替补'], ['#手腕不适']];
+    for (let year = 1; year <= 8; year++) {
+      for (const week of weeks) {
+        for (const signed of [false, true]) {
+          for (const trust of [0, 50, 100]) {
+            for (const pop of [0, 60]) {
+              for (const flags of flagSets) {
+                const s = newGame(1);
+                s.year = year;
+                s.week = week;
+                s.signed = signed;
+                s.coachTrust = trust;
+                s.attrs.popularity = pop;
+                s.flags = flags;
+                s.actionGrid = ['stream', null, null] as GameState['actionGrid'];
+                for (const e of randomPool(s)) reachable.add(e.id);
+                const f = forcedEvent(s);
+                if (f) reachable.add(f.id);
+              }
+            }
+          }
+        }
+      }
+    }
+    // 决赛按年编号（E05-3），所以按前缀认。
+    const ids = [...reachable];
+    const missing = EVENTS.filter((e) => !ids.some((id) => id === e.id || id.startsWith(`${e.id}-`))).map(
+      (e) => e.id,
+    );
+    expect(missing).toEqual([]);
   });
 });
 

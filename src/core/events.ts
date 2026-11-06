@@ -22,17 +22,13 @@ export interface DrawResult {
 }
 
 /**
- * 抽本周事件。
- * 顺序：必触发 → 按阶段分桶 → 去掉已触发 → 条件过滤 → 按权重抽 → 空则落回填充池 → 仍空则本周无事件。
+ * 必触发事件：写死年份/周的（决赛、邀请函）与带 auto 的，不走抽签。
+ * 每年生成的决赛按年编号（E04-3），所以「去重」是逐年生效的。
  */
-export function drawEvent(state: GameState): DrawResult {
-  const ctx = createRng(state.rngState);
-
-  // 1. 写死年份/周的必触发事件（决赛、签约等），不走抽签。
-  //    每年生成的决赛按年编号（E04-3），所以「去重」是逐年生效的。
+export function forcedEvent(state: GameState): GameEvent | undefined {
   const final = finalFor(state);
   const invite = inviteEvent(state);
-  const forced = [...(final ? [final] : []), ...EVENTS, ...(invite ? [invite] : [])].find((e) => {
+  return [...(final ? [final] : []), ...EVENTS, ...(invite ? [invite] : [])].find((e) => {
     // 可重复事件（once: false）不能被 triggeredEvents 永久拉黑。
     if (e.once && state.triggeredEvents.includes(e.id)) return false;
     if (e.year !== undefined && e.year !== state.year) return false;
@@ -41,11 +37,12 @@ export function drawEvent(state: GameState): DrawResult {
     if (e.year === undefined && e.week === undefined && !e.auto) return false;
     return !e.requires || e.requires(state);
   });
-  if (forced) return { event: forced, rngState: ctx.state() };
+}
 
-  // 2. 随机池：排除写死年份的、填充池的；比赛事件只在本周有比赛时出现。
+/** 随机池：排除写死年份的、填充池的、已触发的一次性事件；比赛事件只在比赛周出现。 */
+export function randomPool(state: GameState): GameEvent[] {
   const phase = phaseOfYear(state.year);
-  const pool = EVENTS.filter(
+  return EVENTS.filter(
     (e) =>
       e.year === undefined &&
       !e.filler &&
@@ -54,6 +51,21 @@ export function drawEvent(state: GameState): DrawResult {
       (!e.once || !state.triggeredEvents.includes(e.id)) &&
       (!e.requires || e.requires(state)),
   );
+}
+
+/**
+ * 抽本周事件。
+ * 顺序：必触发 → 按阶段分桶 → 去掉已触发 → 条件过滤 → 按权重抽 → 空则落回填充池 → 仍空则本周无事件。
+ */
+export function drawEvent(state: GameState): DrawResult {
+  const ctx = createRng(state.rngState);
+
+  // 1. 必触发事件优先。
+  const forced = forcedEvent(state);
+  if (forced) return { event: forced, rngState: ctx.state() };
+
+  // 2. 随机池。
+  const pool = randomPool(state);
 
   if (pool.length > 0) {
     const index = ctx.rng.weighted(pool.map((e) => e.weight));
