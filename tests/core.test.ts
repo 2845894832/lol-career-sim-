@@ -563,8 +563,8 @@ describe('事件抽取', () => {
 
   it('表内事件条数与 ID 规则', () => {
     const ids = EVENTS.filter((e) => /^[MLSPN]\d\d$/.test(e.id)).map((e) => e.id);
-    expect(ids).toHaveLength(179);
-    expect(new Set(ids).size).toBe(179);
+    expect(ids).toHaveLength(199);
+    expect(new Set(ids).size).toBe(199);
   });
 
   it('表内事件：正文 ≤50 字、2~3 个选项、后果字段合法', () => {
