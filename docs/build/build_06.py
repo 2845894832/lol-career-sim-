@@ -95,7 +95,7 @@ BEFORE = load("out-before.json")
 AFTER34 = load("out-after.json")
 AFTER80 = load("out-after80.json")
 AFTER84 = load("out-after84.json")
-AFTER104 = load("out-after104.json")
+AFTER104 = load("out-after104w5.json")  # 权重 10→5 之后
 BS, S34, S80, S84 = BEFORE["summary"], AFTER34["summary"], AFTER80["summary"], AFTER84["summary"]
 S104 = AFTER104["summary"]
 
@@ -197,7 +197,7 @@ def main():
         "**你已拍板的：** 补到 80 条以上、AI 写你逐条看、选项 6–8 字（改设计文档）、失败文案每个选项单独写、"
         "比赛事件要求已签约且能上场、删掉转教练/合同转会/换位置类、L11 改两万块、E05 看伤停、84 条审核通过写进代码、"
         "事件链先不放进去、签约事件留着不写、8 处旧失败文案补上、84 条先停、链先停、梗密度不调、人物梗不引用真人名、"
-        "人物梗 20 条审核通过写进代码。"
+        "人物梗 20 条审核通过写进代码、所有 weight 10 的事件改成 5。"
         "**还没拍板的：** 链以后做不做、收尾要不要用 auto 强制位、104 条够不够 / 要不要继续到 136 条、人物梗要不要再扩 20–40 条。"
         "文中标「未经用户确认」的推导不是决定。",
     )
@@ -274,8 +274,10 @@ def main():
     )
     k.para(
         doc,
-        f"104 条里 **75 条可重复**、29 条 `once`，权重 10/2/1 = 73/13/13（这 99 条表内事件；另有 E01–E05）。240 次抽取摊到 75 条，"
-        "再乘权重差，顶部仍有 7–9 次。要让单条「一局记不住第二次」，条数还得往上走。",
+        f"104 条里 **75 条可重复**、29 条 `once`，权重 5/2/1 = 75/13/16（这 99 条表内事件；另有 E01–E05 也是 5）。240 次抽取摊到 75 条，"
+        "再乘权重差，顶部仍有 7–9 次。要让单条「一局记不住第二次」，条数还得往上走。"
+        "\n\n**权重 10→5 的实测：** 全体一起减半不改变相对占比，只有 weight 1/2 的特殊事件占比翻倍；"
+        f"最高重复从 18 降到 {S104['maxRepeatInRun']}，平均 >5 次的仍是 12 条（N17 8.5 次/局）。",
     )
 
     # ---------------- 三 ----------------
@@ -377,6 +379,7 @@ def main():
             ["L11", "1", "五百块 → 两万块，成功分支写 `#路人王`"],
             ["失败文案", "8", "E01–E04 的 8 个失败分支补上文案（此前只有数值）"],
             ["人物梗", "20", "N01–N20 审核通过进代码；比赛 5 / 生活 14 / 特殊 1；正文 0 真人名"],
+            ["权重", "77", "所有 weight 10 → 5（含 E01–E05、M/L/S/P/N、F01/F02）；特殊 1/2 不动"],
         ],
         [3.2, 1.6, 10.8],
         size=8.4,
@@ -433,7 +436,8 @@ def main():
     cmd(doc, "npx vite-node scripts/06-events/sim.ts after     # 34 条：在 67677c8 上跑，写 out-after.json")
     cmd(doc, "npx vite-node scripts/06-events/sim.ts after80   # 80 条版")
     cmd(doc, "npx vite-node scripts/06-events/sim.ts after84   # 84 条版")
-    cmd(doc, "npx vite-node scripts/06-events/sim.ts after104  # 本文数字（104 条）")
+    cmd(doc, "npx vite-node scripts/06-events/sim.ts after104  # 104 条、权重 10")
+    cmd(doc, "npx vite-node scripts/06-events/sim.ts after104w5  # 本文数字（104 条、权重 5）")
     cmd(doc, "IGNORE_CONS=1 DELETED=S01,P08,P12 PYTHONIOENCODING=utf-8 python scripts/06-events/audit_table.py")
     cmd(doc, "npx vitest run && npx tsc --noEmit")
     k.para(
