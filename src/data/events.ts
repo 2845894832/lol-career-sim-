@@ -13,7 +13,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#河道', '#大龙', '#下路'],
     text: '你和队友被卡在河道，超级兵正推我方高地。你是 AD，手里还有闪现和大招。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -66,7 +66,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#直播', '#弹幕', '#路人期'],
     text: '正在服务器大杀四方的你，看见弹幕飘过一句「不去打职业扬名立万，窝在这里当个小主播」。',
     once: true,
-    weight: 10,
+    weight: 5,
     requires: (s) => !s.signed,
     options: [
       {
@@ -237,7 +237,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#河道', '#大龙'],
     text: '你按下传送，光标停在提伯斯身上。语音里有人笑出了声。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -274,7 +274,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#进场', '#下路'],
     text: '你想 TP 支援，锤石的灯笼正好在光标下。你按了。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -332,7 +332,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#替补', '#救主'],
     text: '你在替补席坐了三个月。今天教练说：你上。',
     once: true,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -363,7 +363,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#BP', '#泄密'],
     text: '直播时你随口说了训练赛的 BP。二十分钟后，对面教练看完了。',
     once: true,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.actionGrid.includes('stream'),
     options: [
       {
@@ -390,7 +390,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#失误', '#下路'],
     text: '你的韦鲁斯压到塔前，Q 朝着自家方向飞了出去。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -423,7 +423,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#BP', '#选择'],
     text: '对面那个英雄连赢五把。教练问你要不要 ban，你说不用。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -461,7 +461,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#情绪', '#观众'],
     text: '你推掉对面高地，站在泉水门口亮了队标。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -494,7 +494,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#团战', '#操作'],
     text: '四包二，你没路可走，在塔边多绕了半圈。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -531,7 +531,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#试训', '#生活', '#五十块'],
     text: '试训临时取消。教练转来五十块，备注写着「车费」。',
     once: true,
-    weight: 10,
+    weight: 5,
     requires: (s) => !s.signed,
     options: [
       {
@@ -555,7 +555,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#直播', '#弹幕', '#嘴碎'],
     text: '弹幕说你刚才那一下，像在给防御塔做广告。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -579,7 +579,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#采访', '#圣经'],
     text: '赛后采访，记者问你能做到这一步是因为什么。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -603,7 +603,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#ID', '#论坛', '#人气低'],
     text: '你把 ID 改成了「五十块」。有人截图发到了论坛上。',
     once: true,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.attrs.popularity >= 50,
     options: [
       {
@@ -627,7 +627,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#替补', '#更衣室'],
     text: '你被换到替补席，队里没人告诉你为什么。',
     once: true,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -663,7 +663,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#直播', '#弹幕', '#777'],
     text: '直播间里有人一直刷 777。你不知道该笑还是该生气。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.attrs.popularity >= 50,
     options: [
       {
@@ -687,7 +687,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#教练', '#微博', '#挽留'],
     text: '教练递了辞呈。微博上，队里没人说话。',
     once: true,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust <= 30,
     options: [
       {
@@ -720,7 +720,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#赛前', '#饮食', '#状态'],
     text: '赛前那碗面很香。第四把，你的手开始抖。',
     once: true,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.week <= CONFIG.career.matchWeeksPerYear,
     options: [
       {
@@ -786,7 +786,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#队内', '#复盘', '#氛围'],
     text: '复盘到一半，有人打断：先点菜吧。屋里没人反驳。',
     once: true,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust <= 50,
     options: [
       {
@@ -919,7 +919,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#失误', '#数据'],
     text: '结算面板上，你的伤害只有两千二。队友先关了面板。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1092,7 +1092,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#心态', '#口头禅'],
     text: '输了。麦克风里你说了一句：无所谓的，寄了。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1161,7 +1161,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#单杀', '#采访'],
     text: '你在上路单杀了对面。赛后采访问你当时在想什么。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1194,7 +1194,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#顺手', '#自嘲'],
     text: '你顺手点死了对面打野，然后继续补你的炮车。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1227,7 +1227,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#草丛', '#开团'],
     text: '中路下河道那片草，对面三个人已经蹲了半分钟。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1267,7 +1267,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#大龙', '#惩戒'],
     text: '大龙还剩一格血，你的惩戒和对面打野同时按下。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1304,7 +1304,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#反应', '#下路'],
     text: '对面中单从侧翼切进来，你的手比脑子慢了半拍。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1341,7 +1341,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#暂停', '#节奏'],
     text: '打到一半对面叫了暂停，回来之后节奏全变了。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1377,7 +1377,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#网吧赛', '#奖金', '#通宵'],
     text: '网吧赛冠军奖金两万块，队友问你去不去。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '去，通宵打',
@@ -1412,7 +1412,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#夺冠', '#客场', '#采访'],
     text: '客场夺冠，全场安静得像图书馆。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -1449,7 +1449,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#直播', '#弹幕', '#退役'],
     text: '直播间掉到三位数，弹幕问你什么时候退役。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '认真回答',
@@ -1484,7 +1484,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#外卖', '#赛前', '#辣'],
     text: '赛前外卖点错，送到的是重辣。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -1520,7 +1520,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#粉丝', '#手写信', '#应援'],
     text: '粉丝寄来一箱东西，最上面是一封手写信。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '读完回信',
@@ -1626,7 +1626,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#一级团', '#越塔'],
     text: '一级团三换零，对面打野还在自家野区。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1662,7 +1662,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#BP', '#绝活'],
     text: 'BP 最后一手，教练问你想要什么。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1698,7 +1698,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#偷家', '#大龙'],
     text: '对面五个人在打大龙，你带着兵线摸到了他们家高地。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1738,7 +1738,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#单杀', '#新人'],
     text: '训练赛里，二队中单连着单杀你三次。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -1774,7 +1774,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#商务', '#代言', '#广告'],
     text: '有个牌子想找你拍广告，产品你自己没用过。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.attrs.popularity >= 60,
     options: [
       {
@@ -1810,7 +1810,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#伤病', '#手腕', '#封闭'],
     text: '手腕的旧伤在阴天又开始疼。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -1846,7 +1846,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#直播', '#合同', '#平台'],
     text: '直播合同到期，平台给的价格砍了一半。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -1879,7 +1879,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#超话', '#粉丝', '#失误'],
     text: '超话里有人剪了你这个赛季所有的失误。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -1986,7 +1986,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#反蹲', '#野区'],
     text: '对面打野在河道蹲了整整一分钟，什么都没蹲到。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -2025,7 +2025,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#决胜局', '#让二追三'],
     text: '0:2 落后，第三局 BP 前，休息室里没人说话。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -2061,7 +2061,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#公屏', '#嘲讽'],
     text: '对面中单在公屏打字：这把让你们。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -2097,7 +2097,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#上路', '#新人'],
     text: '你被换到上路，对面是个十八岁的新人。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -2137,7 +2137,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#庆功宴', '#老板', '#酒'],
     text: '庆功宴上，老板端着酒杯走过来。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -2173,7 +2173,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#家人', '#现场', '#第一次'],
     text: '家里人第一次来现场看你的比赛。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -2209,7 +2209,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#队友', '#群聊', '#黑历史'],
     text: '队友在群里发了你的黑历史视频。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -2245,7 +2245,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#退役仪式', '#彩排', '#ID'],
     text: '退役仪式彩排，主持人念错了你的 ID。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -2349,7 +2349,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#偷家', '#针对'],
     text: '对面赛前采访说，专门研究过你的偷家。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -2389,7 +2389,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#让二追三', '#解说'],
     text: '解说在赛前又提起了那场让二追三。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -2425,7 +2425,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#首发', '#通道'],
     text: '第一次首发，你在选手通道里手心全是汗。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -2461,7 +2461,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#比赛', '#手速', '#镜头'],
     text: '你的操作慢了半拍，导播还是把镜头给了你。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.coachTrust >= CONFIG.match.benchThreshold,
     options: [
       {
@@ -2498,7 +2498,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#复盘', '#丢龙', '#教练'],
     text: '复盘会上，教练把丢龙那一帧暂停了。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -2534,7 +2534,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#采访', '#金句', '#短视频'],
     text: '你那句采访被剪成短视频，播放量破了百万。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.attrs.popularity >= 60,
     options: [
       {
@@ -2570,7 +2570,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#粉丝', '#表情包', '#自嘲'],
     text: '粉丝把你的自嘲做成了表情包，传得到处都是。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.attrs.popularity >= 50,
     options: [
       {
@@ -2603,7 +2603,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#训练室', '#椅子', '#补贴'],
     text: '你把训练室的椅子坐塌了。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -2672,7 +2672,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#生活', '#舆论', '#集锦'],
     text: '这场比赛被剪成「总嚼赛」集锦，弹幕说两边都在下饭。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed && s.attrs.popularity >= 40,
     options: [
       {
@@ -2699,7 +2699,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#生活', '#对手', '#习惯'],
     text: '对面中单掏出卷尺，量了量键盘和显示器的距离。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -2723,7 +2723,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#直播', '#水友赛', '#翻车'],
     text: '直播水友赛，你被一个钻石水友单杀了。弹幕全是问号。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.attrs.popularity >= 40,
     options: [
       {
@@ -2750,7 +2750,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#生活', '#基地', '#乌龙'],
     text: '保洁阿姨拔了基地网线，训练赛掉线，对面以为你们跑了。',
     once: false,
-    weight: 10,
+    weight: 5,
     requires: (s) => s.signed,
     options: [
       {
@@ -2883,7 +2883,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '赛前采访你说，对面中单看到你的 ID 手会抖。开局三分钟，你在塔下被单杀。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '亮回去',
@@ -2922,7 +2922,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '你拿到四杀。第五个人头，被辅助一记平 A 收走了。语音里安静了半秒。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '笑说没事',
@@ -2958,7 +2958,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '小龙团，你闪现过墙，撞在墙上。对面五个人隔着墙看了你一眼。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '硬打',
@@ -2994,7 +2994,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '你假装回城，绕进龙坑，一个人打大龙。打到一半，对面辅助的路过眼亮了。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '打完',
@@ -3065,7 +3065,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '弹幕刷「妈妈爱你」，你顺口回了一句「谢谢妈」。直播间静了一秒。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '顺着叫',
@@ -3101,7 +3101,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '你以为麦关了，说「这中单我带的动吗」。隔壁训练室的门开了。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '道歉',
@@ -3137,7 +3137,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '赛后采访你讲了五分钟赛区体系建设，弹幕开始刷「书记」。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '继续讲',
@@ -3170,7 +3170,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '平台时长还差二十小时，你开着直播睡着了。醒来时在线人数是平时的三倍。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '接着睡',
@@ -3241,7 +3241,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '基地宿舍五个人一间，你的床垫铺在地上。半夜，隔壁床开始打呼。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '戴耳机睡',
@@ -3276,7 +3276,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '排位连败，你说「去洗澡了」。一个小时后，直播间里还有两万人在等。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '真去洗',
@@ -3312,7 +3312,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: 'BP 最后一手，你锁了刀妹。对面打野在公屏打字：「哥，能换一个吗。」',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '不换',
@@ -3419,7 +3419,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '你被单杀，镜头切过来。你对着摄像头说了一句「我没哭」。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '继续嘴硬',
@@ -3454,7 +3454,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '排位排队的间隙，你用画图软件画了只猫。第二天，它成了粉丝群头像。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '接着画',
@@ -3525,7 +3525,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '一晚上排到同一个 ID 三把。第三把，他在公屏打了一句「又是你」。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '加个好友',
@@ -3560,7 +3560,7 @@ export const EVENTS: GameEvent[] = [
     tags: ['#人物梗'],
     text: '粉丝见面会，你从头到尾只摆了一个点赞手势。第二天，有人做了九宫格对比图。',
     once: false,
-    weight: 10,
+    weight: 5,
     options: [
       {
         label: '发微博自嘲',
@@ -3596,7 +3596,7 @@ export const FILLER_EVENTS: readonly GameEvent[] = [
     tags: ['#训练', '#深夜'],
     text: '凌晨四点，训练室只剩你一个人。屏幕上还是那波没打好的团。',
     once: true,
-    weight: 10,
+    weight: 5,
     filler: true,
     options: [
       {
@@ -3620,7 +3620,7 @@ export const FILLER_EVENTS: readonly GameEvent[] = [
     tags: ['#采访', '#嘴'],
     text: '赛后采访，记者问你：「今天下路被压成这样，你怎么看？」',
     once: true,
-    weight: 10,
+    weight: 5,
     filler: true,
     options: [
       {
