@@ -157,7 +157,7 @@ EV = [
          text='你去网吧开黑，隔壁机位的人一直看你。',
          opts=[o('承认身份', 'roll', ['popularity'],
                  {'attrs': {'popularity': 2}},
-                 {'attrs': {'popularity': -1}, 'mentality': -1},
+                 {'attrs': {'popularity': -1, 'mentality': -1}},
                  '你给他签了个名，他请你喝了瓶水。',
                  '他掏出手机拍你，你整局都没打好。'),
                o('说认错了', 'success', [], {'attrs': {'mentality': 1}},
