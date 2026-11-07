@@ -4,7 +4,7 @@ import openpyxl
 from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
 from openpyxl.utils import get_column_letter
 
-OUT = 'P1-事件库-人物梗-10条-试写.xlsx'
+OUT = 'P1-事件库-人物梗-20条-试写.xlsx'
 
 # name, kind, phase, once, weight, requires, text, meme, origin, note, options
 EV = [
@@ -158,6 +158,156 @@ EV = [
              '你发了四个字，点赞破了十万。', '文案打错了一个字，评论区全在纠错。'),
         ],
     ),
+    dict(
+        id='N11', kind='life', phase='growth', once=False, weight=10,
+        requires='无',
+        text='基地宿舍五个人一间，你的床垫铺在地上。半夜，隔壁床开始打呼。',
+        meme='打地铺', origin='穷队五人挤一间，个子高的只能睡地上。',
+        note='不写“穷”，写“睡不好”；三个选项都是熬过这一夜的办法，没有对错。',
+        opts=[
+            ('戴耳机睡', 'roll', '0.05', '{ stamina: 8 }', '{ stamina: -4, attrs: { mentality: -2 } }',
+             '你睡到中午，醒来发现耳机没电了。', '耳机里的歌循环到天亮，你一句没记住。'),
+            ('去客厅睡', 'success', '—', '{ stamina: 4 }', '—',
+             '沙发短了一截，但至少安静。', ''),
+            ('叫醒他', 'roll', '0.10', '{ attrs: { mentality: 1 }, coachTrust: 1 }', '{ coachTrust: -2, attrs: { mentality: -2 } }',
+             '他翻了个身，呼噜停了十分钟。', '他醒了，然后两个人一起失眠。'),
+        ],
+    ),
+    dict(
+        id='N12', kind='life', phase='decline', once=False, weight=10,
+        requires='无',
+        text='排位连败，你说「去洗澡了」。一个小时后，直播间里还有两万人在等。',
+        meme='洗澡狗', origin='排位劣势时说“我要去洗澡了”，然后挂机。',
+        note='把“挂机”改成“直播间还在等”，压力从队友转到观众；不惩罚玩家，只让他选怎么收场。',
+        opts=[
+            ('真去洗', 'success', '—', '{ stamina: 8, attrs: { popularity: -1 } }', '—',
+             '你洗完回来，直播间只剩一半人。', ''),
+            ('回来接着打', 'roll', '0.10', '{ attrs: { mentality: 2, popularity: 2 } }', '{ attrs: { mentality: -3 }, coachTrust: -2 }',
+             '你连赢三把，弹幕说这澡洗得值。', '你越打越输，最后一把直接秒了。'),
+            ('挂个自动回复', 'roll', '0.05', '{ attrs: { popularity: 1 } }', '{ attrs: { popularity: -2 } }',
+             '你留了句「马上回来」，粉丝在评论区接龙。', '自动回复挂了三天，超话开始传你退役。'),
+        ],
+    ),
+    dict(
+        id='N13', kind='match', phase='peak', once=False, weight=10,
+        requires='signed && coachTrust >= 25',
+        text='BP 最后一手，你锁了刀妹。对面打野在公屏打字：「哥，能换一个吗。」',
+        meme='lwx no daomei', origin='排位撞见对手玩刀妹，公屏求他别玩。',
+        note='把“排位求饶”搬进比赛 BP：换不换是面子与胜负的交换，不是操作题。',
+        opts=[
+            ('不换', 'roll', '0.10', '{ attrs: { operation: 2, popularity: 2 }, coachTrust: 2 }', '{ coachTrust: -3, attrs: { mentality: -2 } }',
+             '你把他野区反了个干净，公屏再没响过。', '你被抓了七次，公屏开始刷「谢谢哥」。'),
+            ('换一个', 'success', '—', '{ coachTrust: 1, attrs: { teamfight: 1 } }', '—',
+             '你锁了版本答案，对面打野发了句「好人」。', ''),
+            ('回他一句', 'roll', '0.05', '{ attrs: { popularity: 3 } }', '{ attrs: { mentality: -1 }, coachTrust: -2 }',
+             '你回了句「那你别来」，全场笑了。', '话被截进集锦，标题写「赛前挑衅」。'),
+        ],
+    ),
+    dict(
+        id='N14', kind='match', phase='decline', once=True, weight=2,
+        requires='signed && coachTrust >= 25',
+        text='决赛输了。你坐在椅子上没动，对面五个人已经走过来。',
+        meme='赛后痛哭', origin='决赛被打崩后坐在椅子上痛哭的名场面。',
+        note='不写哭，写“坐着没动”；握手是职业礼仪，但玩家可以选择先缓一会儿。',
+        opts=[
+            ('站起来握手', 'success', '—', '{ attrs: { mentality: 2 }, coachTrust: 2 }', '—',
+             '你一个个握过去，手有点抖。', ''),
+            ('坐着缓一会儿', 'roll', '0.05', '{ attrs: { mentality: 1 } }', '{ attrs: { popularity: -3 }, coachTrust: -2 }',
+             '你缓了十秒，还是站起来走了过去。', '镜头拍了你半分钟，弹幕说你输不起。'),
+            ('直接回休息室', 'fail', '—', '—', '{ attrs: { popularity: -4 }, coachTrust: -4 }',
+             '', '官方罚了你一笔，公告写「未完成赛后礼仪」。'),
+        ],
+    ),
+    dict(
+        id='N15', kind='special', phase='peak', once=True, weight=2,
+        requires='signed && honors 含 lpl-champion 或 worlds-champion',
+        text='官方问你要哪个英雄的皮肤。你说了两个，两个英雄的粉丝在论坛吵翻了。',
+        meme='杰斯吧爆吧', origin='选冠军皮肤时两个英雄之争，两个贴吧互爆。',
+        note='不指定英雄名，只保留“二选一被粉丝放大”的结构；后果全落人气与心态。',
+        opts=[
+            ('选第一个', 'roll', '0.10', '{ attrs: { popularity: 3 } }', '{ attrs: { popularity: -2 } }',
+             '皮肤原画出来那天，那个英雄的登场率涨了一倍。', '另一个英雄的玩家刷了三天差评。'),
+            ('让粉丝投票', 'roll', '0.05', '{ attrs: { popularity: 2 } }', '{ attrs: { popularity: -3 } }',
+             '投票持续了两周，你每天转发一次。', '两边都觉得你在敷衍，投票成了骂战。'),
+            ('两个都想要', 'roll', '0.05', '{ attrs: { popularity: 4 } }', '{ attrs: { popularity: -2 } }',
+             '官方破例做了两款，你成了第一个。', '官方回了句「不行」，截图被传得到处都是。'),
+        ],
+    ),
+    dict(
+        id='N16', kind='life', phase='any', once=False, weight=10,
+        requires='无',
+        text='你被单杀，镜头切过来。你对着摄像头说了一句「我没哭」。',
+        meme='主播没有哭', origin='直播嘴硬名言，配句是“还在嘴硬”。',
+        note='把“嘴硬”做成可选的台阶：继续硬、笑一下、不解释；没有人真的哭。',
+        opts=[
+            ('继续嘴硬', 'roll', '0.10', '{ attrs: { popularity: 3 } }', '{ attrs: { popularity: -2, mentality: -2 } }',
+             '这句话上了热搜，配图是你红着的眼睛。', '弹幕把你三年前的哭脸翻了出来。'),
+            ('笑一下', 'success', '—', '{ attrs: { mentality: 1 } }', '—',
+             '你笑出了声，弹幕也跟着笑。', ''),
+            ('不解释', 'roll', '0.05', '{ attrs: { mentality: 1 } }', '{ attrs: { mentality: -1 } }',
+             '你低头继续补刀，镜头自己切走了。', '沉默被解读成破防，超话吵了一晚上。'),
+        ],
+    ),
+    dict(
+        id='N17', kind='life', phase='any', once=False, weight=10,
+        requires='无',
+        text='排位排队的间隙，你用画图软件画了只猫。第二天，它成了粉丝群头像。',
+        meme='被电竞耽误的画家', origin='排位间隙用系统画图软件鼠绘，画功不错。',
+        note='轻事件，只影响人气和训练状态；“画队友”那条把风险落在队内关系上。',
+        opts=[
+            ('接着画', 'roll', '0.10', '{ attrs: { popularity: 3 } }', '{ coachTrust: -2 }',
+             '你画了一整套，战队官方拿去做了表情包。', '画到凌晨，第二天的训练赛你全程在打哈欠。'),
+            ('删掉', 'success', '—', '{ attrs: { mentality: 1 } }', '—',
+             '你清空了画布，粉丝说可惜。', ''),
+            ('画队友', 'roll', '0.05', '{ attrs: { popularity: 2, mentality: 1 } }', '{ coachTrust: -3 }',
+             '你把队友画成一排土豆，他笑了一晚上。', '队友觉得你在嘲讽他，训练室冷了两天。'),
+        ],
+    ),
+    dict(
+        id='N18', kind='special', phase='peak', once=True, weight=2,
+        requires='signed && honors 含 lpl-champion 或 worlds-champion',
+        text='决赛台下，你被镜头拍到在吃热狗。三个月后，官方把它做成了守卫皮肤。',
+        meme='冠军热狗', origin='拳头以他吃热狗的照片为原型做了冠军守卫皮肤。',
+        note='把真人照片换成“镜头拍到”，官方做皮肤保留；钱只给 400，不破坏经济平衡。',
+        opts=[
+            ('转发认领', 'roll', '0.10', '{ attrs: { popularity: 4 } }', '{ attrs: { popularity: -1 } }',
+             '你转发了皮肤预览，配文「版权费呢」。', '有人翻出你比赛前吃坏肚子的旧账。'),
+            ('装作不知道', 'success', '—', '{ attrs: { mentality: 1 } }', '—',
+             '你在采访里被问到，只说「挺好吃的」。', ''),
+            ('直播吃给粉丝看', 'roll', '0.10', '{ attrs: { popularity: 3 }, money: 400 }', '{ attrs: { popularity: -2 } }',
+             '那晚直播间全在刷热狗，商家找上门来。', '你吃撑了，第二天训练赛状态全无。'),
+        ],
+    ),
+    dict(
+        id='N19', kind='life', phase='any', once=False, weight=10,
+        requires='无',
+        text='一晚上排到同一个 ID 三把。第三把，他在公屏打了一句「又是你」。',
+        meme='峡谷鬼见愁 / 诺导', origin='排位存在感太强，撞上的队友对手都发愁。',
+        note='“又是你”是中性开场，三个选项分别是交朋友、打服他、躲开，都不带惩罚。',
+        opts=[
+            ('加个好友', 'roll', '0.10', '{ attrs: { popularity: 2, mentality: 1 } }', '{ attrs: { mentality: -1 } }',
+             '你们双排了一晚上，他把把给你让线。', '他反手把你举报了，理由写「演员」。'),
+            ('认真打', 'roll', '0.10', '{ attrs: { operation: 2 } }', '{ attrs: { mentality: -2 } }',
+             '第三把你把他打到 0/8，他再没说话。', '你越认真越急，第三把输得最难看。'),
+            ('换个号', 'success', '—', '{ stamina: 4 }', '—',
+             '你换了个小号，清净了一晚上。', ''),
+        ],
+    ),
+    dict(
+        id='N20', kind='life', phase='any', once=False, weight=10,
+        requires='无',
+        text='粉丝见面会，你从头到尾只摆了一个点赞手势。第二天，有人做了九宫格对比图。',
+        meme='人型合影立牌', origin='与谁合影都摆标准点赞手势，像会自动换装的立牌。',
+        note='不写“敷衍”，写“被做成九宫格”；三个选项都是公关处理，代价只在人气。',
+        opts=[
+            ('发微博自嘲', 'roll', '0.10', '{ attrs: { popularity: 3 } }', '{ attrs: { popularity: -2 } }',
+             '你转了那张图，说「姿势是练过的」。', '评论区说你连营业都不用心。'),
+            ('下次换个姿势', 'success', '—', '{ attrs: { popularity: 1, mentality: 1 } }', '—',
+             '第二场你比了个心，粉丝尖叫。', ''),
+            ('不回应', 'success', '—', '{ attrs: { mentality: 1 } }', '—',
+             '图传了几天，自己沉下去了。', ''),
+        ],
+    ),
 ]
 
 HDR = ['编号', '类型', '阶段', '一次', '权重', '触发条件', '正文', '字数', '来源梗', '梗的原文', '改编说明', '审查']
@@ -174,7 +324,7 @@ ws = wb.active
 ws.title = '说明'
 
 guide = [
-    ('人物梗 10 条试写（未进代码）', 16, True),
+    ('人物梗 20 条试写（未进代码）', 16, True),
     ('用途：让你判断“人物梗表怎么变成事件”的成分，通过后再决定要不要扩写、扩多少。', 10, False),
     ('', 10, False),
     ('来源：lol-memes/LOL人物梗表.xlsx（1000 行）。只取“行为/名场面”类梗，外号类不用；', 10, False),
@@ -183,7 +333,7 @@ guide = [
     ('怎么读：先看“正文 + 三个选项”，再看“梗的原文”和“改编说明”，判断是不是你想要的味道。', 10, False),
     ('“审查”列留空，你可以填 通过 / 改 / 删；改的话把想改的那句写在旁边。', 10, False),
     ('', 10, False),
-    ('成分（详见“成分”sheet）：比赛 4 / 生活 4 / 特殊 2；成长 1 / 巅峰 6 / 衰退 2 / 任意 1。', 10, False),
+    ('成分（详见“成分”sheet）：比赛 6 / 生活 10 / 特殊 4；成长 2 / 巅峰 9 / 衰退 4 / 任意 5。', 10, False),
     ('与现有 84 条没有一对一重复；最近的邻居是 M16（偷家）、M11（抢龙）、L31（表情包），已在改编说明里区分。', 10, False),
     ('', 10, False),
     ('约束：正文 ≤50 字；选项 2–3 个；后果只用现有字段（attrs / stamina / money / coachTrust / flag 等）。', 10, False),
@@ -231,15 +381,15 @@ wo.freeze_panes = 'A2'
 wf = wb.create_sheet('成分')
 rows = [
     ('维度', '分布'),
-    ('总数', '10 条 / 30 个选项'),
-    ('类型', '比赛 4（N01–N04）· 生活 4（N06–N09）· 特殊 2（N05、N10）'),
-    ('阶段', '成长 1（N07）· 巅峰 6（N01 N02 N04 N05 N08 N10）· 衰退 2（N03 N09）· 任意 1（N06）'),
-    ('梗的来源类别', '赛场名场面 4（装杯、五杀、闪现撞墙、灵性偷龙）· 直播/粉丝 4（忘关麦、妈妈粉、大主播、口头禅）· 采访 1（膏书记）· 立 flag 1（女装）'),
+    ('总数', '20 条 / 60 个选项'),
+    ('类型', '比赛 6（N01–N04、N13、N14）· 生活 10（N06–N09、N11、N12、N16、N17、N19、N20）· 特殊 4（N05、N10、N15、N18）'),
+    ('阶段', '成长 2（N07 N11）· 巅峰 9（N01 N02 N04 N05 N08 N10 N13 N15 N18）· 衰退 4（N03 N09 N12 N14）· 任意 5（N06 N16 N17 N19 N20）'),
+    ('梗的来源类别', '赛场名场面 6（装杯、五杀、闪现撞墙、灵性偷龙、刀妹公屏、赛后痛哭）· 直播/粉丝 9（忘关麦、妈妈粉、大主播、口头禅、洗澡挂机、嘴硬、鼠绘、排位撞车、合影）· 采访 1（膏书记）· 立 flag 1（女装）· 生活/荣誉 3（打地铺、冠军皮肤、冠军热狗）'),
     ('梗表用法', '只取“行为/名场面”，外号类（阿水、柴犬、大B老师等）一条没用；1000 行里可用的大约两成，其余是外号/谐音'),
     ('真人名/战队名', '0 / 0（正文与选项都不出现）'),
-    ('与现有 84 条的关系', '无一对一重复；M16 偷家、M11 抢龙、L31 表情包、L21 直播合同最近，已在改编说明区分'),
-    ('后果落点', 'attrs 与 coachTrust 为主，2 条各用一个 flag（#五杀 / #女装）；未用 honor / teamId / money'),
-    ('待你判断', '这种“行为梗→两难选项”的比例够不够；要不要继续从这 20% 里再挑 20–40 条'),
+    ('与现有 84 条的关系', '无一对一重复；M16 偷家、M11 抢龙、L31 表情包、L21 直播合同、L28 退役仪式最近，已在改编说明区分'),
+    ('后果落点', 'attrs 与 coachTrust 为主，2 条各用一个 flag（#五杀 / #女装），1 条给 money 400；未用 honor / teamId'),
+    ('待你判断', '这 20 条的比例与味道对不对；对的话再按同口径挑 20–40 条'),
 ]
 for i, (a, b) in enumerate(rows, start=1):
     c1 = wf.cell(row=i, column=1, value=a)
