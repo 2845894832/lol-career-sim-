@@ -96,8 +96,9 @@ AFTER34 = load("out-after.json")
 AFTER80 = load("out-after80.json")
 AFTER84 = load("out-after84.json")
 AFTER104 = load("out-after104w5.json")  # 权重 10→5 之后
+AFTER164 = load("out-after164.json")  # 三批扩写之后
 BS, S34, S80, S84 = BEFORE["summary"], AFTER34["summary"], AFTER80["summary"], AFTER84["summary"]
-S104 = AFTER104["summary"]
+S164 = AFTER164["summary"]
 
 
 def event_stats(d):
@@ -117,12 +118,12 @@ B_ROWS = event_stats(BEFORE)
 A34_ROWS = event_stats(AFTER34)
 A80_ROWS = event_stats(AFTER80)
 A84_ROWS = event_stats(AFTER84)
-A104_ROWS = event_stats(AFTER104)
+A164_ROWS = event_stats(AFTER164)
 AVG80 = {r[0]: r[2] for r in A80_ROWS}
 MAX80 = {r[0]: r[3] for r in A80_ROWS}
 AVG84 = {r[0]: r[2] for r in A84_ROWS}
-AVG104 = {r[0]: r[2] for r in A104_ROWS}
-MAX104 = {r[0]: r[3] for r in A104_ROWS}
+AVG164 = {r[0]: r[2] for r in A164_ROWS}
+MAX164 = {r[0]: r[3] for r in A164_ROWS}
 
 
 def parse_events():
@@ -189,7 +190,7 @@ def main():
     k.title(
         doc,
         "事件库扩到多少、谁来写",
-        "06 号 ticket · 2026-11-07 · 104 条已进代码 · 模拟 24 局可复跑",
+        "06 号 ticket · 2026-11-07 · 164 条已进代码 · 模拟 24 局可复跑",
     )
 
     k.note(
@@ -197,8 +198,8 @@ def main():
         "**你已拍板的：** 补到 80 条以上、AI 写你逐条看、选项 6–8 字（改设计文档）、失败文案每个选项单独写、"
         "比赛事件要求已签约且能上场、删掉转教练/合同转会/换位置类、L11 改两万块、E05 看伤停、84 条审核通过写进代码、"
         "事件链先不放进去、签约事件留着不写、8 处旧失败文案补上、84 条先停、链先停、梗密度不调、人物梗不引用真人名、"
-        "人物梗 20 条审核通过写进代码、所有 weight 10 的事件改成 5。"
-        "**还没拍板的：** 链以后做不做、收尾要不要用 auto 强制位、104 条够不够 / 要不要继续到 136 条、人物梗要不要再扩 20–40 条。"
+        "人物梗 20 条审核通过写进代码、所有 weight 10 的事件改成 5；2026-11-07 又分三批各 20 条审核通过写进代码（比赛梗 M28–M57、人物梗 N21–N50）。"
+        "**还没拍板的：** 链以后做不做、收尾要不要用 auto 强制位、164 条够不够、人物梗/比赛梗还要不要继续写。"
         "文中标「未经用户确认」的推导不是决定。",
     )
 
@@ -206,19 +207,19 @@ def main():
     k.h1(doc, "一", "三句话")
     k.para(
         doc,
-        f"**第一句：条数不是问题，重复才是。** E01 从每局 **{f1(45.4)} 次** 降到 **{f1(AVG104.get('E01', 0))} 次**，"
-        f"无事件的周从 **{pct(BS['emptyRate'])}** 变成 **{pct(S104['emptyRate'])}**（104 条，24 局）。",
+        f"**第一句：条数不是问题，重复才是。** E01 从每局 **{f1(45.4)} 次** 降到 **{f1(AVG164.get('E01', 0))} 次**，"
+        f"无事件的周从 **{pct(BS['emptyRate'])}** 变成 **{pct(S164['emptyRate'])}**（164 条，24 局）。",
     )
     k.para(
         doc,
-        f"**第二句：104 条把最高重复压到 {S104['maxRepeatInRun']} 次，但仍不是「记不住第二次」。** "
-        f"顶部 N17 每局 {f1(AVG104.get('N17', 0))} 次；要压到 3 次以内，按算式约 136 条（丙）。",
+        f"**第二句：164 条把最高重复压到 {S164['maxRepeatInRun']} 次，但仍不是「记不住第二次」。** "
+        f"顶部 N34 每局 {f1(AVG164.get('N34', 0))} 次；要压到 3 次以内，按算式约 136 条（丙）。",
     )
     k.para(
         doc,
         "**第三句：这次真正改的是「能不能穿帮」，不是「够不够多」。** 比赛事件现在要求已签约且信任 ≥25，"
-        "路人期不会再抽到职业赛画面；代价是可重复池变小，顶部重复略升（80 条时最高 16 → 84 条时 14 → 104 条时 "
-        f"{S104['maxRepeatInRun']}）。",
+        "路人期不会再抽到职业赛画面；代价是可重复池变小，顶部重复略升（80 条时最高 16 → 84 条时 14 → 164 条时 "
+        f"{S164['maxRepeatInRun']}）。",
     )
 
     # ---------------- 二 ----------------
@@ -226,18 +227,18 @@ def main():
     k.para(
         doc,
         "口径：8 个种子 × 3 种策略（balanced / grind / noScrim），每局 240 周、每周一次抽取；"
-        "遇到事件选第 `(seed + week) % 选项数` 个，不挑最优。四列只改了事件库。",
+        "遇到事件选第 `(seed + week) % 选项数` 个，不挑最优。下面几列只改了事件库。",
     )
     k.table(
         doc,
-        ["指标", "落表前", "34 条", "80 条", "84 条", "104 条"],
+        ["指标", "落表前", "34 条", "80 条", "84 条", "164 条"],
         [
-            ["抽到事件", str(BS["totalEvents"]), str(S34["totalEvents"]), str(S80["totalEvents"]), str(S84["totalEvents"]), str(S104["totalEvents"])],
-            ["无事件周占比", pct(BS["emptyRate"]), pct(S34["emptyRate"]), pct(S80["emptyRate"]), pct(S84["emptyRate"]), pct(S104["emptyRate"])],
-            ["每局事件数", f1(BS["eventsPerRun"]), f1(S34["eventsPerRun"]), f1(S80["eventsPerRun"]), f1(S84["eventsPerRun"]), f1(S104["eventsPerRun"])],
-            ["每局空周数", f1(BS["emptiesPerRun"]), f1(S34["emptiesPerRun"]), f1(S80["emptiesPerRun"]), f1(S84["emptiesPerRun"]), f1(S104["emptiesPerRun"])],
-            ["不同事件数", str(BS["distinctEvents"]), str(S34["distinctEvents"]), str(S80["distinctEvents"]), str(S84["distinctEvents"]), str(S104["distinctEvents"])],
-            ["单事件单局最高", str(BS["maxRepeatInRun"]), str(S34["maxRepeatInRun"]), str(S80["maxRepeatInRun"]), str(S84["maxRepeatInRun"]), str(S104["maxRepeatInRun"])],
+            ["抽到事件", str(BS["totalEvents"]), str(S34["totalEvents"]), str(S80["totalEvents"]), str(S84["totalEvents"]), str(S164["totalEvents"])],
+            ["无事件周占比", pct(BS["emptyRate"]), pct(S34["emptyRate"]), pct(S80["emptyRate"]), pct(S84["emptyRate"]), pct(S164["emptyRate"])],
+            ["每局事件数", f1(BS["eventsPerRun"]), f1(S34["eventsPerRun"]), f1(S80["eventsPerRun"]), f1(S84["eventsPerRun"]), f1(S164["eventsPerRun"])],
+            ["每局空周数", f1(BS["emptiesPerRun"]), f1(S34["emptiesPerRun"]), f1(S80["emptiesPerRun"]), f1(S84["emptiesPerRun"]), f1(S164["emptiesPerRun"])],
+            ["不同事件数", str(BS["distinctEvents"]), str(S34["distinctEvents"]), str(S80["distinctEvents"]), str(S84["distinctEvents"]), str(S164["distinctEvents"])],
+            ["单事件单局最高", str(BS["maxRepeatInRun"]), str(S34["maxRepeatInRun"]), str(S80["maxRepeatInRun"]), str(S84["maxRepeatInRun"]), str(S164["maxRepeatInRun"])],
         ],
         [4.2, 2.9, 2.9, 2.9, 2.9, 2.9],
         size=8.6,
@@ -259,9 +260,9 @@ def main():
         caption="表 2-2　落表前能重复的只有两条；决赛/邀请函/兜底都只出 1 次，略",
     )
 
-    k.h2(doc, "104 条时：最高 {n} 次".format(n=S104["maxRepeatInRun"]))
+    k.h2(doc, "164 条时：最高 {n} 次".format(n=S164["maxRepeatInRun"]))
     rows = []
-    for eid, total, avg, mx in A104_ROWS[:10]:
+    for eid, total, avg, mx in A164_ROWS[:10]:
         kind = next((e["kind"] for e in EV if e["id"] == eid), EXTRA_KIND.get(eid, ""))
         rows.append([eid, KIND_CN.get(kind, "—"), f1(avg), str(mx)])
     k.table(
@@ -270,14 +271,14 @@ def main():
         rows[:6],
         [3.2, 3.2, 4.0, 4.0],
         size=8.6,
-        caption="表 2-3　104 条时重复最多的几条（24 局平均）",
+        caption="表 2-3　164 条时重复最多的几条（24 局平均）",
     )
     k.para(
         doc,
-        f"104 条里 **75 条可重复**、29 条 `once`，权重 5/2/1 = 75/13/16（这 99 条表内事件；另有 E01–E05 也是 5）。240 次抽取摊到 75 条，"
-        "再乘权重差，顶部仍有 7–9 次。要让单条「一局记不住第二次」，条数还得往上走。"
+        f"164 条里 **129 条可重复**、30 条 `once`，权重 5/2/1 = 135/13/16。240 次抽取摊到 129 条，"
+        "再乘权重差，顶部仍有一条 4–5 次。要让单条「一局记不住第二次」，条数还得往上走。"
         "\n\n**权重 10→5 的实测：** 全体一起减半不改变相对占比，只有 weight 1/2 的特殊事件占比翻倍；"
-        f"最高重复从 18 降到 {S104['maxRepeatInRun']}，平均 >5 次的仍是 12 条（N17 8.5 次/局）。",
+        f"最高重复从 18 降到 {S164['maxRepeatInRun']}，平均 >5 次的从 12 条降到 0 条（顶部 N34 4.6 次/局）。",
     )
 
     # ---------------- 三 ----------------
@@ -309,8 +310,8 @@ def main():
         doc,
         "乙累计新写 54 条（46 条新写 + 8 条补写），删 9 条后净增 50；54 × 20 分钟 ≈ 18 小时。"
         "丙是在 84 条上再加 52 条，≈17.3 小时。"
-        "2026-11-07 又把已审的 20 条人物梗并进代码，现 104 条，实测最高 "
-        f"{S104['maxRepeatInRun']} 次/局；下面四、五节按 104 条重算。",
+        "2026-11-07 又分三批各 20 条并进代码，现 164 条，实测最高 "
+        f"{S164['maxRepeatInRun']} 次/局；下面四、五节按 164 条重算。",
         size=9.5,
         color=k.G,
     )
@@ -333,7 +334,7 @@ def main():
         ],
         [4.0, 4.0, 4.0, 3.0],
         size=8.6,
-        caption="表 4-1　类型配额；80 条目标之外又并入 20 条人物梗（比赛 +5、生活 +14、特殊 +1，未经你逐条配额）",
+        caption="表 4-1　类型配额；80 条目标之后又并入 60 条（人物梗 30 + 比赛梗 30），不按原配额",
     )
     k.table(
         doc,
@@ -347,23 +348,22 @@ def main():
         ],
         [4.0, 4.0, 4.0, 3.0],
         size=8.6,
-        caption="表 4-2　阶段配额；人物梗 20 条按成长 2 / 巅峰 9 / 衰退 4 / 任意 5 摊入",
+        caption="表 4-2　阶段配额；后 60 条按写作时的手感分配，未逐条对配额",
     )
     k.para(
         doc,
-        "如果继续到 136 条（丙），按同一比例摊剩下 52 条：比赛 +11、生活 +20、特殊 +7；"
-        "阶段成长 +8、巅峰 +20、衰退 +5、任意 +9。这是按现有比例算的，**未经用户确认**。",
+        "丙方案原定 136 条，现在 164 条已经越过；再加多少、按什么比例摊，**未经用户确认**。",
         size=9.5,
         color=k.G,
     )
 
     # ---------------- 五 ----------------
-    k.h1(doc, "五", "代码里的 104 条：改了什么")
+    k.h1(doc, "五", "代码里的 164 条：改了什么")
     k.para(
         doc,
         "整表替换进 `src/data/events.ts`（E01–E05 保留，E02/E03 按你要求改了掷骰口径）。"
         "删 9 条：S01 P08 P12 L13 S11 L17 L20 L23 L27（转教练、合同转会、换位置、二队、L20 替补名单）。"
-        "新增 8 条：L33–L36、S12–S15；2026-11-07 再并入人物梗 N01–N20（你已审核通过）。"
+        "新增 8 条：L33–L36、S12–S15；2026-11-07 并入人物梗 N01–N20，以及三批扩写各 20 条（M28–M57、N21–N50，均经你审核）。"
         "84 条版见 `P1-事件库-84条-重写稿-v5.xlsx`，人物梗见 `P1-事件库-人物梗-20条-试写.xlsx`；测试与类型检查全绿（75 tests）。",
     )
     k.table(
@@ -378,7 +378,8 @@ def main():
             ["E05", "1", "触发改为 `injury >= 1`，并改 `once`，避免伤停期间每周复发"],
             ["L11", "1", "五百块 → 两万块，成功分支写 `#路人王`"],
             ["失败文案", "8", "E01–E04 的 8 个失败分支补上文案（此前只有数值）"],
-            ["人物梗", "20", "N01–N20 审核通过进代码；比赛 5 / 生活 14 / 特殊 1；正文 0 真人名"],
+            ["人物梗", "30", "N01–N50 审核通过进代码；正文 0 真人名"],
+            ["扩写三批", "60", "M28–M57、N21–N50；比赛 30 / 生活 30；正文 0 真人名"],
             ["权重", "77", "所有 weight 10 → 5（含 E01–E05、M/L/S/P/N、F01/F02）；特殊 1/2 不动"],
         ],
         [3.2, 1.6, 10.8],
@@ -412,8 +413,8 @@ def main():
         [
             ["事件链未进代码", "5 条链", "你已定先不放进去；建议表留着，开链时再定 auto"],
             ["签约事件", "1 条", "你已定留着不写；现在仍走 `resolveSigningWindow`"],
-            ["丙方案的 52 条", "52", "未写；是否继续到 136 条要你定"],
-            ["人物梗再扩", "0", "20 条已审核进代码；要不要再扩 20–40 条要你定"],
+            ["再往上扩", "0", "136 条已越过（现 164）；要不要继续写要你定"],
+            ["梗继续扩", "0", "三批 60 条已进代码；还要不要写要你定"],
             ["梗密度未校准", "—", "有的梗很密、有的只有一句，需要你看过再调"],
         ],
         [4.6, 2.0, 9.4],
@@ -424,8 +425,8 @@ def main():
     # ---------------- 八 ----------------
     k.h1(doc, "八", "还要你拍板")
     k.para(doc, "**已定（2026-11-07）：** 84 条先停、不做到 136；5 条链先停；梗密度不调；人物梗表不引用真人名；人物梗 20 条审核通过写进代码。", bullet=True)
-    k.para(doc, "1. 104 条够不够？要不要按丙方案继续到 136（再加 32，≈10.7 小时）？", bullet=True)
-    k.para(doc, "2. 人物梗这 20 条的味道对不对？要不要按同口径再挑 20–40 条？", bullet=True)
+    k.para(doc, "1. 164 条够不够？还要不要继续写？", bullet=True)
+    k.para(doc, "2. 后 60 条的味道对不对？哪几条要改要删？", bullet=True)
     k.para(doc, "3. 5 条事件链以后做不做？做的话收尾用不用 `auto`？", bullet=True)
     k.para(doc, "4. 签约事件（单选项「签字」）要不要补进 `resolveSigningWindow`？", bullet=True)
 
@@ -436,8 +437,11 @@ def main():
     cmd(doc, "npx vite-node scripts/06-events/sim.ts after     # 34 条：在 67677c8 上跑，写 out-after.json")
     cmd(doc, "npx vite-node scripts/06-events/sim.ts after80   # 80 条版")
     cmd(doc, "npx vite-node scripts/06-events/sim.ts after84   # 84 条版")
-    cmd(doc, "npx vite-node scripts/06-events/sim.ts after104  # 104 条、权重 10")
-    cmd(doc, "npx vite-node scripts/06-events/sim.ts after104w5  # 本文数字（104 条、权重 5）")
+    cmd(doc, "npx vite-node scripts/06-events/sim.ts after104  # 164 条、权重 10")
+    cmd(doc, "npx vite-node scripts/06-events/sim.ts after104w5  # 104 条、权重 5")
+    cmd(doc, "npx vite-node scripts/06-events/sim.ts after124  # 124 条")
+    cmd(doc, "npx vite-node scripts/06-events/sim.ts after144  # 144 条")
+    cmd(doc, "npx vite-node scripts/06-events/sim.ts after164  # 本文数字（164 条）")
     cmd(doc, "IGNORE_CONS=1 DELETED=S01,P08,P12 PYTHONIOENCODING=utf-8 python scripts/06-events/audit_table.py")
     cmd(doc, "npx vitest run && npx tsc --noEmit")
     k.para(
