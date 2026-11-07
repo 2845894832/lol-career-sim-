@@ -1,4 +1,4 @@
-# 把 out-after204.json 里「重复 >3 次」的事件渲染成临时表。
+# 把 out-after224.json 里「重复 >3 次」的事件渲染成临时表。
 # 用法：npx vite-node scripts/06-events/sim.ts after184
 #       PYTHONIOENCODING=utf-8 <python> scripts/06-events/build_hot_xlsx.py
 import json
@@ -26,7 +26,7 @@ WIDTHS = [5, 7, 8, 8, 7, 9, 9, 15, 8, 70]
 
 
 def load():
-    data = json.loads((HERE / 'out-after204.json').read_text(encoding='utf-8'))
+    data = json.loads((HERE / 'out-after224.json').read_text(encoding='utf-8'))
     live = json.loads((HERE / 'events-live.json').read_text(encoding='utf-8'))
     meta = {e['id']: e for e in live}
     over = {}
@@ -85,7 +85,7 @@ def main():
     sheet(wb, '单局曾超3次', max3)
 
     s = wb.create_sheet('说明')
-    s.append(['口径', '8 种子 × 3 策略 = 24 局；每局 240 次抽事件；204 条事件库'])
+    s.append(['口径', '8 种子 × 3 策略 = 24 局；每局 240 次抽事件；224 条事件库'])
     s.append(['平均>3次', f'{len(avg3)} 条（24 局总次数 ÷ 24 > 3）'])
     s.append(['单局曾超3次', f'{len(max3)} 条（某一局里出现 >3 次；均值可能 ≤3）'])
     s.append(['为什么生活事件多', '生活事件 240 周都能进池；比赛事件只在每年 26 个比赛周、且要已签约+教练信任≥25'])

@@ -14444,5 +14444,1238 @@
     "failText": "你把电闸拉了，整层楼黑了十分钟。"
    }
   ]
+ },
+ {
+  "id": "L58",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "洗衣机翻了三遍，袜子还是只剩一只。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "光脚穿鞋",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": -8
+    },
+    "successText": "你光脚穿了一天鞋，居然习惯了。",
+    "failText": "鞋里进了沙子，你走一步龇一下牙。"
+   },
+   {
+    "label": "下单十双",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "money": -100
+    },
+    "fail": null,
+    "successText": "你一次买了十双同款，从此不再配对。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L59",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "你睁眼时，训练赛已经开了十分钟。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "冲去基地",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": 1,
+     "stamina": -8
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     },
+     "coachTrust": -3
+    },
+    "successText": "你赶到时刚好赶上第二把，教练没多说。",
+    "failText": "你迟到被记了一笔，当天训练翻倍。"
+   },
+   {
+    "label": "群里先道歉",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "coachTrust": -1
+    },
+    "fail": null,
+    "successText": "你在群里道了歉，套上衣服就出门。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L60",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "楼下广场舞的音乐，每晚七点准时响。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "关窗硬练",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     },
+     "stamina": -8
+    },
+    "successText": "你把窗户关死，戴上耳机练进去了。",
+    "failText": "低音一直往脑子里钻，你练得心烦。"
+   },
+   {
+    "label": "下楼商量",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你下楼跟领队阿姨聊了两句，她们把音量调小了一格。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L61",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "外卖送到隔壁楼层，骑手电话已经打不通。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "给人送回去",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "stamina": -8
+    },
+    "fail": null,
+    "successText": "你爬了两层送过去，对方连声道谢。",
+    "failText": null
+   },
+   {
+    "label": "将错就错",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     },
+     "money": 0
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "money": -400
+    },
+    "successText": "你打开一看是自己爱吃的，干脆吃了。",
+    "failText": "你吃完才发现，那是别人的减脂餐。"
+   }
+  ]
+ },
+ {
+  "id": "L62",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "新队服印出来，你的 ID 少了一个字母。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "将错就错",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "coachTrust": -1
+    },
+    "successText": "你穿着错版队服上场，弹幕全在刷这个梗。",
+    "failText": "镜头一扫，解说念了三遍都没念对。"
+   },
+   {
+    "label": "返工重印",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "money": -100,
+     "coachTrust": 1
+    },
+    "fail": null,
+    "successText": "你自费重印了一件，后勤说下次注意。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L63",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "你在直播间抽奖，抽中的是自己的粉丝。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "加送一份",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     },
+     "money": -200
+    },
+    "fail": null,
+    "successText": "你又加了一份签名照，弹幕说这波不亏。",
+    "failText": null
+   },
+   {
+    "label": "按规则发",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -2
+     }
+    },
+    "successText": "你按规则发了奖，粉丝在超话说你公道。",
+    "failText": "有人刷你内定，你解释了半天没人信。"
+   }
+  ]
+ },
+ {
+  "id": "L64",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "粉丝群投票：最想看你玩哪个英雄。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "顺从民意",
+    "risk": "roll",
+    "attrs": [
+     "operation"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "operation": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "operation": -2,
+      "mentality": -1
+     }
+    },
+    "successText": "你选了票数最高的，直播效果拉满。",
+    "failText": "那英雄你根本不熟，被路人打穿了。"
+   },
+   {
+    "label": "选拿手的",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "operation": 1
+     },
+     "coachTrust": 1
+    },
+    "fail": null,
+    "successText": "你锁了自己最熟的那个，稳稳赢了两把。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L65",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "直播到一半，手机停机，弹幕全在刷问号。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "借个热点",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     },
+     "money": -100
+    },
+    "successText": "你用队友的热点续上，观众说这操作很真实。",
+    "failText": "热点也断断续续，你只好提前下播。"
+   },
+   {
+    "label": "先充话费",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1
+     },
+     "money": -100
+    },
+    "fail": null,
+    "successText": "你充完话费回来，直播间已经走了一半人。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L66",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "你顶着满头泡沫，发现洗发水挤不出来了。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "用水冲掉",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "fail": null,
+    "successText": "你冲了半天，头发还是有点黏。",
+    "failText": null
+   },
+   {
+    "label": "喊队友送",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     }
+    },
+    "successText": "队友隔着门递进来一瓶，还笑了你半天。",
+    "failText": "你喊了五分钟，没人理你。"
+   }
+  ]
+ },
+ {
+  "id": "L67",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "电梯坏了，训练室在十二楼。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "爬十二楼",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "stamina": 8
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     },
+     "stamina": -8
+    },
+    "successText": "你一口气爬上去，居然比等电梯还快。",
+    "failText": "你爬到八楼就扶着墙喘，迟到了五分钟。"
+   },
+   {
+    "label": "等师傅修",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "coachTrust": -1
+    },
+    "fail": null,
+    "successText": "你在大厅等了四十分钟，训练赛已经开打。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L68",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "出门还是晴天，回来时下起了大雨。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "淋雨跑回",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "stamina": -8
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     },
+     "stamina": -16
+    },
+    "successText": "你一路跑回去，冲了个热水澡，反而精神了。",
+    "failText": "你淋透了，第二天鼻子一直不通。"
+   },
+   {
+    "label": "等雨停了",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "money": -50
+    },
+    "fail": null,
+    "successText": "你在便利店买了杯热饮，等雨小一点才走。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L69",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "食堂阿姨一勺下去，肉全抖回了盆里。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "再要一勺",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     },
+     "stamina": 8
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "coachTrust": -1
+    },
+    "successText": "阿姨笑着又给你添了一勺。",
+    "failText": "后面排队的人开始起哄，你只好端着盘子走了。"
+   },
+   {
+    "label": "算了吃饱",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": 8
+    },
+    "fail": null,
+    "successText": "你就着青菜吃完，下午早早又饿了。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L70",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "出门前，手机只剩 1% 的电。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "关机省电",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 1
+     }
+    },
+    "fail": null,
+    "successText": "你关了机，到基地才开，错过了两条消息。",
+    "failText": null
+   },
+   {
+    "label": "边充边走",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     },
+     "money": -800
+    },
+    "successText": "你一路充到基地，电量刚好够用。",
+    "failText": "充电宝没电，手机在半路黑屏了。"
+   }
+  ]
+ },
+ {
+  "id": "L71",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "粉丝送的周边，做工糙得像盗版。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "照样摆着",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1,
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1
+     }
+    },
+    "successText": "你把周边摆在显示器旁，粉丝看到很开心。",
+    "failText": "有人认出是盗版，评论区吵了起来。"
+   },
+   {
+    "label": "婉言谢绝",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你说心意收下了，东西让他留着自己用。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L72",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "你被拉进家族群，三姑六婆开始问工资。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "敷衍两句",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     }
+    },
+    "successText": "你发了个表情包，话题很快转走了。",
+    "failText": "你被追问了半小时，最后只能装没看见。"
+   },
+   {
+    "label": "发个红包",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "money": -200
+    },
+    "fail": null,
+    "successText": "你发了个红包，群里瞬间安静了。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L73",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "健身环在角落吃灰，你决定今天开始练。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "练二十分",
+    "risk": "roll",
+    "attrs": [
+     "mentality"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "stamina": 8
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     },
+     "stamina": -8
+    },
+    "successText": "你练了二十分钟，出了一身汗，睡得特别香。",
+    "failText": "你练了五分钟就躺下了，第二天腰酸。"
+   },
+   {
+    "label": "继续吃灰",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": -1
+     }
+    },
+    "fail": null,
+    "successText": "你把健身环挪了个位置，继续吃灰。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L74",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "凌晨一点，楼上开始跳绳。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "上去敲门",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -2
+     },
+     "coachTrust": -1
+    },
+    "successText": "对方道了歉，声音很快停了。",
+    "failText": "你敲了半天门，对方根本没开。"
+   },
+   {
+    "label": "戴耳塞睡",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     }
+    },
+    "fail": null,
+    "successText": "你塞上耳塞，跳绳声变成了闷闷的鼓点。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L75",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "你戴着口罩，眼镜一起雾就看不见屏幕。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "摘了硬打",
+    "risk": "roll",
+    "attrs": [
+     "operation"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "operation": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "operation": -2
+     },
+     "coachTrust": -1
+    },
+    "successText": "你摘了眼镜打完一局，居然没什么影响。",
+    "failText": "你眯着眼补刀，漏了一整波兵。"
+   },
+   {
+    "label": "换隐形眼镜",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 1
+     },
+     "money": -300
+    },
+    "fail": null,
+    "successText": "你换了隐形眼镜，世界一下清楚了。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L76",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "你翻旧手机，看到刚打职业时的照片。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "发到微博",
+    "risk": "roll",
+    "attrs": [
+     "popularity"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 2
+     }
+    },
+    "fail": {
+     "attrs": {
+      "popularity": -1,
+      "mentality": -1
+     }
+    },
+    "successText": "你发了张对比照，评论区说变化太大。",
+    "failText": "照片被你删了又恢复，最后还是没发。"
+   },
+   {
+    "label": "存进相册",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "mentality": 2
+     }
+    },
+    "fail": null,
+    "successText": "你把照片存好，盯着看了一会儿。",
+    "failText": null
+   }
+  ]
+ },
+ {
+  "id": "L77",
+  "kind": "life",
+  "phase": "any",
+  "tags": [
+   "#人物梗"
+  ],
+  "text": "你在楼顶晒被子，风把它吹到了隔壁阳台。",
+  "once": false,
+  "weight": 5,
+  "filler": false,
+  "auto": false,
+  "opponent": null,
+  "opponentRole": null,
+  "year": null,
+  "week": null,
+  "requires": null,
+  "options": [
+   {
+    "label": "翻过去捡",
+    "risk": "roll",
+    "attrs": [
+     "awareness"
+    ],
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "awareness": 1,
+      "mentality": 1
+     }
+    },
+    "fail": {
+     "attrs": {
+      "mentality": -1
+     },
+     "stamina": -8
+    },
+    "successText": "你小心翻过去把被子捞了回来。",
+    "failText": "你脚下一滑，差点跟着被子一起过去。"
+   },
+   {
+    "label": "找邻居要",
+    "risk": "success",
+    "attrs": null,
+    "mix": null,
+    "bonus": null,
+    "skillBonus": false,
+    "matchResult": null,
+    "success": {
+     "attrs": {
+      "popularity": 1
+     }
+    },
+    "fail": null,
+    "successText": "邻居把被子递回来，还说下次帮你收。",
+    "failText": null
+   }
+  ]
  }
 ]
