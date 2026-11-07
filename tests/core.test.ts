@@ -562,13 +562,13 @@ describe('事件抽取', () => {
   });
 
   it('表内事件条数与 ID 规则', () => {
-    const ids = EVENTS.filter((e) => /^[MLSP]\d\d$/.test(e.id)).map((e) => e.id);
-    expect(ids).toHaveLength(79);
-    expect(new Set(ids).size).toBe(79);
+    const ids = EVENTS.filter((e) => /^[MLSPN]\d\d$/.test(e.id)).map((e) => e.id);
+    expect(ids).toHaveLength(99);
+    expect(new Set(ids).size).toBe(99);
   });
 
   it('表内事件：正文 ≤50 字、2~3 个选项、后果字段合法', () => {
-    const tableEvents = EVENTS.filter((e) => /^[MLSP]\d\d$/.test(e.id));
+    const tableEvents = EVENTS.filter((e) => /^[MLSPN]\d\d$/.test(e.id));
     const consKeys = new Set([
       'attrs', 'temp', 'stamina', 'maxStamina', 'money', 'injury',
       'coachTrust', 'honor', 'flag', 'clearFlag', 'signed', 'teamId',
@@ -621,6 +621,7 @@ describe('事件抽取', () => {
                   s.coachTrust = trust;
                   s.attrs.popularity = pop;
                   s.flags = flags;
+                  s.honors = [{ id: 'lpl-champion', year }];
                   s.actionGrid = ['stream', null, null] as GameState['actionGrid'];
                   for (const e of randomPool(s)) reachable.add(e.id);
                   const f = forcedEvent(s);
