@@ -753,9 +753,29 @@ describe('段位与邀请函', () => {
     s.week = CONFIG.career.signingWindowWeek;
     // 名次是按分数与周数重算的；给一个远高于榜上任何人的分数才能稳住前 200。
     s.rankPoints = 60000;
+    s.placement = 1;
     s = planWeek(s, ['rest', 'rest', 'rest']);
-    while (s.pendingEvent) s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
+    expect(s.pendingEvent?.eventId).toBe('INV-1');
+    s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
     expect(s.signed).toBe(true);
+    expect(s.teamId).not.toBeNull();
+    expect(s.flags).toContain('#签约');
+  });
+
+  it('邀请函只有一个「签字进队」选项，必成', () => {
+    const s = newGame(20);
+    s.signed = false;
+    s.year = 1;
+    s.week = 5;
+    s.rankPoints = 4830;
+    s.placement = 1;
+    const ev = drawEvent(s).event!;
+    expect(ev.id).toBe('INV-1');
+    expect(ev.options).toHaveLength(1);
+    const opt = ev.options[0]!;
+    expect(opt.label).toBe('签字进队');
+    expect(opt.risk).toBe('success');
+    expect(opt.success?.signed).toBe(true);
   });
 
   it('没到王者且第 1 年，不计数也不终结', () => {

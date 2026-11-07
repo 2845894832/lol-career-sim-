@@ -180,10 +180,9 @@ function resolveSigningWindow(state: GameState, out: LogEntry[]): void {
   const qualified = rankOf(state.rankPoints, state.placement).index === CONFIG.rank.tiers.length - 1;
 
   if (qualified) {
-    state.signed = true;
-    state.freeAgent = false;
+    // 达标不再直接签字：下一周由 S16「邀请函」事件接手，选完才 signed。
     state.failedWindows = 0;
-    out.push({ text: '有队伍给了你一份合同。你签字的时候手有点抖。', tone: 'good' });
+    state.freeAgent = true;
     return;
   }
 

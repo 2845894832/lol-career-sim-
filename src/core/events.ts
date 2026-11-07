@@ -46,6 +46,7 @@ export function randomPool(state: GameState): GameEvent[] {
     (e) =>
       e.year === undefined &&
       !e.filler &&
+      !e.auto &&
       (e.phase === 'any' || e.phase === phase) &&
       (e.kind !== 'match' || isMatchWeek(state.week)) &&
       (!e.once || !state.triggeredEvents.includes(e.id)) &&

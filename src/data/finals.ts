@@ -124,21 +124,18 @@ export function finalById(id: string): GameEvent | null {
 }
 
 /**
- * 邀请函：段位到王者、还没签约时必触发一次。
- * 接受就直接转职业（不用等第 30 周的签约窗口）；拒绝可以继续当路人，明年还会再来。
+ * 签约事件：到王者后收到邀请函，只有一个「签字进队」选项，必定成功。
+ * 队伍取当年最弱的三支里的第一支——具体签哪支还要你定。
  */
-/** 三个邀请：都是当年最弱的 3 支，选一支就签约。 */
 function inviteOptions(state: GameState) {
-  return invitations(state.year).map((t, i) => ({
-    label: `${t.name}（${t.id}）`,
+  const team = invitations(state.year)[0];
+  if (!team) return [];
+  return [{
+    label: '签字进队',
     risk: 'success' as const,
-    success: { signed: true, teamId: t.id, coachTrust: 10, attrs: { popularity: 4 } },
-    successText: [
-      `${t.name} 的经理只问了一句：「什么时候能到？」`,
-      `${t.name} 的训练室很小，墙上贴着去年倒数第一的战绩。`,
-      `你签了 ${t.name}。合同只有一页，最后一行写着「争取进季后赛」。`,
-    ][i] ?? `你签了 ${t.name}。`,
-  }));
+    success: { signed: true, teamId: team.id, coachTrust: 10, attrs: { popularity: 4 } },
+    successText: `你在 ${team.name} 的合同上签了字，第二天搬进了基地。`,
+  }];
 }
 
 export function inviteEvent(state: GameState): GameEvent | null {
@@ -152,16 +149,11 @@ export function inviteEvent(state: GameState): GameEvent | null {
     year: undefined,
     auto: true,
     tags: ['#邀请函', '#签约', '#王者'],
-    text: '私信里躺着一条邀请：一支 LPL 战队想让你去试训。发信人你认识。',
+    text: '桌上放着一封邀请函，战队经理在等你答复。',
     once: true,
     weight: 1,
     requires: (s) => !s.signed && rankOf(s.rankPoints, s.placement).index >= 9,
-    options: [...inviteOptions(state), {
-      label: '再等等，我还想再打一季',
-      risk: 'success' as const,
-      success: { attrs: { mentality: 2 }, flag: '#拒过邀请' },
-      successText: '你关掉对话框，把排位又开了一把。',
-    }],
+    options: inviteOptions(state),
   };
 }
 
