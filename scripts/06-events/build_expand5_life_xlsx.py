@@ -228,10 +228,10 @@ def main():
     notes = [
         ['项目', '内容'],
         ['数量', f'{len(EV)} 条（全部 life / phase any / 无条件），{sum(len(e["opts"]) for e in EV)} 个选项'],
-        ['目的', '往「每周都在池子里」的那 30–60 条里加分母，压掉 N49/N48 这类无条件生活事件的平均次数'],
+        ['目的', '往「每周都在池子里」的那 30–60 条里加分母，压掉 L38/N17 这类无条件生活事件的平均次数'],
         ['共同条件', 'kind=life、phase=any、requires 省略、once=false、weight 5'],
         ['审查列', '填「通过 / 改 / 删」'],
-        ['状态', '只进这张表，没进 `src/data/events.ts`；代码现在是 184 条'],
+        ['状态', '只进这张表，没进 `src/data/events.ts`；代码现在是 204 条'],
     ]
     for r in notes:
         wn.append(r)
