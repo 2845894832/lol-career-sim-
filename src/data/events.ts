@@ -105,57 +105,6 @@ export const EVENTS: GameEvent[] = [
     ],
   },
   {
-    id: 'E03',
-    kind: 'special',
-    phase: 'peak',
-    year: CONFIG.career.finalYear,
-    week: CONFIG.career.finalWeek,
-    opponent: CONFIG.match.opponentFinal,
-    opponentRole: 'final',
-    tags: ['#S赛', '#决赛', '#特殊', '#请神'],
-    text: '第 3 年，决赛。这一场决定你以后的历史地位。',
-    once: true,
-    weight: 1,
-    options: [
-      {
-        label: '闭上双眼请神',
-        risk: 'roll',
-        bonus: 0.25,
-        skillBonus: true,
-        success: {
-          attrs: { mentality: 3 },
-          flag: '请神',
-        },
-        successText: '请神成功，你化身神秘瓜皮头男。',
-        fail: {
-          attrs: { mentality: -4 },
-        },
-        failText: '手感没有来，手倒是先抖了。',
-      },
-      {
-        label: '不想这些，专注游戏',
-        risk: 'roll',
-        bonus: 0.0,
-        skillBonus: true,
-        successText: '你把耳机音量调大了一格，世界安静了。',
-      },
-      {
-        label: '向队友说些话',
-        risk: 'roll',
-        bonus: 0.05,
-        skillBonus: true,
-        success: {
-          attrs: { mentality: 2 },
-        },
-        fail: {
-          attrs: { mentality: -2 },
-        },
-        failText: '你想把大家拧成一股绳，绳先断了。',
-        successText: '你说「打完这把去吃火锅」，语音里有人笑出了声。',
-      },
-    ],
-  },
-  {
     id: 'E04',
     kind: 'life',
     phase: 'any',

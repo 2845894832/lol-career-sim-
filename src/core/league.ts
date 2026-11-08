@@ -17,8 +17,8 @@ export interface Fixture {
   week: number;
   rivalId: string;
   rivalName: string;
-  /** 春决 / 夏决 是写死的周次，不进常规赛轮转。 */
-  kind: 'regular' | 'spring' | 'summer';
+  /** 联赛决赛与 S 赛是事件，不进常规赛轮转。 */
+  kind: 'regular';
   played: boolean;
   won?: boolean;
 }
@@ -37,7 +37,7 @@ function hash01(a: number, b: number): number {
   return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
 }
 
-/** 该年联盟里除我以外的队，按「种子 + 年份」打散，前 13 个当对手。 */
+/** 该年联盟里除我以外的队，按「种子 + 年份」打散，每队各碰一次。 */
 export function rivalsFor(year: number, myTeamId: string, seed: number): RosterTeam[] {
   const others = rosterOf(year).filter((t) => t.id !== myTeamId);
   return others
@@ -46,13 +46,20 @@ export function rivalsFor(year: number, myTeamId: string, seed: number): RosterT
     .map((x) => x.t);
 }
 
-/** 整年赛程：常规赛按双周排，春决第 15 周、夏决第 30 周。 */
+/** 单循环周次：第 1 场第 2 周、最后一场第 24 周，中间均匀铺开。 */
+export function leagueWeeksFor(year: number): number[] {
+  const n = rosterOf(year).length - 1;
+  if (n <= 1) return [2];
+  return Array.from({ length: n }, (_, i) => 2 + Math.round((i * 22) / (n - 1)));
+}
+
+/** 整年常规赛：按当年队数动态排单循环，联赛决赛与 S 赛走事件。 */
 export function scheduleFor(state: GameState): Fixture[] {
   const teamId = state.teamId;
   if (!teamId) return [];
   const year = state.year;
   const rivals = rivalsFor(year, teamId, state.seed);
-  const weeks: readonly number[] = CONFIG.league.regularWeeks;
+  const weeks = leagueWeeksFor(year);
   const out: Fixture[] = [];
   weeks.forEach((week, i) => {
     const r = rivals[i];
@@ -67,7 +74,7 @@ export function scheduleFor(state: GameState): Fixture[] {
       won: rec?.won,
     });
   });
-  // 决赛是事件（SPR-* / SUM-*），不进赛程表；这里只出常规赛。
+  // 联赛决赛与 S 赛是事件，不进赛程表；这里只出常规赛。
   return out.sort((a, b) => a.week - b.week);
 }
 
@@ -243,7 +250,7 @@ export function winChance(state: GameState, rivalId: string): number {
 export function standings(state: GameState): StandingRow[] {
   const teams = rosterOf(state.year);
   if (!state.teamId || teams.length === 0) return [];
-  const total = CONFIG.league.regularWeeks.filter((w) => w <= state.week).length;
+  const total = leagueWeeksFor(state.year).filter((w) => w <= state.week).length;
   const avg = teams.reduce((s, t) => s + teamStrength(t), 0) / teams.length;
   const rows: StandingRow[] = teams.map((t) => {
     if (t.id === state.teamId) {

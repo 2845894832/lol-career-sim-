@@ -32,14 +32,19 @@ export function ageOf(state: GameState): number {
   return CONFIG.career.startAge + state.year - 1;
 }
 
-/** 26 个比赛周之后是休赛期。 */
+/** 第 1 周与第 26 周没有比赛；2–25 是联赛，27–30 是 S 赛。 */
 export function isMatchWeek(week: number): boolean {
-  return week <= CONFIG.career.matchWeeksPerYear;
+  return (week >= 2 && week <= 25) || (week >= 27 && week <= 30);
 }
 
-/** 那场决赛：第 3 年 S 赛（第 26 周）。 */
+/** 只有 2–24 周会自动打常规赛；第 25 周起全是事件。 */
+export function isRegularSeasonWeek(week: number): boolean {
+  return week >= 2 && week <= 24;
+}
+
+/** S 赛决赛：第 30 周，且已经拿到「进决赛」的 flag。 */
 export function isFinalWeek(state: GameState): boolean {
-  return state.year === CONFIG.career.finalYear && state.week === CONFIG.career.finalWeek;
+  return state.week === CONFIG.league.worldsFinalWeek && state.flags.includes(`#S决赛-${state.year}`);
 }
 
 export function isSigningWindow(week: number): boolean {
@@ -149,6 +154,11 @@ export function addHonor(state: GameState, honor: HonorId): void {
 /** 这个荣誉拿过没有（不区分次数）。 */
 export function hasHonor(state: GameState, honor: HonorId): boolean {
   return state.honors.some((h) => h.id === honor);
+}
+
+/** 今年这个荣誉发过没有；MVP / 最佳阵容一年只发一次。 */
+export function hasHonorThisYear(state: GameState, honor: HonorId): boolean {
+  return state.honors.some((h) => h.id === honor && h.year === state.year);
 }
 
 /** 临时加减：只在本场比赛内有效。 */

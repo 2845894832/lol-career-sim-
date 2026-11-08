@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CONFIG } from '../src/config';
-import { isStarting, startRequirement, fixtureThisWeek, finalOpponentStrength, opponentStrength, rivalStrength, seasonAverageStrength, seasonStrengths, seasonTopStrength, winChance } from '../src/core/league';
+import { isStarting, startRequirement, fixtureThisWeek, finalOpponentStrength, leagueWeeksFor, opponentStrength, rivalStrength, seasonAverageStrength, seasonStrengths, seasonTopStrength, winChance } from '../src/core/league';
 import { reduce } from '../src/core/reduce';
 import { staminaCost } from '../src/core/actions';
 import { applyAction, canAfford } from '../src/core/actions';
@@ -15,9 +15,40 @@ import { fromSaveJson, toSaveJson } from '../src/core/save';
 import { loadSaved, persist } from '../src/core/save';
 import { newGame, rankTier } from '../src/core/state';
 import { placementOf, rankOf, weeklyGain } from '../src/core/ladder';
-import { ATTR_KEYS, MATCH_ATTRS, type Action, type GameEvent, type GameState } from '../src/types';
+import { ATTR_KEYS, HONOR_LABEL, MATCH_ATTRS, type Action, type GameEvent, type GameState } from '../src/types';
 import { SHOP, buy, buyBlocker, hasOnce, restBonus, streamIncome, subActive, subUntil, weekIncome, weekSpend } from '../src/core/shop';
-import { springFinal } from '../src/data/finals';
+import { leagueFinal, worldsFinal } from '../src/data/finals';
+import { awardHallOfFame, awardSeasonHonors } from '../src/core/honors';
+
+/** 造一个第 25 周的联赛决赛选手：13 胜、首发、五维 90。 */
+function makeLeagueFinalist(seed = 33): GameState {
+  const s = newGame(seed);
+  s.signed = true;
+  s.teamId = 'RNG';
+  s.coachTrust = 100;
+  s.week = CONFIG.league.leagueFinalWeek;
+  for (const key of MATCH_ATTRS) s.attrs[key] = 90;
+  s.seasonResults = Array.from({ length: 13 }, (_, i) => ({
+    week: 2 + i,
+    rivalId: 'EDG',
+    won: true,
+    kind: 'regular' as const,
+  }));
+  return s;
+}
+
+/** 造一个第 30 周的 S 赛决赛选手。 */
+function makeWorldsFinalist(seed = 34): GameState {
+  const s = newGame(seed);
+  s.signed = true;
+  s.teamId = 'RNG';
+  s.coachTrust = 100;
+  s.week = CONFIG.league.worldsFinalWeek;
+  s.year = 1;
+  s.flags = ['#S决赛-1'];
+  for (const key of MATCH_ATTRS) s.attrs[key] = 90;
+  return s;
+}
 
 /** 一周：排三格 → 结周 → 处理事件。 */
 function step(state: GameState): GameState {
@@ -272,7 +303,7 @@ describe('对手强度表', () => {
     s.teamId = 'RNG';
     s.year = 1;
     let found = 0;
-    for (let w = 1; w <= CONFIG.career.matchWeeksPerYear; w++) {
+    for (let w = 1; w <= CONFIG.career.weeksPerYear; w++) {
       s.week = w;
       const fixture = fixtureThisWeek(s);
       if (!fixture) continue;
@@ -290,9 +321,10 @@ describe('对手强度表', () => {
     s.week = 1; // 第 1 周没有赛程
     expect(opponentStrength(s)).toBeCloseTo(seasonAverageStrength(1), 6);
 
-    s.year = CONFIG.career.finalYear;
-    s.week = CONFIG.career.finalWeek;
-    expect(opponentStrength(s)).toBeCloseTo(seasonTopStrength(CONFIG.career.finalYear), 6);
+    s.year = 1;
+    s.week = CONFIG.league.worldsFinalWeek;
+    s.flags = ['#S决赛-1'];
+    expect(opponentStrength(s)).toBeCloseTo(seasonTopStrength(1), 6);
   });
 
   it('强度表只来自名单：按赛季降序，队数与 rosters 一致', () => {
@@ -316,7 +348,7 @@ describe('对手强度表', () => {
     const s = newGame(4);
     s.signed = true;
     s.year = 1;
-    const event = springFinal(1);
+    const event = leagueFinal(1);
     const option = event.options[0]!;
     expect(successRateOf(s, event, option)).toBeCloseTo(
       matchRate(s, seasonTopStrength(1), option.bonus ?? 0),
@@ -336,8 +368,9 @@ describe('对手强度表', () => {
     try {
       cfg.opponentSource = 'fixed';
       expect(opponentStrength(s)).toBe(CONFIG.match.opponentDefault);
-      s.year = CONFIG.career.finalYear;
-      s.week = CONFIG.career.finalWeek;
+      s.year = 1;
+      s.week = CONFIG.league.worldsFinalWeek;
+      s.flags = ['#S决赛-1'];
       expect(opponentStrength(s)).toBe(CONFIG.match.opponentFinal);
       expect(finalOpponentStrength(1, 65)).toBe(65);
     } finally {
@@ -398,19 +431,14 @@ describe('四维加成与必成选项', () => {
     expect(successRateOf(s, e02, trial)).toBeCloseTo(((65 + 40) / 2) / 100, 6);
   });
 
-  it('E03 三个选项在 matchRate 之上加四维加成', () => {
-    const s = newGame(10);
-    s.signed = true;
-    s.year = CONFIG.career.finalYear;
-    s.week = CONFIG.career.finalWeek;
-    for (const key of ['operation', 'laning', 'teamfight', 'awareness'] as const) s.attrs[key] = 90;
-    const e03 = EVENTS.find((e) => e.id === 'E03')!;
-    for (const option of e03.options) {
-      expect(option.skillBonus).toBe(true);
-      const withBonus = successRateOf(s, e03, option);
-      const without = successRateOf(s, e03, { ...option, skillBonus: false });
-      expect(withBonus - without).toBeCloseTo(0.16, 6);
-    }
+  it('S 赛决赛选项按当季最强队算', () => {
+    const s = makeWorldsFinalist(10);
+    const event = worldsFinal(1);
+    const option = event.options[0]!;
+    expect(successRateOf(s, event, option)).toBeCloseTo(
+      matchRate(s, seasonTopStrength(1), option.bonus ?? 0),
+      6,
+    );
   });
 
   it('必成/必败选项不带掷骰属性', () => {
@@ -510,17 +538,19 @@ describe('事件抽取', () => {
     expect(ratio).toBeLessThan(0.12);
   });
 
-  it('第 3 年第 26 周必出决赛事件', () => {
-    const s = newGame(1);
-    s.year = 3;
-    s.week = 26;
-    const r = drawEvent(s);
-    expect(r.event?.id).toBe('E03');
+  it('第 25 周联赛决赛必出 LPL 事件', () => {
+    const s = makeLeagueFinalist(1);
+    expect(drawEvent(s).event?.id).toBe('LPL-1');
   });
 
-  it('休赛期抽不到比赛事件', () => {
+  it('第 30 周 S 决赛必出 WF 事件', () => {
+    const s = makeWorldsFinalist(1);
+    expect(drawEvent(s).event?.id).toBe('WF-1');
+  });
+
+  it('第 26 周休赛期抽不到比赛事件', () => {
     const s = newGame(3);
-    s.week = 28;
+    s.week = 26;
     for (let i = 0; i < 60; i++) {
       const r = drawEvent(s);
       s.rngState = r.rngState;
@@ -680,9 +710,9 @@ describe('出场判定', () => {
     expect(canPlay(s)).toBe(true);
   });
 
-  it('休赛期没有比赛', () => {
+  it('第 26 周休赛期没有比赛', () => {
     const s = newGame(1);
-    s.week = 28;
+    s.week = 26;
     s.signed = true;
     expect(canPlay(s)).toBe(false);
   });
@@ -826,38 +856,94 @@ describe('统一胜负公式', () => {
   });
 });
 
-describe('春决 / 夏决', () => {
-  it('只有签约之后才会在决赛周出现', () => {
+describe('联赛决赛 / S 赛', () => {
+  it('只有前 2 且首发才会打联赛决赛', () => {
     const unsigned = newGame(31);
-    unsigned.week = CONFIG.league.springFinalWeek;
-    expect(drawEvent(unsigned).event?.id).not.toBe('SPR-1');
+    unsigned.week = CONFIG.league.leagueFinalWeek;
+    expect(drawEvent(unsigned).event?.id).not.toBe('LPL-1');
 
-    const signed = newGame(31);
-    signed.signed = true;
-    signed.week = CONFIG.league.springFinalWeek;
-    expect(drawEvent(signed).event?.id).toBe('SPR-1');
+    const benched = makeLeagueFinalist(31);
+    benched.attrs.operation = 0;
+    benched.attrs.laning = 0;
+    benched.attrs.teamfight = 0;
+    benched.attrs.awareness = 0;
+    benched.attrs.mentality = 0;
+    expect(drawEvent(benched).event?.id).not.toBe('LPL-1');
+
+    expect(drawEvent(makeLeagueFinalist(31)).event?.id).toBe('LPL-1');
   });
 
-  it('夏决在第 30 周，且按年编号不重复', () => {
-    const s = newGame(32);
-    s.signed = true;
-    s.week = CONFIG.league.summerFinalWeek;
-    expect(drawEvent(s).event?.id).toBe('SUM-1');
-
+  it('联赛决赛按年编号', () => {
+    const s = makeLeagueFinalist(32);
+    expect(drawEvent(s).event?.id).toBe('LPL-1');
     s.year = 3;
-    s.week = CONFIG.league.summerFinalWeek;
-    expect(drawEvent(s).event?.id).toBe('SUM-3');
+    expect(drawEvent(s).event?.id).toBe('LPL-3');
   });
 
-  it('赢了给联赛冠军', () => {
-    const s = newGame(33);
-    s.signed = true;
-    s.week = CONFIG.league.springFinalWeek;
-    for (const key of MATCH_ATTRS) s.attrs[key] = 100;
-    const ev = drawEvent(s).event!;
-    s.pendingEvent = { eventId: ev.id };
-    const after = reduce(s, { kind: 'chooseOption', option: 1 }).state;
-    expect(after.honors.map((h) => h.id)).toContain('lpl-champion');
+  it('联赛决赛成功选项写联赛冠军', () => {
+    expect(leagueFinal(1).options.some((o) => o.success?.honor === 'lpl-champion')).toBe(true);
+  });
+
+  it('S 赛决赛赢下写 S 冠军', () => {
+    const s = makeWorldsFinalist(33);
+    applyMatchOutcome(s, true, true);
+    expect(s.honors.map((h) => h.id)).toContain('worlds-champion');
+  });
+});
+
+describe('新赛程与荣誉', () => {
+  it('联赛周次按当年队数动态铺满 2–24', () => {
+    for (let year = 1; year <= CONFIG.career.years; year += 1) {
+      const weeks = leagueWeeksFor(year);
+      expect(weeks).toHaveLength(seasonStrengths(year).length - 1);
+      expect(weeks[0]).toBe(2);
+      expect(weeks[weeks.length - 1]).toBe(24);
+    }
+  });
+
+  it('MSI 荣誉已从标签里删除', () => {
+    expect(Object.keys(HONOR_LABEL)).not.toContain('msi-champion');
+  });
+
+  it('第 25 周五维 ≥85 拿 MVP + 最佳阵容', () => {
+    const s = makeLeagueFinalist(51);
+    const logs = awardSeasonHonors(s);
+    const ids = s.honors.map((h) => h.id);
+    expect(ids).toContain('season-mvp');
+    expect(ids).toContain('all-pro');
+    expect(logs.length).toBe(2);
+    expect(awardSeasonHonors(s)).toEqual([]);
+  });
+
+  it('五维 83 只拿最佳阵容', () => {
+    const s = makeLeagueFinalist(52);
+    for (const key of MATCH_ATTRS) s.attrs[key] = 83;
+    awardSeasonHonors(s);
+    const ids = s.honors.map((h) => h.id);
+    expect(ids).not.toContain('season-mvp');
+    expect(ids).toContain('all-pro');
+  });
+
+  it('名次不在前 4 不发常规赛荣誉', () => {
+    const s = makeLeagueFinalist(53);
+    s.seasonResults = [];
+    expect(awardSeasonHonors(s)).toEqual([]);
+    expect(s.honors).toEqual([]);
+  });
+
+  it('荣誉 ≥8 且至少一个 S 冠军才进名人堂，且只进一次', () => {
+    const s = makeLeagueFinalist(54);
+    s.honors = Array.from({ length: 8 }, (_, i) => ({ id: 'lpl-champion' as const, year: i + 1 }));
+    s.honors.push({ id: 'worlds-champion', year: 8 });
+    expect(awardHallOfFame(s).length).toBe(1);
+    expect(s.honors.map((h) => h.id)).toContain('hall-of-fame');
+    expect(awardHallOfFame(s)).toEqual([]);
+  });
+
+  it('没有 S 冠军不进名人堂', () => {
+    const s = makeLeagueFinalist(55);
+    s.honors = Array.from({ length: 8 }, (_, i) => ({ id: 'lpl-champion' as const, year: i + 1 }));
+    expect(awardHallOfFame(s)).toEqual([]);
   });
 });
 

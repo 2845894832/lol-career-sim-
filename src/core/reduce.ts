@@ -8,7 +8,9 @@ import { advanceYear } from './growth';
 import { applyMatchOutcome, autoMatch, benchReason, canPlay } from './match';
 import { drawEvent, getEvent, resolveOption } from './events';
 import { normalEnding, sliceEnding, specialEnding } from './endings';
-import { addHonor, attrTotal, cloneState, isFinalWeek, isMatchWeek, isSigningWindow } from './state';
+import { addHonor, attrTotal, cloneState, isFinalWeek, isRegularSeasonWeek, isSigningWindow } from './state';
+import { awardHallOfFame, awardSeasonHonors } from './honors';
+import { resolveWorldsGroup } from './worlds';
 import { placementOf, rankOf, weeksPlayed } from './ladder';
 
 /**
@@ -114,6 +116,11 @@ function endWeek(state: GameState, out: LogEntry[]): void {
     out.push(...lines.map((text) => ({ text, tone: 'plain' as const })));
   }
 
+  // 第 25 周先评常规赛荣誉，再打联赛决赛。
+  if (state.week === CONFIG.league.leagueFinalWeek) {
+    out.push(...awardSeasonHonors(state));
+  }
+
   // 抽一个事件；有事件就等玩家选，没有就照常比赛结周。
   const drawn = drawEvent(state);
   state.rngState = drawn.rngState;
@@ -162,7 +169,8 @@ function chooseOption(state: GameState, index: number, out: LogEntry[]): void {
 
 /** 照常打一场：受伤/下放会跳过，休赛期没有比赛。 */
 function settleMatch(state: GameState, out: LogEntry[]): void {
-  if (!isMatchWeek(state.week)) return;
+  // 第 25 周与 28–30 周是必触发事件周，不在这里自动打。
+  if (!isRegularSeasonWeek(state.week)) return;
   if (!canPlay(state)) {
     const reason = benchReason(state);
     if (reason) out.push({ text: reason, tone: 'plain' });
@@ -246,6 +254,9 @@ function finishWeek(state: GameState, out: LogEntry[]): void {
     }
   }
 
+  // 第 27 周：S 赛小组赛自动模拟，出线才拿八强 flag。
+  if (state.week === CONFIG.league.worldsGroupWeek) resolveWorldsGroup(state, out);
+
   if (isSigningWindow(state.week)) resolveSigningWindow(state, out);
   if (state.ended) return;
 
@@ -288,6 +299,7 @@ function advanceToNextYear(state: GameState, out: LogEntry[]): void {
 
   if (state.year > CONFIG.career.years) {
     state.year = CONFIG.career.years;
+    out.push(...awardHallOfFame(state));
     state.ended = normalEnding(state, 'expired');
     out.push({ text: '八年过去了。', tone: 'plain' });
     return;
@@ -309,6 +321,7 @@ function advanceToNextYear(state: GameState, out: LogEntry[]): void {
 
 function retire(state: GameState, out: LogEntry[]): void {
   state.retired = true;
+  out.push(...awardHallOfFame(state));
   state.ended = normalEnding(state, 'retired');
   out.push({ text: '你发了条微博：「退役了，谢谢大家。」', tone: 'plain' });
 }

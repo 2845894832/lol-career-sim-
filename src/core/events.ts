@@ -14,7 +14,7 @@ import {
   type LogEntry,
 } from '../types';
 import { applyAttrDelta } from './growth';
-import { addFlag, addHonor, clamp, effectiveAttr, isMatchWeek, phaseOfYear } from './state';
+import { addFlag, addHonor, clamp, effectiveAttr, isRegularSeasonWeek, phaseOfYear } from './state';
 
 export interface DrawResult {
   event: GameEvent | null;
@@ -48,7 +48,7 @@ export function randomPool(state: GameState): GameEvent[] {
       !e.filler &&
       !e.auto &&
       (e.phase === 'any' || e.phase === phase) &&
-      (e.kind !== 'match' || isMatchWeek(state.week)) &&
+      (e.kind !== 'match' || isRegularSeasonWeek(state.week)) &&
       (!e.once || !state.triggeredEvents.includes(e.id)) &&
       (!e.requires || e.requires(state)),
   );

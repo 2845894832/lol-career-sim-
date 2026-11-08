@@ -53,7 +53,6 @@ export const ACTION_IDS: readonly ActionId[] = [
 
 export type HonorId =
   | 'lpl-champion'
-  | 'msi-champion'
   | 'worlds-champion'
   | 'season-mvp'
   | 'all-pro'
@@ -67,7 +66,6 @@ export interface HonorEntry {
 
 export const HONOR_LABEL: Record<HonorId, string> = {
   'lpl-champion': '联赛冠军',
-  'msi-champion': 'MSI 冠军',
   'worlds-champion': 'S 赛冠军',
   'season-mvp': '常规赛 MVP',
   'all-pro': '最佳阵容',

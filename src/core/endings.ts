@@ -10,7 +10,6 @@ const MARK_NOTES: Record<string, string> = {
   试训通过: '当年那条弹幕飘过去，你选了去试训。',
   嘴碎: '当年你回怼了那条弹幕，之后每一年都在还。',
   想得开: '当年你选择继续播，没把那条弹幕当回事。',
-  请神: '第 3 年决赛前，你闭上了眼睛——那一下值不值，只有你知道。',
   道过歉: '那年训练室里你低了头，队伍没散。',
 };
 
@@ -58,14 +57,14 @@ export function sliceEnding(state: GameState): Ending {
   const { best } = bestAndWorst(state);
   const tier = rankTier(state.rankPoints).name;
   const startTier = rankTier(CONFIG.start.rankPoints).name;
-  const wonSpring = hasHonor(state, 'lpl-champion');
-  const spring = wonSpring ? '春决你赢了，奖杯现在还在休息室的柜子里。' : '春决你输了，场馆灯灭得比想象中快。';
+  const wonLeague = hasHonor(state, 'lpl-champion');
+  const league = wonLeague ? '联赛决赛你赢了，奖杯现在还在休息室的柜子里。' : '联赛决赛你输了，场馆灯灭得比想象中快。';
 
   const title = '切片到此为止';
   const body = [
     `这 ${CONFIG.career.sliceAtWeek} 周，你从${startTier}打到${tier}，现在第 ${state.placement} 名。六维最强的是${best}。`,
-    spring,
-    '完整版是八年：春决之后还有 MSI、夏季赛、世界赛，和七次同样的春天。',
+    league,
+    '完整版是八年：联赛、S 赛，和七次同样的春天。',
   ].join('');
 
   return {

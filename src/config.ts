@@ -11,20 +11,17 @@ export const CONFIG = {
     /** 8 年生涯。 */
     years: 8,
     startAge: 18,
-    /** 每年 26 个比赛周 + 4 个休赛期周。 */
+    /** 每年 30 周：24 周联赛 + 第 25 周联赛决赛 + 第 26 周休赛 + 27–30 周 S 赛。 */
     weeksPerYear: 30,
-    matchWeeksPerYear: 26,
+    /** 常规赛与联赛决赛的最晚周；S 赛单独判定。 */
+    matchWeeksPerYear: 25,
     /**
      * 切片构建专用：打完这一周就出「切片到此为止」的结算页。
      * 0 = 不截断（正式版）。由 vite define 的 __SLICE_AT__ 注入。
      */
     sliceAtWeek: typeof __SLICE_AT__ === 'number' ? __SLICE_AT__ : 0,
-    /** 休赛期最后一周是签约窗口（夏决在 30，窗口挪到 29）。 */
-    signingWindowWeek: 29,
-    /** 每年 S 赛决赛周。 */
-    finalWeek: 26,
-    /** 那场决赛发生在第几年。 */
-    finalYear: 3,
+    /** 第 26 周没有比赛，作为签约窗口。 */
+    signingWindowWeek: 26,
     /** 第 1 年结束（进入第 2 年）时评最佳新秀。 */
     rookieSeason: 2,
   },
@@ -126,10 +123,13 @@ export const CONFIG = {
 
   /** 联赛：赛程、签约、首发。 */
   league: {
-    /** 常规赛周次：双周，避开第 15 周（春决）与第 30 周（夏决）。 */
-    regularWeeks: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26],
-    springFinalWeek: 15,
-    summerFinalWeek: 30,
+    /** 第 25 周：常规赛前 2 名的单场联赛决赛。 */
+    leagueFinalWeek: 25,
+    /** 第 26 周休赛；27 周 S 赛小组赛，28/29/30 周八强/四强/决赛。 */
+    worldsGroupWeek: 27,
+    worldsQuarterfinalWeek: 28,
+    worldsSemifinalWeek: 29,
+    worldsFinalWeek: 30,
     /** 上王者后给几个邀请。 */
     invitations: 3,
     /** 教练信任超过这个数才首发（底线一）。 */
