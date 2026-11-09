@@ -128,6 +128,7 @@ export function newGame(
     actionGrid: [null, null, null],
     actionTargets: [null, null, null],
     pendingEvent: null,
+    pendingMatch: null,
     eventDone: false,
     temp: {},
     log: [{ text: `第 1 周，你 18 岁，坐在训练室的最后一排。`, tone: 'plain' }],

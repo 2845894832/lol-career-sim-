@@ -7,7 +7,7 @@ import { applyAction, canAfford } from '../src/core/actions';
 import { advanceYear, gainExp, gainPoints, trainGain } from '../src/core/growth';
 import { autoMatch, applyMatchOutcome, matchRate } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
-import { drawEvent, forcedEvent, randomPool, resolveOption, successRateOf } from '../src/core/events';
+import { drawEvent, forcedEvent, matchPool, randomPool, resolveOption, successRateOf } from '../src/core/events';
 import { EVENTS } from '../src/data/events';
 import { canPlay, benchReason } from '../src/core/match';
 import { createRng } from '../src/rng';
@@ -65,6 +65,14 @@ function step(state: GameState): GameState {
   let guard = 0;
   while (s.pendingEvent && guard++ < 3) {
     s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
+  }
+  // 比赛：开赛 → 比赛事件卡 → 演出 → 继续
+  guard = 0;
+  while (s.pendingMatch && guard++ < 4) {
+    const phase = s.pendingMatch.phase;
+    if (phase === 'kickoff') s = reduce(s, { kind: 'kickoffMatch' }).state;
+    else if (phase === 'event') s = reduce(s, { kind: 'chooseMatchOption', option: 0 }).state;
+    else s = reduce(s, { kind: 'finishMatch' }).state;
   }
   return s;
 }
@@ -654,6 +662,7 @@ describe('事件抽取', () => {
                   s.honors = [{ id: 'lpl-champion', year }];
                   s.actionGrid = ['stream', null, null] as GameState['actionGrid'];
                   for (const e of randomPool(s)) reachable.add(e.id);
+                  for (const e of matchPool(s)) reachable.add(e.id);
                   const f = forcedEvent(s);
                   if (f) reachable.add(f.id);
                 }

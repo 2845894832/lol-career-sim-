@@ -1,6 +1,6 @@
 import './style.css';
 import { reduce } from '../core/reduce';
-import { getEvent, successRateOf } from '../core/events';
+import { getEvent, matchOptionRate, successRateOf } from '../core/events';
 import { ACTION_INFO, canAfford, isActionUnlocked, staminaCost } from '../core/actions';
 import { loadSaved, persist } from '../core/save';
 import { ageOf, isMatchWeek, newGame, phaseOfYear } from '../core/state';
@@ -15,6 +15,8 @@ import {
   subUntil,
 } from '../core/shop';
 import { randomSeed } from '../rng';
+import { rosterOf } from '../data/rosters';
+import { mountShow } from './show';
 import {
   ACTION_IDS,
   ATTR_KEYS,
@@ -69,6 +71,12 @@ let sheet: Sheet | null = null;
 let outcome: LogEntry[] | null = null;
 /** 底部页签：本周 / 赛程。 */
 let tab: 'week' | 'schedule' | 'career' | 'money' = 'week';
+
+/** 比赛演出只挂一次：key 不变就不重建，免得每次 render 都从头播。 */
+let showKey = '';
+let showDestroy: (() => void) | null = null;
+/** 比赛事件选项的结果，演出开头飘一下。 */
+let matchNote: LogEntry[] | null = null;
 
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -203,6 +211,7 @@ function renderSlots(): string {
  */
 function blockedWhy(empty: number): string {
   if (state.pendingEvent) return '这个事件还没选完，先在上面选一个';
+  if (state.pendingMatch) return '这周的比赛还没打完，先把比赛走完';
   const slot = state.actionGrid.indexOf(null);
   const canDoSomething = ACTION_IDS.some(
     (id) => id !== 'rest' && isActionUnlocked(state, id) && canAfford(state, slot, id),
@@ -304,6 +313,55 @@ function renderEvent(): string {
     <p class="event-text">${esc(event.text)}</p>
     <div class="options">${rows}</div>
   </div></div>`;
+}
+
+/** 我的队名（签约后用队名，没签约写「我的队」）。 */
+function myTeamName(): string {
+  const team = state.teamId ? rosterOf(state.year).find((t) => t.id === state.teamId) : undefined;
+  return team?.name ?? '我的队';
+}
+
+/** 开赛卡 / 比赛事件卡：演出之前的两步。 */
+function renderMatch(): string {
+  const pm = state.pendingMatch;
+  if (!pm) return '';
+  if (pm.phase === 'kickoff') {
+    return `<div class="overlay"><div class="sheet" data-kind="result">
+      <h2>开赛</h2>
+      <p class="event-text">${esc(myTeamName())} vs ${esc(pm.rivalName)}</p>
+      <div class="cap">bo${pm.bestOf} · 每局 30 秒，可随时跳过本局</div>
+      <div style="height:12px"></div>
+      <div class="options"><button class="btn primary" data-act="kickoff">开赛</button></div>
+    </div></div>`;
+  }
+  if (pm.phase === 'event' && pm.eventId) {
+    const event = getEvent(pm.eventId);
+    if (!event) return '';
+    const rows = event.options
+      .map((option, i) => {
+        const rate = option.risk === 'roll' ? `${Math.round(matchOptionRate(state, option) * 100)}%` : '';
+        return `<button class="btn" data-act="match-choose" data-i="${i}">
+          <span>${esc(option.label)}</span><span class="rate">${rate}</span>
+        </button>`;
+      })
+      .join('');
+    return `<div class="overlay"><div class="sheet" data-kind="result">
+      <h2>赛前 · 比赛事件</h2>
+      <p class="event-text">${esc(event.text)}</p>
+      <div class="options">${rows}</div>
+      <div class="cap" style="margin-top:8px">这一次只决定心态/信任等后果；成了才把加成带进比赛。</div>
+    </div></div>`;
+  }
+  return '';
+}
+
+/** 演出层：canvas 由 show.ts 挂进去。 */
+function renderShow(): string {
+  if (state.pendingMatch?.phase !== 'show') return '';
+  const note = matchNote?.length
+    ? `<div class="show-note">${matchNote.map((e) => esc(e.text)).join(' · ')}</div>`
+    : '';
+  return `<div class="show-overlay"><div id="show-host"></div>${note}</div>`;
 }
 
 function renderOutcome(): string {
@@ -528,16 +586,42 @@ function render(): void {
     app.innerHTML = renderTopbar() + renderEnding();
     return;
   }
+  // 演出进行中：不重建 DOM，等 show.ts 回调。
+  const pm = state.pendingMatch;
+  if (pm && pm.phase === 'show') {
+    const key = `${pm.rivalId}-${pm.bestOf}-${pm.score?.join(':') ?? ''}-${pm.win ? 1 : 0}`;
+    if (showKey === key) return;
+    showKey = key;
+    showDestroy?.();
+    app.innerHTML = renderShow();
+    const host = document.getElementById('show-host');
+    if (host) {
+      showDestroy = mountShow(host, {
+        games: pm.games ?? [],
+        bestOf: pm.bestOf ?? 3,
+        myName: myTeamName(),
+        rivalName: pm.rivalName,
+        onDone: () => {
+          showDestroy = null;
+          showKey = '';
+          matchNote = null;
+          apply({ kind: 'finishMatch' });
+        },
+      });
+    }
+    return;
+  }
+  showKey = '';
   if (tab === 'schedule') {
-    app.innerHTML = renderTopbar() + renderSchedule() + renderTabs() + renderSheet() + renderEvent() + renderOutcome();
+    app.innerHTML = renderTopbar() + renderSchedule() + renderTabs() + renderSheet() + renderEvent() + renderMatch() + renderOutcome();
     return;
   }
   if (tab === 'career') {
-    app.innerHTML = renderTopbar() + renderCareer() + renderTabs() + renderSheet() + renderEvent() + renderOutcome();
+    app.innerHTML = renderTopbar() + renderCareer() + renderTabs() + renderSheet() + renderEvent() + renderMatch() + renderOutcome();
     return;
   }
   if (tab === 'money') {
-    app.innerHTML = renderTopbar() + renderMoney() + renderTabs() + renderSheet() + renderEvent() + renderOutcome();
+    app.innerHTML = renderTopbar() + renderMoney() + renderTabs() + renderSheet() + renderEvent() + renderMatch() + renderOutcome();
     return;
   }
   app.innerHTML =
@@ -550,6 +634,7 @@ function render(): void {
     renderTabs() +
     renderSheet() +
     renderEvent() +
+    renderMatch() +
     renderOutcome();
 }
 
@@ -656,7 +741,25 @@ app.addEventListener('click', (ev) => {
       const result = reduce(state, { kind: 'chooseOption', option: index });
       state = result.state;
       persist(state);
-      outcome = result.log;
+      // 决赛：选项结算完直接进演出，把结果飘在演出开头。
+      if (state.pendingMatch?.phase === 'show') {
+        matchNote = result.log.filter((e) => e.tone !== 'plain').slice(0, 3);
+        outcome = null;
+      } else {
+        outcome = result.log;
+      }
+      render();
+      break;
+    }
+    case 'kickoff':
+      apply({ kind: 'kickoffMatch' });
+      break;
+    case 'match-choose': {
+      const index = Number(node.dataset.i);
+      const result = reduce(state, { kind: 'chooseMatchOption', option: index });
+      state = result.state;
+      matchNote = result.log.filter((e) => e.tone !== 'plain').slice(0, 3);
+      persist(state);
       render();
       break;
     }

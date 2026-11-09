@@ -159,6 +159,32 @@ export interface PendingEvent {
   eventId: string;
 }
 
+/** 演出里的一局：谁赢、双方人头。 */
+export interface ShowGame {
+  win: boolean;
+  kills: [number, number];
+}
+
+/**
+ * 一场正在进行的比赛。流程：kickoff（点开赛）→ event（比赛事件卡）
+ * → show（30 秒演出，等玩家点「继续」）→ 结周。
+ */
+export interface PendingMatch {
+  phase: 'kickoff' | 'event' | 'show';
+  rivalId: string;
+  rivalName: string;
+  /** 这场比赛抽到的比赛事件；池子空了就是 null（跳过事件卡）。 */
+  eventId: string | null;
+  /** 比赛事件那一次骰子成没成（演出/日志用）。 */
+  optionSuccess?: boolean;
+  /** 比赛结果；show 阶段起才有。 */
+  win?: boolean;
+  score?: [number, number];
+  games?: ShowGame[];
+  /** 赛制：3 = bo3，5 = bo5。 */
+  bestOf?: 3 | 5;
+}
+
 export interface Ending {
   kind: 'normal' | 'special';
   title: string;
@@ -228,6 +254,8 @@ export interface GameState {
   /** 专项训练指定哪一维（记录在格子上）。 */
   actionTargets: (AttrKey | null)[];
   pendingEvent: PendingEvent | null;
+  /** 本周还没打完的比赛（开赛卡/事件卡/演出）。 */
+  pendingMatch: PendingMatch | null;
   /** 本周事件是否已结算。 */
   eventDone: boolean;
   /** 临场加减，不进存档。 */
@@ -246,6 +274,9 @@ export type Action =
   | { kind: 'selectAction'; slot: number; action: ActionId; target?: AttrKey }
   | { kind: 'clearSlot'; slot: number }
   | { kind: 'chooseOption'; option: number }
+  | { kind: 'kickoffMatch' }
+  | { kind: 'chooseMatchOption'; option: number }
+  | { kind: 'finishMatch' }
   | { kind: 'endWeek' }
   | { kind: 'retire' }
   | { kind: 'skipYear' };

@@ -1,14 +1,15 @@
 import { CONFIG } from '../config';
-import { fixtureThisWeek, matchLogLine, myTeamStrength, opponentStrength, recordResult, rivalStrength, winChance } from './league';
+import { fixtureThisWeek, matchLogLine, myMatchStrength, myTeamStrength, recordResult, rivalStrength, seasonStrengths } from './league';
 import { createRng } from '../rng';
 import { hasOnce } from './shop';
-import type { Action, ActionId, AttrKey, GameState, LogEntry, ReduceResult } from '../types';
+import type { Action, ActionId, AttrKey, GameState, LogEntry, ReduceResult, ShowGame } from '../types';
 import { applyAction, canAfford, isActionUnlocked, staminaCost } from './actions';
 import { advanceYear } from './growth';
-import { applyMatchOutcome, autoMatch, benchReason, canPlay } from './match';
-import { drawEvent, getEvent, resolveOption } from './events';
+import { applyMatchOutcome, benchReason, canPlay } from './match';
+import { drawEvent, drawMatchEvent, getEvent, resolveOption, skillBonusOf } from './events';
+import { winProbability } from './odds';
 import { normalEnding, sliceEnding, specialEnding } from './endings';
-import { addHonor, attrTotal, cloneState, isFinalWeek, isRegularSeasonWeek, isSigningWindow } from './state';
+import { addHonor, attrTotal, cloneState, isFinalWeek, isSigningWindow } from './state';
 import { awardHallOfFame, awardSeasonHonors } from './honors';
 import { resolveWorldsGroup } from './worlds';
 import { placementOf, rankOf, weeksPlayed } from './ladder';
@@ -31,6 +32,15 @@ export function reduce(prev: GameState, action: Action): ReduceResult {
       break;
     case 'chooseOption':
       chooseOption(state, action.option, out);
+      break;
+    case 'kickoffMatch':
+      kickoffMatch(state, out);
+      break;
+    case 'chooseMatchOption':
+      chooseMatchOption(state, action.option, out);
+      break;
+    case 'finishMatch':
+      finishMatch(state, out);
       break;
     case 'endWeek':
       endWeek(state, out);
@@ -68,6 +78,10 @@ function selectAction(
     out.push({ text: '先把这周的事件处理掉。', tone: 'plain' });
     return;
   }
+  if (state.pendingMatch) {
+    out.push({ text: '先把这周的比赛打完。', tone: 'plain' });
+    return;
+  }
   if (!isActionUnlocked(state, id)) {
     out.push({ text: '还没签约，用不了这个。', tone: 'plain' });
     return;
@@ -85,8 +99,8 @@ function selectAction(
 
 function clearSlot(state: GameState, slot: number, out: LogEntry[]): void {
   if (slot < 0 || slot > 2) return;
-  if (state.pendingEvent) {
-    out.push({ text: '先把这周的事件处理掉。', tone: 'plain' });
+  if (state.pendingEvent || state.pendingMatch) {
+    out.push({ text: '先把这周的事处理掉。', tone: 'plain' });
     return;
   }
   if (!state.actionGrid[slot]) return;
@@ -98,6 +112,10 @@ function clearSlot(state: GameState, slot: number, out: LogEntry[]): void {
 function endWeek(state: GameState, out: LogEntry[]): void {
   if (state.pendingEvent) {
     out.push({ text: '先把这周的事件处理掉。', tone: 'plain' });
+    return;
+  }
+  if (state.pendingMatch) {
+    out.push({ text: '先把这周的比赛打完。', tone: 'plain' });
     return;
   }
 
@@ -131,8 +149,7 @@ function endWeek(state: GameState, out: LogEntry[]): void {
   }
 
   state.eventDone = true;
-  settleMatch(state, out);
-  finishWeek(state, out);
+  beginMatch(state, out);
 }
 
 function chooseOption(state: GameState, index: number, out: LogEntry[]): void {
@@ -144,41 +161,187 @@ function chooseOption(state: GameState, index: number, out: LogEntry[]): void {
   if (!event) {
     state.pendingEvent = null;
     state.eventDone = true;
-    settleMatch(state, out);
-    finishWeek(state, out);
+    beginMatch(state, out);
     return;
   }
 
   const outcome = resolveOption(state, event, index);
   out.push(...outcome.logs);
 
-  // 比赛事件由选项决定胜负；但伤停/下放/没签约时，这场不该算在你头上。
+  // 周事件本身就是一场比赛（决赛）：沿用老规则，选项成败即胜负；
+  // 结果先交给演出，等玩家点「继续」再结周。
   if (outcome.win !== null) {
-    if (canPlay(state)) {
-      out.push(...applyMatchOutcome(state, outcome.win, isFinalWeek(state)));
-    } else {
+    if (!canPlay(state)) {
       const reason = benchReason(state);
       if (reason) out.push({ text: reason, tone: 'plain' });
+      finishWeek(state, out);
+      return;
     }
-  } else {
-    settleMatch(state, out);
+    out.push(...applyMatchOutcome(state, outcome.win, isFinalWeek(state)));
+    if (event.opponentRole === 'final' || event.year !== undefined) {
+      startShow(state, finalRival(state), outcome.win);
+    } else {
+      finishWeek(state, out);
+    }
+    return;
   }
 
-  finishWeek(state, out);
+  beginMatch(state, out);
 }
 
-/** 照常打一场：受伤/下放会跳过，休赛期没有比赛。 */
-function settleMatch(state: GameState, out: LogEntry[]): void {
-  // 第 25 周与 28–30 周是必触发事件周，不在这里自动打。
-  if (!isRegularSeasonWeek(state.week)) return;
+/** 决赛对手队名：当季最强队。 */
+function finalRival(state: GameState): { rivalId: string; rivalName: string } {
+  const top = seasonStrengths(state.year)[0];
+  return { rivalId: top?.id ?? '', rivalName: top?.name ?? '对手' };
+}
+
+/**
+ * 结周后的比赛入口。
+ * - 没赛程 / 没签约：这周没有你的比赛，直接结周。
+ * - 有赛程但上不了场（伤停/替补）：球队照打，后台掷一次，无演出。
+ * - 能上场：先出「开赛」卡，抽一张比赛事件，再进演出。
+ */
+function beginMatch(state: GameState, out: LogEntry[]): void {
+  const fixture = fixtureThisWeek(state);
+  if (!fixture || !state.signed) {
+    finishWeek(state, out);
+    return;
+  }
+
   if (!canPlay(state)) {
     const reason = benchReason(state);
     if (reason) out.push({ text: reason, tone: 'plain' });
+    const won = rollWin(state, fixture.rivalId, 0);
+    recordResult(state, fixture, won);
+    out.push({
+      text: matchLogLine(fixture, won, Math.round(myTeamStrength(state)), Math.round(rivalStrength(state.year, fixture.rivalId))),
+      tone: won ? 'good' : 'bad',
+    });
+    finishWeek(state, out);
     return;
   }
-  // 对手强度来自当季名单：赛程周是那支队，其余周是当季平均，决赛是当季最强。
-  const { win } = autoMatch(state, opponentStrength(state));
-  out.push(...applyMatchOutcome(state, win, isFinalWeek(state)));
+
+  const drawn = drawMatchEvent(state);
+  state.rngState = drawn.rngState;
+  state.pendingMatch = {
+    phase: 'kickoff',
+    rivalId: fixture.rivalId,
+    rivalName: fixture.rivalName,
+    eventId: drawn.event?.id ?? null,
+    bestOf: seriesBestOf(state),
+  };
+  out.push({ text: `【比赛】第 ${fixture.week} 周，对 ${fixture.rivalName}。`, tone: 'plain' });
+}
+
+/** 点「开赛」：有比赛事件就弹卡，没有就直接掷。 */
+function kickoffMatch(state: GameState, out: LogEntry[]): void {
+  const pm = state.pendingMatch;
+  if (!pm || pm.phase !== 'kickoff') return;
+  if (pm.eventId) {
+    pm.phase = 'event';
+    return;
+  }
+  settleRegularMatch(state, out, 0, false);
+}
+
+/** 比赛事件卡选完：先算这次操作成没成，再由比赛掷一次定胜负。 */
+function chooseMatchOption(state: GameState, index: number, out: LogEntry[]): void {
+  const pm = state.pendingMatch;
+  if (!pm || pm.phase !== 'event') return;
+  const event = pm.eventId ? getEvent(pm.eventId) : null;
+  if (!event) {
+    settleRegularMatch(state, out, 0, false);
+    return;
+  }
+
+  const outcome = resolveOption(state, event, index, { skillRoll: true });
+  out.push(...outcome.logs);
+
+  const option = event.options[index];
+  const bonus =
+    (option?.skillBonus ? skillBonusOf(state) : 0) + (outcome.success ? (option?.bonus ?? 0) : 0);
+  settleRegularMatch(state, out, bonus, outcome.success);
+}
+
+/** 掷比赛胜负、记积分榜、写后果，然后进演出。 */
+function settleRegularMatch(state: GameState, out: LogEntry[], bonus: number, optionSuccess: boolean): void {
+  const pm = state.pendingMatch;
+  if (!pm) return;
+  pm.optionSuccess = optionSuccess;
+  const fixture = fixtureThisWeek(state);
+  const won = rollWin(state, pm.rivalId, bonus);
+  if (fixture) {
+    recordResult(state, fixture, won);
+    out.push({
+      text: matchLogLine(fixture, won, Math.round(myTeamStrength(state)), Math.round(rivalStrength(state.year, fixture.rivalId))),
+      tone: won ? 'good' : 'bad',
+    });
+  }
+  out.push(...applyMatchOutcome(state, won, isFinalWeek(state)));
+  startShow(state, { rivalId: pm.rivalId, rivalName: pm.rivalName }, won);
+}
+
+/** 把结果扩成一场系列赛，放进状态里给演出用。 */
+function startShow(state: GameState, rival: { rivalId: string; rivalName: string }, win: boolean): void {
+  const bestOf = seriesBestOf(state);
+  const { score, games } = buildSeries(state, win, bestOf);
+  state.pendingMatch = {
+    phase: 'show',
+    rivalId: rival.rivalId,
+    rivalName: rival.rivalName,
+    eventId: null,
+    win,
+    score,
+    games,
+    bestOf,
+  };
+}
+
+/** 常规赛 bo3，联赛决赛与 S 八强/四强/决赛 bo5。 */
+function seriesBestOf(state: GameState): 3 | 5 {
+  if (state.week === CONFIG.league.leagueFinalWeek) return 5;
+  if (state.week >= CONFIG.league.worldsQuarterfinalWeek) return 5;
+  return 3;
+}
+
+function rollWin(state: GameState, rivalId: string, bonus: number): boolean {
+  const ctx = createRng(state.rngState);
+  const win = ctx.rng.next() < winProbability(myMatchStrength(state), rivalStrength(state.year, rivalId), bonus, state.coachTrust);
+  state.rngState = ctx.state();
+  return win;
+}
+
+/**
+ * 一局的比分与顺序：赢家先拿够局数，输家随机 0..need-1 局；
+ * 顺序打乱成「有起伏」的剧本（如 2:1 → 输/赢/赢）。
+ */
+function buildSeries(state: GameState, win: boolean, bestOf: 3 | 5): { score: [number, number]; games: ShowGame[] } {
+  const need = bestOf === 5 ? 3 : 2;
+  const ctx = createRng(state.rngState);
+  const loserGames = ctx.rng.int(need);
+  const flags: boolean[] = [
+    ...Array.from({ length: need }, () => true),
+    ...Array.from({ length: loserGames }, () => false),
+  ];
+  for (let i = flags.length - 1; i > 0; i -= 1) {
+    const j = ctx.rng.int(i + 1);
+    [flags[i], flags[j]] = [flags[j]!, flags[i]!];
+  }
+  const games: ShowGame[] = flags.map((won) => {
+    const hi = 11 + ctx.rng.int(4);
+    const lo = 4 + ctx.rng.int(3);
+    return won ? { win: true, kills: [hi, lo] } : { win: false, kills: [lo, hi] };
+  });
+  state.rngState = ctx.state();
+  const score: [number, number] = win ? [need, loserGames] : [loserGames, need];
+  return { score, games };
+}
+
+/** 演出看完，点「继续」才真正结周。 */
+function finishMatch(state: GameState, out: LogEntry[]): void {
+  if (!state.pendingMatch) return;
+  state.pendingMatch = null;
+  finishWeek(state, out);
 }
 
 function resolveSigningWindow(state: GameState, out: LogEntry[]): void {
@@ -233,27 +396,6 @@ function finishWeek(state: GameState, out: LogEntry[]): void {
     out.push({ text: `这周没打排位，掉到第 ${state.placement} 名了。`, tone: 'bad' });
   }
 
-  // 签约之后，到了比赛周就打一场。
-  if (state.signed && state.injury < CONFIG.match.injuryBench) {
-    const fixture = fixtureThisWeek(state);
-    if (fixture) {
-      const ctx = createRng(state.rngState);
-      const won = ctx.rng.next() < winChance(state, fixture.rivalId);
-      state.rngState = ctx.state();
-      recordResult(state, fixture, won);
-      out.push({
-        text: matchLogLine(
-          fixture,
-          won,
-          Math.round(myTeamStrength(state)),
-          Math.round(rivalStrength(state.year, fixture.rivalId)),
-        ),
-        tone: won ? 'good' : 'bad',
-      });
-      state.temp = {};
-    }
-  }
-
   // 第 27 周：S 赛小组赛自动模拟，出线才拿八强 flag。
   if (state.week === CONFIG.league.worldsGroupWeek) resolveWorldsGroup(state, out);
 
@@ -282,6 +424,7 @@ function resetWeek(state: GameState): void {
   state.actionTargets = [null, null, null];
   state.eventDone = false;
   state.pendingEvent = null;
+  state.pendingMatch = null;
   state.lastLedger = state.ledger;
   state.ledger = [];
   // 住处升级：每周开始自动恢复一点体力。

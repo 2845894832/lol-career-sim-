@@ -14,7 +14,7 @@ import {
   type LogEntry,
 } from '../types';
 import { applyAttrDelta } from './growth';
-import { addFlag, addHonor, clamp, effectiveAttr, isRegularSeasonWeek, phaseOfYear } from './state';
+import { addFlag, addHonor, clamp, effectiveAttr, phaseOfYear } from './state';
 
 export interface DrawResult {
   event: GameEvent | null;
@@ -39,7 +39,7 @@ export function forcedEvent(state: GameState): GameEvent | undefined {
   });
 }
 
-/** 随机池：排除写死年份的、填充池的、已触发的一次性事件；比赛事件只在比赛周出现。 */
+/** 随机池：排除写死年份的、填充池的、已触发的一次性事件；比赛事件不占每周事件位。 */
 export function randomPool(state: GameState): GameEvent[] {
   const phase = phaseOfYear(state.year);
   return EVENTS.filter(
@@ -47,11 +47,36 @@ export function randomPool(state: GameState): GameEvent[] {
       e.year === undefined &&
       !e.filler &&
       !e.auto &&
+      e.kind !== 'match' &&
       (e.phase === 'any' || e.phase === phase) &&
-      (e.kind !== 'match' || isRegularSeasonWeek(state.week)) &&
       (!e.once || !state.triggeredEvents.includes(e.id)) &&
       (!e.requires || e.requires(state)),
   );
+}
+
+/** 比赛事件池：只在赛程里的那场比赛抽，不进每周事件位。 */
+export function matchPool(state: GameState): GameEvent[] {
+  const phase = phaseOfYear(state.year);
+  return EVENTS.filter(
+    (e) =>
+      e.kind === 'match' &&
+      e.year === undefined &&
+      !e.filler &&
+      !e.auto &&
+      (e.phase === 'any' || e.phase === phase) &&
+      (!e.once || !state.triggeredEvents.includes(e.id)) &&
+      (!e.requires || e.requires(state)),
+  );
+}
+
+/** 这场比赛抽到的比赛事件；池子空了返回 null。 */
+export function drawMatchEvent(state: GameState): DrawResult {
+  const ctx = createRng(state.rngState);
+  const pool = matchPool(state);
+  if (pool.length === 0) return { event: null, rngState: ctx.state() };
+  const index = ctx.rng.weighted(pool.map((e) => e.weight));
+  const picked = pool[index] ?? null;
+  return { event: picked, rngState: ctx.state() };
 }
 
 /**
@@ -102,8 +127,17 @@ function fourAvg(state: GameState): number {
  * 50 为基准，每高 50 点 +0.2、每低 50 点 −0.2（夹在 ±0.2）。
  * 数值未经用户确认；改这里就改全部 skillBonus 选项。
  */
-function skillBonusOf(state: GameState): number {
+export function skillBonusOf(state: GameState): number {
   return clamp((fourAvg(state) - CONFIG.attrs.cap / 2) / 250, -0.2, 0.2);
+}
+
+/**
+ * 比赛事件卡上那一次「这波操作成不成」的成功率：按四维均值算。
+ * 和比赛胜负是两次骰子：这一次只决定心态/信任等后果，成功才把选项的
+ * 胜率加成带进比赛（见 reduce.ts 的 chooseMatchOption）。
+ */
+export function matchOptionRate(state: GameState, _option: EventOption): number {
+  return clamp(fourAvg(state) / CONFIG.attrs.cap, CONFIG.match.minWinRate, CONFIG.match.maxWinRate);
 }
 
 /** 掷骰选项的可见成功率。必成为 1，必败为 0；比赛事件走统一胜负公式。 */
@@ -211,7 +245,12 @@ export interface OptionOutcome {
   win: boolean | null;
 }
 
-export function resolveOption(state: GameState, event: GameEvent, index: number): OptionOutcome {
+export function resolveOption(
+  state: GameState,
+  event: GameEvent,
+  index: number,
+  opts?: { skillRoll?: boolean },
+): OptionOutcome {
   const option = event.options[index];
   const logs: LogEntry[] = [];
   if (!option) return { success: false, logs, win: null };
@@ -222,6 +261,8 @@ export function resolveOption(state: GameState, event: GameEvent, index: number)
     success = true;
   } else if (option.risk === 'fail') {
     success = false;
+  } else if (opts?.skillRoll && event.kind === 'match') {
+    success = ctx.rng.next() < matchOptionRate(state, option);
   } else {
     success = ctx.rng.next() < successRateOf(state, event, option);
   }
