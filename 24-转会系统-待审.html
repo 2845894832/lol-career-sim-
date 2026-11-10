@@ -1,0 +1,40 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8">
+<title>Ticket 24 · 转会系统 决策待审表</title>
+<style>
+body{background:#0f1115;color:#e6e8ee;font:15px/1.6 system-ui,'Segoe UI',sans-serif;margin:0;padding:32px 24px}
+h1{font-size:22px;margin:0 0 6px} .sub{color:#9aa3b2;font-size:13px;margin-bottom:20px}
+table{border-collapse:collapse;width:100%;max-width:1200px}
+th{text-align:left;background:#1c2230;color:#cfd6e4;font-size:13px;padding:10px 12px;border-bottom:1px solid #2a3142}
+td{padding:10px 12px;border-bottom:1px solid #232a38;vertical-align:top}
+td:nth-child(1){white-space:nowrap;font-weight:600}
+td:nth-child(2){color:#9aa3b2;font-size:13px}
+td:nth-child(3){color:#dfe4ee}
+.st{white-space:nowrap;font-size:13px}
+.st.ok{color:#4ade80} .st.flow{color:#60a5fa}
+tr:hover td{background:#151a24}
+.wrap{max-width:1200px}
+</style><div class=wrap><h1>Ticket 24 · 转会系统 决策待审表</h1><div class=sub>22 条已按你的答复落定，状态列标了依据（Qn = 第一轮，m00xxx = 后续补充）。有异议直接说行号；回「通过」我才动 src。</div>
+<table><thead><tr><th>决定</th><th>选项</th><th>我推荐</th><th>状态</th></tr></thead><tbody>
+<tr><td>形态</td><td>事件卡 / 新屏 / 不做系统只做叙事</td><td>跨年事件卡，复用现有事件弹窗；不新增屏幕</td><td class='st ok'>已定（Q1）</td></tr>
+<tr><td>触发频率</td><td>一生一次 / 每年跨年 / 合同到期才开</td><td>每年跨年一次；首次签约后，从第 2 年跨年起</td><td class='st ok'>已定（Q2）</td></tr>
+<tr><td>谁发起</td><td>玩家申请 / 球队决定 / 双向</td><td>双向：跨年时球队报价 + 玩家可主动申请</td><td class='st ok'>已定（Q3）</td></tr>
+<tr><td>报价数量</td><td>1 支 / 2–3 支 / 全部可谈</td><td>2–3 支挑 1 支；够格的队不足就少给</td><td class='st ok'>已定（Q4）</td></tr>
+<tr><td>报价卡内容</td><td>只队名 / 队名+位置对比 / 加次年阵容</td><td>队名 + 该队同位置 ovr + 我能否首发 + 次年首发五人</td><td class='st ok'>已定（Q4/Q3）</td></tr>
+<tr><td>首次签约</td><td>保持固定 / 也走转会窗</td><td>保持现状：王者档 + 名次前 200 → 最弱三支的第一支</td><td class='st ok'>已定（Q13）</td></tr>
+<tr><td>合同年限</td><td>1 年 / 2 年 / 无合同</td><td>1 年</td><td class='st ok'>已定（m00105）</td></tr>
+<tr><td>1 年合同的含义</td><td>每年都是合同年 / 只在到期年开窗</td><td>每年都是合同年：每跨年都可谈，留队 = 续约 1 年</td><td class='st ok'>已定（m00205）</td></tr>
+<tr><td>钱</td><td>只签字费 / 签字费+年薪 / 无钱</td><td>只签字费，按队伍强度分 3 档，跨年一次性到账；无年薪</td><td class='st ok'>已定（Q5）</td></tr>
+<tr><td>续约发不发签字费</td><td>发 / 不发</td><td>不发；只有换队才发，续约不产生签字费</td><td class='st ok'>已定（m00874）</td></tr>
+<tr><td>签字费档位</td><td>3 档 / 5 档 / 按排名线性</td><td>强 5000 / 中 2000 / 弱 1000；17 队按首发均值排序，前 6 强、中 5 中、后 6 弱（比例口径待你点头）</td><td class='st ok'>已定（m00205）</td></tr>
+<tr><td>换队重置</td><td>全重置 / 只信任 / 不重置</td><td>信任重置 65（越过 60 的首发线，换过去就能上）；人气、荣誉、伤病全保留；首发按新队重算；当年战绩清零</td><td class='st ok'>已定（Q6 + m00798）</td></tr>
+<tr><td>首发联动</td><td>只过滤报价 / 申请也过滤 / 只警告</td><td>报价和主动申请都只出「同位置球员比你弱」的队（换过去顶得掉他）</td><td class='st ok'>已定（Q7 + m00752）</td></tr>
+<tr><td>被拒代价</td><td>无 / 掉信任 / 掉人气</td><td>无代价，可等下一份报价</td><td class='st ok'>已定（Q8）</td></tr>
+<tr><td>队名更名 / 消失</td><td>跟随映射 / 视为解散 / 留在旧 id</td><td>跟随更名映射；没有对应新队 = 解散 → 自由人 + 弱队保底报价</td><td class='st ok'>已定（Q9）</td></tr>
+<tr><td>自由人空一年</td><td>强制签 / 可空一年 / 视为退役</td><td>不可空一年：跨年必须落在某支队伍上（留队续约或接受一份报价）；解散时保底给弱队报价，没有「都不签」出口</td><td class='st ok'>已定（m00279）</td></tr>
+<tr><td>UI 位置</td><td>新屏 / 生涯页 / 跨年事件卡</td><td>只在跨年弹事件卡；0 新屏，底部 4 tab 不动</td><td class='st ok'>已定（Q10）</td></tr>
+<tr><td>跨年 bug</td><td>单独 ticket / 并进本 ticket / 不修</td><td>并进本 ticket：战绩按年隔离，第 2 年起常规赛正常打</td><td class='st ok'>已定（Q14）</td></tr>
+<tr><td>更名映射表</td><td>逐年对比 rosters / 手工列</td><td>单独一张《24-队伍更名映射.xlsx》：8 组继承链 + RA 无 S15 视为解散</td><td class='st ok'>已定（m00205，表待你过目）</td></tr>
+<tr><td>首签信任值</td><td>保持 10 / 也改 40</td><td>保持 10 不动：首签是特例，只有转会才重置 65</td><td class='st ok'>已定（m00205）</td></tr>
+<tr><td>验证</td><td>tsc+test / 只 tsc / 手动点</td><td>npx tsc --noEmit + npm test（95）全过 + 手动跨年一次</td><td class='st flow'>流程</td></tr>
+<tr><td>范围</td><td>只转会 / 加谈判 / 加经纪人</td><td>只做转会 + 合同年限/签字费；不加谈判、经纪人、工资帽</td><td class='st ok'>已定（m00205）</td></tr>
+</tbody></table></div></html>
