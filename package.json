@@ -1,7 +1,7 @@
 {
   "name": "lpl-career-proto",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "P2 可玩骨架：LPL 生涯模拟原型（单页、可离线）",
   "scripts": {
