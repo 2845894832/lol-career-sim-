@@ -1147,14 +1147,13 @@ describe('转会系统', () => {
     }
   });
 
-  it('续约：留队、信任不清零、签字费照发', () => {
+  it('续约：留队、信任不清零、不发签字费', () => {
     const s = runWeekToTransfer(offerState());
-    const fee = signingFee(2, 'RNG');
     const next = reduce(s, { kind: 'chooseOption', option: 0 }).state;
     expect(next.teamId).toBe('RNG');
     expect(next.coachTrust).toBe(100);
     expect(next.contractYear).toBe(2);
-    expect(next.money).toBe(s.money + fee);
+    expect(next.money).toBe(s.money);
     expect(next.year).toBe(2);
     expect(next.week).toBe(1);
   });

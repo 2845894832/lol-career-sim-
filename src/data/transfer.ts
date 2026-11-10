@@ -130,6 +130,8 @@ export function applicationOffers(state: GameState, year: number): TransferOffer
 function contractOption(state: GameState, offer: TransferOffer, year: number, renew: boolean): EventOption {
   const needTrust = CONFIG.league.startThreshold + Math.max(0, offer.gap);
   const postTrust = renew ? state.coachTrust : CONFIG.transfer.trustAfterTransfer;
+  // 只有换队才发签字费；留队续约没有。
+  const fee = renew ? 0 : offer.fee;
   const posLine = offer.posOvr === null
     ? `${POS_LABEL[state.role]}：名单上没有这个人（缺口）`
     : `${POS_LABEL[state.role]}：${offer.posName ?? '?'} ${offer.posOvr} · 你 ${myOvr(state)}（${offer.gap > 0 ? `差 ${offer.gap}` : `强 ${-offer.gap}`}）`;
@@ -141,7 +143,9 @@ function contractOption(state: GameState, offer: TransferOffer, year: number, re
   const detail = [
     posLine,
     `首发五人：${offer.lineup}`,
-    `签字费 +${offer.fee} · 合同 1 年 · ${renew ? '信任不动' : `信任重置到 ${CONFIG.transfer.trustAfterTransfer}`}`,
+    renew
+      ? `没有签字费 · 合同 1 年 · 信任不动`
+      : `签字费 +${fee} · 合同 1 年 · 信任重置到 ${CONFIG.transfer.trustAfterTransfer}`,
     trustLine,
   ].join('\n');
   return {
@@ -151,13 +155,13 @@ function contractOption(state: GameState, offer: TransferOffer, year: number, re
     success: {
       contract: {
         teamId: offer.teamId,
-        fee: offer.fee,
+        fee,
         resetTrust: !renew,
         startYear: year,
       },
     },
     successText: renew
-      ? `你在 ${offer.name} 的续约合同上签了字，签字费 ${offer.fee}。`
+      ? `你和 ${offer.name} 续约一年，没有签字费。`
       : `你转会去了 ${offer.name}，签字费 ${offer.fee}。`,
   };
 }
