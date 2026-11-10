@@ -1,5 +1,5 @@
 import { CONFIG } from '../config';
-import { fixtureThisWeek, matchLogLine, myMatchStrength, myTeamStrength, recordResult, rivalStrength, seasonStrengths } from './league';
+import { fixtureThisWeek, isStarting, matchLogLine, myMatchStrength, myTeamStrength, recordResult, rivalStrength, seasonStrengths, startRequirement } from './league';
 import { createRng } from '../rng';
 import { hasOnce } from './shop';
 import type { Action, ActionId, AttrKey, GameState, LogEntry, ReduceResult, ShowGame } from '../types';
@@ -171,9 +171,8 @@ function chooseOption(state: GameState, index: number, out: LogEntry[]): void {
   // 周事件本身就是一场比赛（决赛）：沿用老规则，选项成败即胜负；
   // 结果先交给演出，等玩家点「继续」再结周。
   if (outcome.win !== null) {
-    if (!canPlay(state)) {
-      const reason = benchReason(state);
-      if (reason) out.push({ text: reason, tone: 'plain' });
+    if (!canPlay(state) || !isStarting(state)) {
+      out.push({ text: benchReason(state) ?? notStartingNote(state), tone: 'plain' });
       finishWeek(state, out);
       return;
     }
@@ -201,6 +200,13 @@ function finalRival(state: GameState): { rivalId: string; rivalName: string } {
  * - 有赛程但上不了场（伤停/替补）：球队照打，后台掷一次，无演出。
  * - 能上场：先出「开赛」卡，抽一张比赛事件，再进演出。
  */
+/** 能上场但没进首发时的说明。 */
+function notStartingNote(state: GameState): string {
+  const req = startRequirement(state);
+  const gap = req.gap > 0 ? `，对位差 ${req.gap}` : '';
+  return `你还没进首发（信任 ${state.coachTrust}，要大于 ${req.needTrust}${gap}），这场球队自己打。`;
+}
+
 function beginMatch(state: GameState, out: LogEntry[]): void {
   const fixture = fixtureThisWeek(state);
   if (!fixture || !state.signed) {
@@ -208,9 +214,8 @@ function beginMatch(state: GameState, out: LogEntry[]): void {
     return;
   }
 
-  if (!canPlay(state)) {
-    const reason = benchReason(state);
-    if (reason) out.push({ text: reason, tone: 'plain' });
+  if (!canPlay(state) || !isStarting(state)) {
+    out.push({ text: benchReason(state) ?? notStartingNote(state), tone: 'plain' });
     const won = rollWin(state, fixture.rivalId, 0);
     recordResult(state, fixture, won);
     out.push({

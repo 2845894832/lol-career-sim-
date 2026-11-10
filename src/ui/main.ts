@@ -56,7 +56,15 @@ if (devMode === 'signed' || devMode === 'bench') {
   state = newGame(randomSeed());
   state.signed = true;
   state.teamId = 'RNG';
-  state.coachTrust = devMode === 'bench' ? 55 : 65;
+  state.coachTrust = devMode === 'bench' ? 55 : 100;
+  // signed 调试档要真的能首发（信任 > 60、对位差 ≤ 10），否则看不到比赛流程。
+  if (devMode === 'signed') {
+    state.attrs.operation = 85;
+    state.attrs.laning = 85;
+    state.attrs.teamfight = 85;
+    state.attrs.awareness = 85;
+    state.attrs.mentality = 85;
+  }
   state.week = 13;
   state.seasonResults = [
     { week: 2, rivalId: 'WE', won: true, kind: 'regular' },

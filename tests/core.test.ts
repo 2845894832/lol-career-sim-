@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CONFIG } from '../src/config';
-import { isStarting, startRequirement, fixtureThisWeek, finalOpponentStrength, leagueWeeksFor, opponentStrength, rivalStrength, seasonAverageStrength, seasonStrengths, seasonTopStrength, winChance } from '../src/core/league';
+import { isStarting, startRequirement, fixtureThisWeek, finalOpponentStrength, leagueWeeksFor, opponentStrength, rivalStrength, seasonAverageStrength, seasonStrengths, seasonTopStrength, nextFixture, winChance } from '../src/core/league';
 import { reduce } from '../src/core/reduce';
 import { staminaCost } from '../src/core/actions';
 import { applyAction, canAfford } from '../src/core/actions';
@@ -724,6 +724,31 @@ describe('出场判定', () => {
     s.week = 26;
     s.signed = true;
     expect(canPlay(s)).toBe(false);
+  });
+});
+
+describe('替补不上场', () => {
+  it('没进首发就不弹开赛卡，球队后台打完并记积分榜', () => {
+    const s = newGame(3);
+    s.signed = true;
+    s.teamId = 'RNG';
+    const fixture = nextFixture(s);
+    expect(fixture).toBeTruthy();
+    if (!fixture) throw new Error('no fixture');
+    s.week = fixture.week;
+    s.coachTrust = CONFIG.match.benchThreshold + 5; // 能上场但不到首发线
+    expect(fixtureThisWeek(s)).not.toBeNull();
+
+    let st = s;
+    for (let i = 0; i < 3; i++) {
+      st = reduce(st, { kind: 'selectAction', slot: i, action: 'rest' }).state;
+    }
+    st = reduce(st, { kind: 'endWeek' }).state;
+    if (st.pendingEvent) st = reduce(st, { kind: 'chooseOption', option: 0 }).state;
+
+    expect(st.pendingMatch).toBeNull();
+    expect(st.seasonResults.length).toBe(1);
+    expect(st.week).toBe(fixture.week + 1);
   });
 });
 
