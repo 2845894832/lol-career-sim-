@@ -66,10 +66,11 @@ export function staminaCost(
       return escalate(CONFIG.actions.scrim.stamina, Math.min(a.teamfight, a.awareness));
     case 'fitness':
       return CONFIG.actions.fitness.stamina;
+    // 直播/商业和上分、训练一样：人气越高越费体力，收益不打折。
     case 'stream':
-      return CONFIG.actions.stream.stamina;
+      return escalate(CONFIG.actions.stream.stamina, a.popularity);
     case 'business':
-      return CONFIG.actions.business.stamina;
+      return escalate(CONFIG.actions.business.stamina, a.popularity);
     case 'rest':
       return CONFIG.actions.rest.stamina;
   }
@@ -100,12 +101,10 @@ export function canAfford(state: GameState, slot: number, action: ActionId): boo
   return remainingStamina(state, slot) >= staminaCost(state, action);
 }
 
-/** 人气增长有递减：越高越难涨，避免一直直播就把人气顶满。 */
+/** 人气不打折：代价改成体力，随人气上涨（和人气的「越高越贵」对齐）。 */
 function gainPopularity(state: GameState, base: number): number {
-  const factor = 1 - state.attrs.popularity / CONFIG.attrs.cap;
-  const delta = Math.round(base * factor);
-  if (delta <= 0) return 0;
-  return applyAttrDelta(state, 'popularity', delta);
+  if (base <= 0) return 0;
+  return applyAttrDelta(state, 'popularity', base);
 }
 
 /** 从反馈池里抽一句；池子空就退回原来的固定文案。 */

@@ -181,6 +181,27 @@ describe('行动', () => {
     expect(s.stamina).toBeGreaterThan(low);
   });
 
+  it('直播/商业的人气不打折：高低人气拿到的一样多，体力越往后越贵', () => {
+    const popAfter = (pop: number): number => {
+      const s = newGame(5);
+      s.signed = true;
+      s.teamId = 'RNG';
+      s.attrs.popularity = pop;
+      const before = s.attrs.popularity;
+      applyAction(s, 'business', null);
+      return s.attrs.popularity - before;
+    };
+    expect(popAfter(20)).toBe(CONFIG.actions.business.popularity);
+    expect(popAfter(50)).toBe(CONFIG.actions.business.popularity);
+
+    const low = newGame(5);
+    low.attrs.popularity = 20;
+    const high = newGame(5);
+    high.attrs.popularity = 90;
+    expect(staminaCost(high, 'business')).toBeGreaterThan(staminaCost(low, 'business'));
+    expect(staminaCost(high, 'stream')).toBeGreaterThan(staminaCost(low, 'stream'));
+  });
+
   it('上分累积段位', () => {
     const s = newGame(3);
     const before = s.rankPoints;
