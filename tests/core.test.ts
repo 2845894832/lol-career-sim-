@@ -288,6 +288,34 @@ describe('比赛', () => {
     expect(drawEvent(s).event?.id).not.toBe('E05');
   });
 
+  it('演出里的局数跟着真实胜负走：输的系列赛不会演成我们 2:1', () => {
+    for (let seed = 1; seed <= 12; seed++) {
+      let s = newGame(seed);
+      s.signed = true;
+      s.teamId = 'RNG';
+      s.coachTrust = 100;
+      s.year = 1;
+      s.week = 4;
+      for (const key of MATCH_ATTRS) s.attrs[key] = 85;
+      for (let i = 0; i < 3; i++) s = reduce(s, { kind: 'selectAction', slot: i, action: 'rest' }).state;
+      s = reduce(s, { kind: 'endWeek' }).state;
+      let guard = 0;
+      while (s.pendingEvent && guard++ < 3) s = reduce(s, { kind: 'chooseOption', option: 0 }).state;
+      guard = 0;
+      while (s.pendingMatch && s.pendingMatch.phase !== 'show' && guard++ < 4) {
+        if (s.pendingMatch.phase === 'kickoff') s = reduce(s, { kind: 'kickoffMatch' }).state;
+        else s = reduce(s, { kind: 'chooseMatchOption', option: 0 }).state;
+      }
+      const pm = s.pendingMatch;
+      expect(pm?.phase).toBe('show');
+      const games = pm!.games!;
+      const wins = games.filter((g) => g.win).length;
+      expect(pm!.score![0]).toBe(wins);
+      expect(pm!.score![1]).toBe(games.length - wins);
+      expect(pm!.score![0] > pm!.score![1]).toBe(pm!.win);
+    }
+  });
+
   it('临场加减会改变自动比赛的胜率', () => {
     let s = newGame(7);
     let normal = 0;

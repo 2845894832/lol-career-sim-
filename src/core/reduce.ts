@@ -336,9 +336,12 @@ function buildSeries(state: GameState, win: boolean, bestOf: 3 | 5): { score: [n
   const need = bestOf === 5 ? 3 : 2;
   const ctx = createRng(state.rngState);
   const loserGames = ctx.rng.int(need);
+  // 输的时候「true」是对方赢的局，不能一律按我们赢来铺——否则 1:2 的比赛会演成我们 2:1。
+  const myWins = win ? need : loserGames;
+  const theirWins = win ? loserGames : need;
   const flags: boolean[] = [
-    ...Array.from({ length: need }, () => true),
-    ...Array.from({ length: loserGames }, () => false),
+    ...Array.from({ length: myWins }, () => true),
+    ...Array.from({ length: theirWins }, () => false),
   ];
   for (let i = flags.length - 1; i > 0; i -= 1) {
     const j = ctx.rng.int(i + 1);
@@ -350,7 +353,7 @@ function buildSeries(state: GameState, win: boolean, bestOf: 3 | 5): { score: [n
     return won ? { win: true, kills: [hi, lo] } : { win: false, kills: [lo, hi] };
   });
   state.rngState = ctx.state();
-  const score: [number, number] = win ? [need, loserGames] : [loserGames, need];
+  const score: [number, number] = [myWins, theirWins];
   return { score, games };
 }
 
