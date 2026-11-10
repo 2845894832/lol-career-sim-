@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { CONFIG } from '../src/config';
-import { isStarting, startRequirement, fixtureThisWeek, finalOpponentStrength, leagueWeeksFor, opponentStrength, rivalStrength, seasonAverageStrength, seasonStrengths, seasonTopStrength, nextFixture, winChance } from '../src/core/league';
+import { isStarting, startRequirement, fixtureThisWeek, finalOpponentStrength, leagueWeeksFor, opponentStrength, rivalStrength, seasonAverageStrength, seasonStrengths, seasonTopStrength, nextFixture, winChance, scheduleFor } from '../src/core/league';
 import { reduce } from '../src/core/reduce';
 import { staminaCost } from '../src/core/actions';
 import { applyAction, canAfford } from '../src/core/actions';
 import { advanceYear, gainExp, gainPoints, trainGain } from '../src/core/growth';
 import { autoMatch, applyMatchOutcome, matchRate } from '../src/core/match';
 import { normalEnding, specialEnding } from '../src/core/endings';
-import { drawEvent, forcedEvent, matchPool, randomPool, resolveOption, successRateOf } from '../src/core/events';
+import { drawEvent, forcedEvent, getEvent, matchPool, randomPool, resolveOption, successRateOf } from '../src/core/events';
 import { EVENTS } from '../src/data/events';
 import { canPlay, benchReason } from '../src/core/match';
 import { createRng } from '../src/rng';
@@ -19,6 +19,8 @@ import { ATTR_KEYS, HONOR_LABEL, MATCH_ATTRS, type Action, type GameEvent, type 
 import { SHOP, buy, buyBlocker, hasOnce, restBonus, streamIncome, subActive, subUntil, weekIncome, weekSpend } from '../src/core/shop';
 import { leagueFinal, worldsFinal } from '../src/data/finals';
 import { awardHallOfFame, awardSeasonHonors } from '../src/core/honors';
+import { applicationOffers, signingFee, transferEvent, transferOffers } from '../src/data/transfer';
+import { teamInYear } from '../src/data/teamIdentity';
 
 /** 造一个第 25 周的联赛决赛选手：13 胜、首发、五维 90。 */
 function makeLeagueFinalist(seed = 33): GameState {
@@ -29,6 +31,7 @@ function makeLeagueFinalist(seed = 33): GameState {
   s.week = CONFIG.league.leagueFinalWeek;
   for (const key of MATCH_ATTRS) s.attrs[key] = 90;
   s.seasonResults = Array.from({ length: 13 }, (_, i) => ({
+    year: 1,
     week: 2 + i,
     rivalId: 'EDG',
     won: true,
@@ -910,7 +913,9 @@ describe('联赛决赛 / S 赛', () => {
   it('联赛决赛按年编号', () => {
     const s = makeLeagueFinalist(32);
     expect(drawEvent(s).event?.id).toBe('LPL-1');
+    // 战绩按年隔离：换了年，上一年的 13 胜不算数，得重新打出前 2 名。
     s.year = 3;
+    s.seasonResults = s.seasonResults.map((r) => ({ ...r, year: 3 }));
     expect(drawEvent(s).event?.id).toBe('LPL-3');
   });
 
@@ -1102,5 +1107,119 @@ describe('商店', () => {
     expect(s.ledger[s.ledger.length - 1]).toEqual({ label: '直播', amount: CONFIG.actions.stream.money });
     expect(weekIncome(s)).toBe(CONFIG.actions.stream.money);
     expect(weekSpend(s)).toBe(-CONFIG.shop.residence.price);
+  });
+});
+
+describe('转会系统', () => {
+  /** 第 30 周的已签约首发：能进任何队的转会窗。 */
+  function offerState(seed = 71): GameState {
+    const s = newGame(seed);
+    s.signed = true;
+    s.teamId = 'RNG';
+    s.coachTrust = 100;
+    s.year = 1;
+    s.week = 30;
+    s.contractYear = 1;
+    for (const k of MATCH_ATTRS) s.attrs[k] = 90;
+    return s;
+  }
+
+  /** 排三格休息、结周，把随机的本周事件点掉，直到弹出转会卡。 */
+  function runWeekToTransfer(s: GameState): GameState {
+    let st = s;
+    for (let i = 0; i < 3; i++) st = reduce(st, { kind: 'selectAction', slot: i, action: 'rest' }).state;
+    st = reduce(st, { kind: 'endWeek' }).state;
+    for (let guard = 0; guard < 6 && st.pendingEvent && !st.pendingEvent.eventId.startsWith('TR-'); guard++) {
+      st = reduce(st, { kind: 'chooseOption', option: 0 }).state;
+    }
+    return st;
+  }
+
+  it('第 30 周弹转会卡，每个选项都必须落到一支队（没有「都不签」）', () => {
+    const s = runWeekToTransfer(offerState());
+    expect(s.pendingEvent?.eventId).toBe('TR-2');
+    expect(transferEvent(s)?.id).toBe('TR-2');
+    const ev = getEvent('TR-2', s)!;
+    expect(ev.options.length).toBeGreaterThan(1);
+    for (const o of ev.options) {
+      if (o.nextEvent) continue;
+      expect(o.success?.contract).toBeTruthy();
+    }
+  });
+
+  it('续约：留队、信任不清零、签字费照发', () => {
+    const s = runWeekToTransfer(offerState());
+    const fee = signingFee(2, 'RNG');
+    const next = reduce(s, { kind: 'chooseOption', option: 0 }).state;
+    expect(next.teamId).toBe('RNG');
+    expect(next.coachTrust).toBe(100);
+    expect(next.contractYear).toBe(2);
+    expect(next.money).toBe(s.money + fee);
+    expect(next.year).toBe(2);
+    expect(next.week).toBe(1);
+  });
+
+  it('转会：换队、信任重置 40、签字费到账、战绩清零', () => {
+    const s = runWeekToTransfer(offerState());
+    const ev = getEvent('TR-2', s)!;
+    const contract = ev.options[1]!.success?.contract;
+    expect(contract).toBeTruthy();
+    expect(contract!.teamId).not.toBe('RNG');
+    const next = reduce(s, { kind: 'chooseOption', option: 1 }).state;
+    expect(next.teamId).toBe(contract!.teamId);
+    expect(next.coachTrust).toBe(CONFIG.transfer.trustAfterTransfer);
+    expect(next.contractYear).toBe(2);
+    expect(next.money).toBe(s.money + signingFee(2, contract!.teamId));
+    expect(next.seasonResults).toEqual([]);
+  });
+
+  it('主动申请：走 TRA 卡，只列能首发的队，选中后照样换队', () => {
+    const s = runWeekToTransfer(offerState());
+    const ev = getEvent('TR-2', s)!;
+    const idx = ev.options.findIndex((o) => o.nextEvent);
+    expect(idx).toBeGreaterThan(0);
+    const asked = reduce(s, { kind: 'chooseOption', option: idx }).state;
+    expect(asked.pendingEvent?.eventId).toBe('TRA-2');
+    const list = getEvent('TRA-2', asked)!;
+    expect(list.options.length).toBeGreaterThan(0);
+    for (const o of list.options) expect(o.success?.contract).toBeTruthy();
+    const target = list.options[0]!.success!.contract!;
+    const next = reduce(asked, { kind: 'chooseOption', option: 0 }).state;
+    expect(next.teamId).toBe(target.teamId);
+    expect(next.coachTrust).toBe(CONFIG.transfer.trustAfterTransfer);
+  });
+
+  it('报价只出 gap≤10 的队；签字费按强度三档', () => {
+    const s = offerState();
+    const ordered = seasonStrengths(2);
+    expect(signingFee(2, ordered[0]!.id)).toBe(CONFIG.transfer.feeStrong);
+    expect(signingFee(2, ordered[ordered.length - 1]!.id)).toBe(CONFIG.transfer.feeWeak);
+    expect(signingFee(2, ordered[Math.floor(ordered.length / 2)]!.id)).toBe(CONFIG.transfer.feeMid);
+    for (const o of transferOffers(s, 2)) expect(o.gap).toBeLessThanOrEqual(CONFIG.league.maxGap);
+    for (const o of applicationOffers(s, 2)) expect(o.gap).toBeLessThanOrEqual(CONFIG.league.maxGap);
+  });
+
+  it('弱到没有队能首发时，只保底一支弱队（gap 可能超 10，但不会没合同）', () => {
+    const s = offerState();
+    for (const k of MATCH_ATTRS) s.attrs[k] = 40;
+    const offers = transferOffers(s, 2);
+    expect(offers.length).toBeGreaterThan(0);
+    for (const o of offers) expect(o.gap <= CONFIG.league.maxGap || offers.length === 1).toBe(true);
+  });
+
+  it('队名更名跟映射走，RA 在 S15 视为解散', () => {
+    // year 1 = S8，year 8 = S15。
+    expect(teamInYear('SNG', 2)).toBe('SN');
+    expect(teamInYear('SNG', 5)).toBe('WBG');
+    expect(teamInYear('RNG', 8)).toBe('RNG');
+    expect(teamInYear('RA', 8)).toBeNull();
+  });
+
+  it('换年后上一年的 played 不继承，第 2 年常规赛正常打', () => {
+    const s = offerState();
+    s.seasonResults = [{ year: 1, week: 2, rivalId: 'WE', won: true, kind: 'regular' }];
+    s.year = 2;
+    expect(scheduleFor(s).every((f) => !f.played)).toBe(true);
+    expect(fixtureThisWeek({ ...s, week: 2 })).not.toBeNull();
   });
 });

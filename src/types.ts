@@ -90,6 +90,19 @@ export interface Consequence {
   /** 收到邀请函并接受：直接转成职业选手。 */
   signed?: boolean;
   teamId?: string;
+  /** 签下一份合同：转会或续约，见 data/transfer.ts。 */
+  contract?: ContractTerm;
+}
+
+/** 一年一签的合同：签字费跨年一次性到账，没有年薪。 */
+export interface ContractTerm {
+  teamId: string;
+  /** 签字费；0 = 这份合同不发钱。 */
+  fee: number;
+  /** 转会才把教练信任重置到 40；留队续约不动。 */
+  resetTrust: boolean;
+  /** 合同从哪一年开始（1 起）。 */
+  startYear: number;
 }
 
 export type RiskKind = 'roll' | 'success' | 'fail';
@@ -120,6 +133,10 @@ export interface EventOption {
   failText?: string;
   /** 比赛事件专用：这个分支算赢还是输。省略则按成败判定。 */
   matchResult?: 'win' | 'loss';
+  /** 选项下面补的一行说明（转会报价用，多行用 \n）。 */
+  detail?: string;
+  /** 选完这个选项后，接着弹另一张卡（转会窗 → 主动申请）。 */
+  nextEvent?: string;
 }
 
 export type EventKind = 'match' | 'life' | 'special';
@@ -142,6 +159,8 @@ export interface GameEvent {
   tags: string[];
   /** 正文，硬上限 50 字。 */
   text: string;
+  /** 事件卡标题；省略时界面写「本周事件」。 */
+  title?: string;
   options: EventOption[];
   /** true = 抽完即止；false = 可重复进池。 */
   once: boolean;
@@ -199,6 +218,8 @@ export interface LogEntry {
 }
 
 export interface SeasonResult {
+  /** 哪一年的比赛；跨年不清零时必须靠它区分（ticket 24 修）。 */
+  year: number;
   week: number;
   rivalId: string;
   won: boolean;
@@ -246,6 +267,8 @@ export interface GameState {
   teamId: string | null;
   /** 今年打过的比赛。 */
   seasonResults: SeasonResult[];
+  /** 合同签到的年份（1 起）；null = 没有合同。每年跨年都会重签，所以正常等于 year。 */
+  contractYear: number | null;
   freeAgent: boolean;
   /** 连续无人可签的签约窗口数。 */
   failedWindows: number;

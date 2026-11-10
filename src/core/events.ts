@@ -4,6 +4,7 @@ import { matchRate } from './match';
 import { finalOpponentStrength, opponentStrength } from './league';
 import { EVENTS, FILLER_EVENTS, findEvent } from '../data/events';
 import { finalFor, finalById, inviteEvent, inviteById } from '../data/finals';
+import { transferById } from '../data/transfer';
 import {
   ATTR_LABEL,
   HONOR_LABEL,
@@ -229,8 +230,23 @@ export function applyConsequence(state: GameState, c: Consequence): string[] {
     state.teamId = c.teamId;
     notes.push(`加入 ${c.teamId}`);
   }
+  if (c.contract) {
+    const term = c.contract;
+    state.teamId = term.teamId;
+    state.signed = true;
+    addFlag(state, '#签约');
+    if (term.resetTrust) {
+      state.coachTrust = CONFIG.transfer.trustAfterTransfer;
+      notes.push(`教练信任重置到 ${CONFIG.transfer.trustAfterTransfer}`);
+    }
+    state.money += term.fee;
+    state.contractYear = term.startYear;
+    state.freeAgent = false;
+  }
   if (c.signed && !state.signed) {
     state.signed = true;
+    // 首签没有合同年字段，就按「签到当年」算；之后每年跨年谈一次。
+    state.contractYear = state.year;
     addFlag(state, '#签约');
     notes.push('你签约了');
   }
@@ -243,6 +259,8 @@ export interface OptionOutcome {
   logs: LogEntry[];
   /** 比赛事件的胜负；非比赛事件为 null。 */
   win: boolean | null;
+  /** 选完接着弹的下一张卡（转会窗 → 主动申请）；没有就是 undefined。 */
+  nextEventId?: string;
 }
 
 export function resolveOption(
@@ -289,9 +307,9 @@ export function resolveOption(
   state.eventDone = true;
   state.pendingEvent = null;
 
-  return { success, logs, win };
+  return { success, logs, win, nextEventId: option.nextEvent };
 }
 
-export function getEvent(id: string): GameEvent | undefined {
-  return findEvent(id) ?? finalById(id) ?? inviteById(id) ?? undefined;
+export function getEvent(id: string, state?: GameState): GameEvent | undefined {
+  return findEvent(id) ?? finalById(id) ?? inviteById(id) ?? (state ? transferById(id, state) ?? undefined : undefined);
 }

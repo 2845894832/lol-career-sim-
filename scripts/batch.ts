@@ -25,7 +25,7 @@ function playOne(seed: number, mode: 'busy' | 'idle'): GameState {
 
   while (!s.ended && guard++ < 600) {
     if (s.pendingEvent) {
-      const event = getEvent(s.pendingEvent.eventId);
+      const event = getEvent(s.pendingEvent.eventId, s);
       if (!event) break;
       // 固定策略：按种子选一个选项，保证可复现。
       const index = seed % event.options.length;

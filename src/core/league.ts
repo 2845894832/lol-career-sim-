@@ -64,7 +64,7 @@ export function scheduleFor(state: GameState): Fixture[] {
   weeks.forEach((week, i) => {
     const r = rivals[i];
     if (!r) return;
-    const rec = state.seasonResults.find((x) => x.week === week);
+    const rec = state.seasonResults.find((x) => x.year === year && x.week === week);
     out.push({
       week,
       rivalId: r.id,
@@ -96,7 +96,7 @@ export function fixtureThisWeek(state: GameState): Fixture | null {
 
 /** 记一场结果；比分是编的，只为日志好看。 */
 export function recordResult(state: GameState, f: Fixture, won: boolean): void {
-  state.seasonResults.push({ week: f.week, rivalId: f.rivalId, won, kind: 'regular' });
+  state.seasonResults.push({ year: state.year, week: f.week, rivalId: f.rivalId, won, kind: 'regular' });
 }
 
 /** 一场常规赛的文字结果，日志用。 */
@@ -254,7 +254,9 @@ export function standings(state: GameState): StandingRow[] {
   const avg = teams.reduce((s, t) => s + teamStrength(t), 0) / teams.length;
   const rows: StandingRow[] = teams.map((t) => {
     if (t.id === state.teamId) {
-      const done = state.seasonResults.filter((r) => r.kind === 'regular');
+      const done = state.seasonResults.filter(
+        (r) => r.kind === 'regular' && r.year === state.year,
+      );
       const wins = done.filter((r) => r.won).length;
       return { teamId: t.id, name: t.name, wins, losses: done.length - wins, isMe: true };
     }

@@ -186,6 +186,20 @@ export const CONFIG = {
     failedWindowsToEnd: 2,
   },
 
+  /** 转会：一年一签，跨年弹一张卡。 */
+  transfer: {
+    /** 一次给几支报价（实际可能更少）。 */
+    offers: 3,
+    /** 主动申请时，最多能谈几支。 */
+    applyOffers: 3,
+    /** 签字费三档：按该队首发五人 ovr 均值分。 */
+    feeStrong: 5000,
+    feeMid: 2000,
+    feeWeak: 1000,
+    /** 转会（不是续约）之后教练信任重置到这个数。 */
+    trustAfterTransfer: 40,
+  },
+
   /** 事件抽取。 */
   events: {
     specialWeight: 1,

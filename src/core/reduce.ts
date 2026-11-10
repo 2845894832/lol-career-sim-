@@ -13,6 +13,8 @@ import { addHonor, attrTotal, cloneState, isFinalWeek, isSigningWindow } from '.
 import { awardHallOfFame, awardSeasonHonors } from './honors';
 import { resolveWorldsGroup } from './worlds';
 import { placementOf, rankOf, weeksPlayed } from './ladder';
+import { transferEvent } from '../data/transfer';
+import { teamInYear } from '../data/teamIdentity';
 
 /**
  * 规则核心。纯计算：给一个状态和一个动作，返回新状态和日志。
@@ -157,7 +159,7 @@ function chooseOption(state: GameState, index: number, out: LogEntry[]): void {
     out.push({ text: '这周没有待选的事件。', tone: 'plain' });
     return;
   }
-  const event = getEvent(state.pendingEvent.eventId);
+  const event = getEvent(state.pendingEvent.eventId, state);
   if (!event) {
     state.pendingEvent = null;
     state.eventDone = true;
@@ -167,6 +169,16 @@ function chooseOption(state: GameState, index: number, out: LogEntry[]): void {
 
   const outcome = resolveOption(state, event, index);
   out.push(...outcome.logs);
+
+  // 转会窗里选了「主动申请」：接着弹第二张卡，不结周。
+  if (outcome.nextEventId) {
+    const next = getEvent(outcome.nextEventId, state);
+    if (next) {
+      state.pendingEvent = { eventId: next.id };
+      state.eventDone = false;
+      return;
+    }
+  }
 
   // 周事件本身就是一场比赛（决赛）：沿用老规则，选项成败即胜负；
   // 结果先交给演出，等玩家点「继续」再结周。
@@ -253,7 +265,7 @@ function kickoffMatch(state: GameState, out: LogEntry[]): void {
 function chooseMatchOption(state: GameState, index: number, out: LogEntry[]): void {
   const pm = state.pendingMatch;
   if (!pm || pm.phase !== 'event') return;
-  const event = pm.eventId ? getEvent(pm.eventId) : null;
+  const event = pm.eventId ? getEvent(pm.eventId, state) : null;
   if (!event) {
     settleRegularMatch(state, out, 0, false);
     return;
@@ -421,6 +433,18 @@ function finishWeek(state: GameState, out: LogEntry[]): void {
     return;
   }
 
+  // 第 30 周打完：签约球员先开转会窗，谈完才换年。
+  // 以 triggeredEvents 里的 TR-id 做幂等键：卡结算完再走到这里就直接换年。
+  if (!state.triggeredEvents.includes(`TR-${state.year + 1}`)) {
+    const card = transferEvent(state);
+    if (card) {
+      state.pendingEvent = { eventId: card.id };
+      state.eventDone = false;
+      out.push({ text: '【转会窗】合同年到了，先谈下一份合同。', tone: 'plain' });
+      return;
+    }
+  }
+
   advanceToNextYear(state, out);
 }
 
@@ -444,6 +468,9 @@ function resetWeek(state: GameState): void {
 function advanceToNextYear(state: GameState, out: LogEntry[]): void {
   state.week = 1;
   state.year += 1;
+  // 战绩按年隔离：不清零的话，第 2 年的赛程会把上一年同周次的比赛当成已打完。
+  state.seasonResults = [];
+  state.eventDone = false;
 
   if (state.year > CONFIG.career.years) {
     state.year = CONFIG.career.years;
@@ -454,6 +481,21 @@ function advanceToNextYear(state: GameState, out: LogEntry[]): void {
   }
 
   out.push(...advanceYear(state).map((text) => ({ text, tone: 'plain' as const })));
+
+  // 合同挂在席位上：队名换了就跟着换；没有后继 = 解散（正常流程里转会窗已经拦住了）。
+  if (state.signed) {
+    const next = teamInYear(state.teamId, state.year);
+    if (!next) {
+      state.teamId = null;
+      state.signed = false;
+      state.freeAgent = true;
+      state.contractYear = null;
+      out.push({ text: '老东家的席位没了，你成了自由人。', tone: 'bad' });
+    } else if (next !== state.teamId) {
+      state.teamId = next;
+      out.push({ text: `队伍更名为 ${next}，合同跟着席位走。`, tone: 'plain' });
+    }
+  }
 
   const total = attrTotal(state);
   if (total > state.peakScore) {

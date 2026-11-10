@@ -57,6 +57,7 @@ if (devMode === 'signed' || devMode === 'bench') {
   state.signed = true;
   state.teamId = 'RNG';
   state.coachTrust = devMode === 'bench' ? 55 : 100;
+  state.contractYear = 1;
   // signed 调试档要真的能首发（信任 > 60、对位差 ≤ 10），否则看不到比赛流程。
   if (devMode === 'signed') {
     state.attrs.operation = 85;
@@ -67,12 +68,12 @@ if (devMode === 'signed' || devMode === 'bench') {
   }
   state.week = 13;
   state.seasonResults = [
-    { week: 2, rivalId: 'WE', won: true, kind: 'regular' },
-    { week: 4, rivalId: 'IG', won: true, kind: 'regular' },
-    { week: 6, rivalId: 'BLG', won: false, kind: 'regular' },
-    { week: 8, rivalId: 'EDG', won: true, kind: 'regular' },
-    { week: 10, rivalId: 'SS', won: true, kind: 'regular' },
-    { week: 12, rivalId: 'JDG', won: false, kind: 'regular' },
+    { year: 1, week: 2, rivalId: 'WE', won: true, kind: 'regular' },
+    { year: 1, week: 4, rivalId: 'IG', won: true, kind: 'regular' },
+    { year: 1, week: 6, rivalId: 'BLG', won: false, kind: 'regular' },
+    { year: 1, week: 8, rivalId: 'EDG', won: true, kind: 'regular' },
+    { year: 1, week: 10, rivalId: 'SS', won: true, kind: 'regular' },
+    { year: 1, week: 12, rivalId: 'JDG', won: false, kind: 'regular' },
   ];
 }
 let sheet: Sheet | null = null;
@@ -302,7 +303,7 @@ function renderSheet(): string {
 
 function renderEvent(): string {
   if (!state.pendingEvent) return '';
-  const event = getEvent(state.pendingEvent.eventId);
+  const event = getEvent(state.pendingEvent.eventId, state);
   if (!event) return '';
   const rows = event.options
     .map((option, i) => {
@@ -311,13 +312,17 @@ function renderEvent(): string {
         option.risk === 'roll'
           ? `${Math.round(successRateOf(state, event, option) * 100)}%`
           : '';
-      return `<button class="btn" data-act="choose" data-i="${i}">
-        <span>${esc(option.label)}</span><span class="rate">${rate}</span>
+      const detail = option.detail
+        ? `<span class="detail">${esc(option.detail)}</span>`
+        : '';
+      return `<button class="btn${detail ? ' opt-rich' : ''}" data-act="choose" data-i="${i}">
+        <span class="opt-top"><span>${esc(option.label)}</span><span class="rate">${rate}</span></span>
+        ${detail}
       </button>`;
     })
     .join('');
   return `<div class="overlay"><div class="sheet" data-kind="result">
-    <h2>本周事件</h2>
+    <h2>${esc(event.title ?? '本周事件')}</h2>
     <p class="event-text">${esc(event.text)}</p>
     <div class="options">${rows}</div>
   </div></div>`;
@@ -403,6 +408,19 @@ function renderTabs(): string {
   return `<nav class="tabs">${item('week', '本周')}${item('schedule', '赛程')}${item('career', '生涯')}${item('money', '收支')}</nav>`;
 }
 
+/** 合同：队名 + 合同年 + 信任。转会窗的结果落在这里。 */
+function contractBlock(): string {
+  if (!state.signed || !state.teamId) {
+    return '<div class="sub">还没有合同。上王者之后会收到邀请。</div>';
+  }
+  const name = rosterOf(state.year).find((t) => t.id === state.teamId)?.name ?? state.teamId;
+  const until = state.contractYear ?? state.year;
+  return `<div class="contract-line">
+    <b>${esc(name)}</b>
+    <span class="mini">合同到第 ${until} 年 · 教练信任 ${state.coachTrust}</span>
+  </div>`;
+}
+
 /** 生涯屏：上面是六维（含人气），下面是荣誉。 */
 function renderCareer(): string {
   const rows = ATTR_KEYS.map((key) => {
@@ -442,6 +460,10 @@ function renderCareer(): string {
     : '<div class="sub">荣誉柜是空的。打完一个赛季再看。</div>';
 
   return `<div class="panel">
+      <div class="cap">合同</div>
+      ${contractBlock()}
+    </div>
+    <div class="panel">
       <div class="cap">能力</div>
       <ul class="squad">${rows}</ul>
     </div>

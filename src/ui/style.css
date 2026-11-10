@@ -340,6 +340,33 @@ button {
   font-size: 12px;
 }
 
+/* 转会报价：选项里多一段多行说明，按钮改成竖排。 */
+.btn.opt-rich {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+.btn.opt-rich .opt-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.btn.opt-rich .detail {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+  white-space: pre-line;
+}
+
+.contract-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+}
+
 .ending {
   text-align: left;
 }

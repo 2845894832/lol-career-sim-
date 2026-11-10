@@ -123,6 +123,7 @@ export function newGame(
     role,
     teamId: null,
     seasonResults: [],
+    contractYear: null,
     freeAgent: false,
     failedWindows: 0,
     actionGrid: [null, null, null],
