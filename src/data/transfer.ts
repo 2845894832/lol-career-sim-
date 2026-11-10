@@ -3,9 +3,9 @@
  *
  * 规则（用户已定，见《24-转会系统-待审.xlsx》）：
  * - 每年第 30 周打完，必弹一张转会卡；没有「都不签」的出口。
- * - 报价只出对位差 ≤ 10 的队：换过去至少结构上能争首发（信任还得重攒）。
+ * - 报价只出「同位置球员能力低于你」的队：换过去结构上就该顶掉他。
  * - 签字费按目标队首发五人 ovr 均值分三档：强 5000 / 中 2000 / 弱 1000。
- * - 续约也发签字费；转会才把教练信任重置到 40。
+ * - 续约也发签字费；转会才把教练信任重置到 65（刚好越过 60 的首发线）。
  * - 玩家可以被动接报价，也可以主动申请（同样的 gap 过滤，另给最多 3 支）。
  * - 队名按 data/teamIdentity.ts 跟随席位；没有后继 = 解散，只给保底弱队。
  */
@@ -43,7 +43,7 @@ export interface TransferOffer {
   fee: number;
   /** 次年首发五人，一句话。 */
   lineup: string;
-  /** 结构上能不能争首发（gap ≤ 10）。 */
+  /** 能力上能不能顶掉对位（gap < 0，或该队这个位置空着）。 */
   startable: boolean;
 }
 
@@ -77,11 +77,11 @@ function offerFor(state: GameState, team: RosterTeam, year: number): TransferOff
     strength: teamStrength(team),
     fee: signingFee(year, team.id),
     lineup: lineupOf(team),
-    startable: gap <= CONFIG.league.maxGap,
+    startable: gap < 0,
   };
 }
 
-/** 能达到首发条件的队，按强度从高到低。 */
+/** 能力上能顶掉对位的队：同位置球员 ovr 比你低，或这个位置空着。 */
 function eligibleTeams(state: GameState, year: number): RosterTeam[] {
   const cur = teamInYear(state.teamId, year);
   const mine = myOvr(state);
@@ -89,7 +89,7 @@ function eligibleTeams(state: GameState, year: number): RosterTeam[] {
     .filter((t) => t.id !== cur)
     .filter((t) => {
       const player = t.players.find((p) => p.pos === state.role);
-      return !player || player.ovr - mine <= CONFIG.league.maxGap;
+      return !player || player.ovr < mine;
     })
     .sort((a, b) => teamStrength(b) - teamStrength(a));
 }
@@ -129,16 +129,20 @@ export function applicationOffers(state: GameState, year: number): TransferOffer
 
 function contractOption(state: GameState, offer: TransferOffer, year: number, renew: boolean): EventOption {
   const needTrust = CONFIG.league.startThreshold + Math.max(0, offer.gap);
+  const postTrust = renew ? state.coachTrust : CONFIG.transfer.trustAfterTransfer;
   const posLine = offer.posOvr === null
     ? `${POS_LABEL[state.role]}：名单上没有这个人（缺口）`
-    : `${POS_LABEL[state.role]}：${offer.posName ?? '?'} ${offer.posOvr} · 你 ${myOvr(state)}（差 ${Math.max(0, offer.gap)}）`;
+    : `${POS_LABEL[state.role]}：${offer.posName ?? '?'} ${offer.posOvr} · 你 ${myOvr(state)}（${offer.gap > 0 ? `差 ${offer.gap}` : `强 ${-offer.gap}`}）`;
+  const trustLine = offer.gap > CONFIG.league.maxGap
+    ? `对位差 ${offer.gap}，超过 10 点上不了场；先签下来再练。`
+    : postTrust > needTrust
+      ? `首发要信任 > ${needTrust}（${renew ? `现在 ${postTrust}` : `转会后 ${postTrust}`}），能上`
+      : `首发要信任 > ${needTrust}，${renew ? `现在 ${postTrust}` : `转会后只有 ${postTrust}`}——转会当年从替补打起`;
   const detail = [
     posLine,
     `首发五人：${offer.lineup}`,
     `签字费 +${offer.fee} · 合同 1 年 · ${renew ? '信任不动' : `信任重置到 ${CONFIG.transfer.trustAfterTransfer}`}`,
-    offer.gap > CONFIG.league.maxGap
-      ? `对位差 ${offer.gap}，超过 10 点上不了场；先签下来再练。`
-      : `首发要信任 > ${needTrust}（现在 ${state.coachTrust}）`,
+    trustLine,
   ].join('\n');
   return {
     label: renew ? `${offer.name} 续约 1 年` : `去 ${offer.name}`,

@@ -197,7 +197,7 @@ export const CONFIG = {
     feeMid: 2000,
     feeWeak: 1000,
     /** 转会（不是续约）之后教练信任重置到这个数。 */
-    trustAfterTransfer: 40,
+    trustAfterTransfer: 65,
   },
 
   /** 事件抽取。 */

@@ -1159,7 +1159,7 @@ describe('转会系统', () => {
     expect(next.week).toBe(1);
   });
 
-  it('转会：换队、信任重置 40、签字费到账、战绩清零', () => {
+  it('转会：换队、信任重置到 65、签字费到账、战绩清零', () => {
     const s = runWeekToTransfer(offerState());
     const ev = getEvent('TR-2', s)!;
     const contract = ev.options[1]!.success?.contract;
@@ -1171,6 +1171,13 @@ describe('转会系统', () => {
     expect(next.contractYear).toBe(2);
     expect(next.money).toBe(s.money + signingFee(2, contract!.teamId));
     expect(next.seasonResults).toEqual([]);
+  });
+
+  it('转会之后能直接首发：65 越过 60 的首发线', () => {
+    const s = runWeekToTransfer(offerState());
+    const next = reduce(s, { kind: 'chooseOption', option: 1 }).state;
+    expect(next.coachTrust).toBeGreaterThan(CONFIG.league.startThreshold);
+    expect(isStarting(next)).toBe(true);
   });
 
   it('主动申请：走 TRA 卡，只列能首发的队，选中后照样换队', () => {
@@ -1189,22 +1196,22 @@ describe('转会系统', () => {
     expect(next.coachTrust).toBe(CONFIG.transfer.trustAfterTransfer);
   });
 
-  it('报价只出 gap≤10 的队；签字费按强度三档', () => {
+  it('报价只出「同位置比你弱」的队；签字费按强度三档', () => {
     const s = offerState();
     const ordered = seasonStrengths(2);
     expect(signingFee(2, ordered[0]!.id)).toBe(CONFIG.transfer.feeStrong);
     expect(signingFee(2, ordered[ordered.length - 1]!.id)).toBe(CONFIG.transfer.feeWeak);
     expect(signingFee(2, ordered[Math.floor(ordered.length / 2)]!.id)).toBe(CONFIG.transfer.feeMid);
-    for (const o of transferOffers(s, 2)) expect(o.gap).toBeLessThanOrEqual(CONFIG.league.maxGap);
-    for (const o of applicationOffers(s, 2)) expect(o.gap).toBeLessThanOrEqual(CONFIG.league.maxGap);
+    for (const o of transferOffers(s, 2)) expect(o.gap).toBeLessThan(0);
+    for (const o of applicationOffers(s, 2)) expect(o.gap).toBeLessThan(0);
   });
 
-  it('弱到没有队能首发时，只保底一支弱队（gap 可能超 10，但不会没合同）', () => {
+  it('弱到没有队愿意要时，只保底一支弱队（gap 可能为正，但不会没合同）', () => {
     const s = offerState();
     for (const k of MATCH_ATTRS) s.attrs[k] = 40;
     const offers = transferOffers(s, 2);
     expect(offers.length).toBeGreaterThan(0);
-    for (const o of offers) expect(o.gap <= CONFIG.league.maxGap || offers.length === 1).toBe(true);
+    for (const o of offers) expect(o.gap < 0 || offers.length === 1).toBe(true);
   });
 
   it('队名更名跟映射走，RA 在 S15 视为解散', () => {

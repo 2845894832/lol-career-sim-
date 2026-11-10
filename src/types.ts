@@ -99,7 +99,7 @@ export interface ContractTerm {
   teamId: string;
   /** 签字费；0 = 这份合同不发钱。 */
   fee: number;
-  /** 转会才把教练信任重置到 40；留队续约不动。 */
+  /** 转会才把教练信任重置到 65；留队续约不动。 */
   resetTrust: boolean;
   /** 合同从哪一年开始（1 起）。 */
   startYear: number;
