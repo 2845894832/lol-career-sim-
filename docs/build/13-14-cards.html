@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>13/14 一页图文</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #dfe5ec;
+    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .card {
+    width: 820px; height: 1160px; padding: 52px 54px 44px;
+    background: #F6F8FB; display: flex; flex-direction: column;
+    position: relative; overflow: hidden; color: #22303F;
+  }
+  .card + .card { margin-top: 24px; }
+  .card::before {
+    content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 8px;
+    background: linear-gradient(90deg, #17324F 0%, #2F6FA8 55%, #7FB2D8 100%);
+  }
+  .kicker { font-size: 15px; letter-spacing: 2px; color: #2F6FA8; font-weight: 700; }
+  h1 { font-size: 40px; line-height: 1.28; color: #17324F; margin: 12px 0 10px; letter-spacing: 1px; }
+  .sub { font-size: 18px; line-height: 1.75; color: #5A6B7E; margin-bottom: 30px; }
+  .stack { display: flex; flex-direction: column; gap: 16px; flex: 1; justify-content: space-between; }
+  .layer {
+    background: #fff; border: 1px solid #E1E8F0; border-left: 6px solid #2F6FA8;
+    border-radius: 10px; padding: 22px 24px 20px; flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .eg { margin-top: 10px; font-size: 16.5px; line-height: 1.6; color: #4A5B6D; background: #F1F5FA; border-radius: 6px; padding: 8px 12px; }
+  .layer { flex: 0 0 auto; }
+  .layer .top { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+  .layer .no { font-size: 15px; font-weight: 700; color: #2F6FA8; background: #EAF2F9; border-radius: 4px; padding: 2px 8px; }
+  .layer h2 { font-size: 25px; color: #17324F; }
+  .layer p { font-size: 18px; line-height: 1.72; color: #3D4C5C; }
+  .layer .file { margin-top: 8px; font-size: 15px; color: #8595A6; font-family: Consolas, "Microsoft YaHei", monospace; }
+  .layer.l1 { border-left-color: #2F6FA8; }
+  .layer.l2 { border-left-color: #3F8A6E; }
+  .layer.l3 { border-left-color: #B07C3C; }
+  .layer.l2 .no { color: #3F8A6E; background: #EAF3EF; }
+  .layer.l3 .no { color: #B07C3C; background: #F8F0E6; }
+  .foot {
+    margin-top: 22px; background: #17324F; color: #E8EFF7; border-radius: 10px;
+    padding: 20px 24px; font-size: 18px; line-height: 1.75;
+  }
+  .foot b { color: #fff; }
+  .foot .small { display: block; margin-top: 6px; font-size: 15px; color: #A9C0D6; }
+
+  .concepts { display: flex; flex-direction: column; gap: 18px; flex: 1; }
+  .concept { background: #fff; border: 1px solid #E1E8F0; border-radius: 10px; padding: 22px 24px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .concept .term { font-size: 27px; color: #17324F; font-weight: 700; letter-spacing: .5px; }
+  .concept .term span { font-size: 16px; color: #2F6FA8; font-weight: 400; margin-left: 10px; letter-spacing: 0; }
+  .concept .one { font-size: 19px; line-height: 1.7; margin-top: 8px; color: #2B3A4A; }
+  .concept .meta { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; font-size: 15.5px; line-height: 1.6; }
+  .chip { background: #EEF3F8; color: #43566B; border-radius: 6px; padding: 5px 10px; }
+  .chip.cost { background: #FBF1E7; color: #8A5A24; }
+  .chip b { font-weight: 700; }
+
+  .bands { display: flex; flex-direction: column; gap: 16px; flex: 1; }
+  .band { background: #fff; border: 1px solid #E1E8F0; border-radius: 10px; padding: 20px 24px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .band .head { display: flex; align-items: baseline; gap: 12px; }
+  .band .num { font-size: 38px; font-weight: 700; line-height: 1; }
+  .band .name { font-size: 22px; color: #17324F; font-weight: 700; }
+  .band .why { font-size: 16.5px; color: #5A6B7E; line-height: 1.65; margin-top: 6px; }
+  .band .fields { margin-top: 10px; font-size: 15.5px; line-height: 1.9; color: #6B7A8C; font-family: Consolas, "Microsoft YaHei", monospace; }
+  .band.b1 .num { color: #2F6FA8; } .band.b2 .num { color: #3F8A6E; } .band.b3 .num { color: #B07C3C; }
+  .band.b1 { border-top: 5px solid #2F6FA8; }
+  .band.b2 { border-top: 5px solid #3F8A6E; }
+  .band.b3 { border-top: 5px solid #B07C3C; }
+  .tagline { margin-top: 20px; font-size: 17px; line-height: 1.7; color: #3D4C5C; background: #fff; border: 1px dashed #C9D6E4; border-radius: 10px; padding: 16px 20px; }
+</style>
+</head>
+<body>
+
+  <section class="card" id="c1">
+    <div class="kicker">13 / 14 · 一页图文 ①</div>
+    <h1>这游戏，三层在干活</h1>
+    <p class="sub">你看得见的只有第一层，另外两层在背后替它干活。</p>
+    <div class="stack">
+      <div class="layer l1">
+        <div class="top"><span class="no">01</span><h2>界面层</h2></div>
+        <p>你看见的那层：按钮、表格、红绿数字。改它 = 改长相和手感。</p>
+        <div class="eg">在这游戏里：把「体力 60/100」换成一根进度条，只动这一层。</div>
+        <div class="file">src/ui/main.ts</div>
+      </div>
+      <div class="layer l2">
+        <div class="top"><span class="no">02</span><h2>规则层</h2></div>
+        <p>做判断的那层：你点「训练」，它算这周涨多少、掉多少体力。改它 = 改玩法。</p>
+        <div class="eg">在这游戏里：训练一次涨 1 点改成涨 2 点，整个难度就变了。</div>
+        <div class="file">src/core/</div>
+      </div>
+      <div class="layer l3">
+        <div class="top"><span class="no">03</span><h2>数据层</h2></div>
+        <p>记账的那层：这一周所有数字装在一个对象里，最后存进浏览器。改它 = 改「能记什么」。</p>
+        <div class="eg">在这游戏里：想多加一个「心情」，得先在数据层加一个字段。</div>
+        <div class="file">src/types.ts</div>
+      </div>
+    </div>
+    <div class="foot">
+      打个饭馆的比方：<b>前厅点菜、后厨做菜、仓库记账</b>。
+      <span class="small">三件事各归各的；串层，就是菜做好了却记错了库存。</span>
+    </div>
+  </section>
+
+  <section class="card" id="c2">
+    <div class="kicker">13 / 14 · 一页图文 ②</div>
+    <h1>三个词，三句话</h1>
+    <p class="sub">技术方案里翻来覆去的，其实只有这三个词。</p>
+    <div class="concepts">
+      <div class="concept">
+        <div class="term">TypeScript<span>写错当场报错</span></div>
+        <div class="one">给 JavaScript 加了「类型标签」：名字写错、单位用错，当场报错，不用等跑起来才发现。</div>
+        <div class="meta"><span class="chip"><b>比喻</b>　寄快递先填单子，地址写错当场退回</span><span class="chip cost"><b>代价</b>　多一道编译</span></div>
+        <div class="eg">在这游戏里：改 config.ts 写错字段名，编译就报错，不用等打开游戏。</div>
+      </div>
+      <div class="concept">
+        <div class="term">单文件打包<span>Vite</span></div>
+        <div class="one">把 src 下几十个源文件，压成一个 index.html（现在 88 KB），双击就能玩，不用装环境。</div>
+        <div class="meta"><span class="chip"><b>比喻</b>　散装零件装成一台整机</span><span class="chip cost"><b>代价</b>　改完要重新打包</span></div>
+        <div class="eg">在这游戏里：打包命令跑完，dist/index.html 就是能直接玩的成品。</div>
+      </div>
+      <div class="concept">
+        <div class="term">本地存档<span>localStorage</span></div>
+        <div class="one">浏览器给每个网站的一个小抽屉：关掉浏览器，抽屉里的东西还在。</div>
+        <div class="meta"><span class="chip"><b>比喻</b>　关灯了，抽屉里的东西不会消失</span><span class="chip cost"><b>代价</b>　换浏览器或清缓存就没了</span></div>
+        <div class="eg">在这游戏里：存档键叫 lpl-career-proto:v3，按 F12 就能看见。</div>
+      </div>
+    </div>
+    <div class="foot">
+      三件事各管一段：<b>写不错 → 装得下 → 存得住</b>。
+      <span class="small">记不住名字没关系，记住这三句就行。</span>
+    </div>
+  </section>
+
+  <section class="card" id="c3">
+    <div class="kicker">13 / 14 · 一页图文 ③</div>
+    <h1>39 个字段，分三堆</h1>
+    <p class="sub">整局游戏要记住的东西，只有这 39 个。按「你能不能看见」分。</p>
+    <div class="bands">
+      <div class="band b1">
+        <div class="head"><span class="num">21</span><span class="name">界面上看得见</span></div>
+        <div class="why">你随时能查到的：他是谁、现在第几周。</div>
+        <div class="fields">playerName · role · year · week · attrs · stamina · maxStamina · money · rankPoints · placement · coachTrust · injury · honors · seasonResults · signed · teamId · freeAgent · owned · subs · ended · retired</div>
+      </div>
+      <div class="band b2">
+        <div class="head"><span class="num">10</span><span class="name">藏在背后计数</span></div>
+        <div class="why">界面不显示，但少了它，游戏会「记错」。</div>
+        <div class="fields">version · seed · rngState · exp · yearGain · flags · triggeredEvents · failedWindows · peakYear · peakScore</div>
+      </div>
+      <div class="band b3">
+        <div class="head"><span class="num">8</span><span class="name">只属于本周</span></div>
+        <div class="why">这一周过完就该清掉的临时状态。</div>
+        <div class="fields">actionGrid · actionTargets · pendingEvent · eventDone · ledger · lastLedger · temp · log</div>
+      </div>
+    </div>
+    <div class="tagline">存档时只少存一个 <b>temp</b>；其余 38 个都写进浏览器，其中 log 最多留 60 条。</div>
+  </section>
+
+</body>
+</html>
