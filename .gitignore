@@ -6,3 +6,6 @@ dist-slice/*
 .DS_Store
 .shots/
 .po/
+.scratch/
+__pycache__/
+*.pyc

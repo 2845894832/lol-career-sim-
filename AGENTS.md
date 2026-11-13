@@ -18,3 +18,17 @@
 ## 决策记录
 
 写 ADR 前先读 `docs/决策记录规则.md`：指不到「用户在哪一句说的」，就只能标「出处未确认 / 待确认」，不许写成已定。
+
+## Agent skills
+
+### Issue tracker
+
+Issue 与 spec 以本地 markdown 存在 `.scratch/<feature>/` 下。见 `docs/agents/issue-tracker.md`。
+
+### Triage labels
+
+五类标准分诊角色，标签字符串与角色名相同。见 `docs/agents/triage-labels.md`。
+
+### Domain docs
+
+单上下文：根 `GLOSSARY.md` + `docs/adr/`。见 `docs/agents/domain.md`。
