@@ -71,7 +71,7 @@ export const CONFIG = {
    * 属性越高越贵，这是「越练越慢」的唯一来源。
    */
   actions: {
-    cost: { from: 40, step: 3 },
+    cost: { from: 40, step: 10 },
     rank: { stamina: 14, gain: { laning: 1, operation: 1 } },
     /** 数字 = 指定一维涨几点。 */
     train: { stamina: 12, gain: 2 },

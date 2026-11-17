@@ -224,14 +224,14 @@ describe('成长', () => {
     expect(old.attrs.operation).toBe(51);
   });
 
-  it('属性越高，这一格越贵（每 10 点 +3 体力）', () => {
+  it('属性越高，这一格越贵（每 10 点 +10 体力）', () => {
     const s = newGame(1);
     s.attrs.awareness = 45;
     expect(staminaCost(s, 'review')).toBe(8);
     s.attrs.awareness = 65;
-    expect(staminaCost(s, 'review')).toBe(14);
+    expect(staminaCost(s, 'review')).toBe(28);
     s.attrs.awareness = 95;
-    expect(staminaCost(s, 'review')).toBe(23);
+    expect(staminaCost(s, 'review')).toBe(58);
   });
 
   it('休息按体力上限的 20% 恢复', () => {
